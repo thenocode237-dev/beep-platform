@@ -1,5 +1,10 @@
 import fr, { type Dict } from "./dictionaries/fr";
 import en from "./dictionaries/en";
+import consoleFr, { type ConsoleDict } from "./dictionaries/console-fr";
+import consoleEn from "./dictionaries/console-en";
+
+export type { ConsoleDict };
+export const getConsole = (locale: Locale): ConsoleDict => (locale === "en" ? consoleEn : consoleFr);
 
 export const locales = ["fr", "en"] as const;
 export type Locale = (typeof locales)[number];

@@ -7,7 +7,7 @@ import java.util.UUID;
 public record User(
     UUID id,
     Email email,
-    String passwordHash,
+    String passwordHash, // null : compte créé par lien magique ou OAuth (mot de passe définissable par réinitialisation)
     UserStatus status,
     Instant emailVerifiedAt,
     String totpSecretCipher, // secret TOTP chiffré (jamais en clair)
@@ -17,6 +17,15 @@ public record User(
 
   public static User register(UUID id, Email email, String passwordHash, String locale, Instant now) {
     return new User(id, email, passwordHash, UserStatus.PENDING, null, null, false, locale, now);
+  }
+
+  /** Compte sans mot de passe (lien magique, OAuth) : actif dès que l'adresse est prouvée. */
+  public static User registerExternal(UUID id, Email email, String locale, Instant now) {
+    return new User(id, email, null, UserStatus.PENDING, null, null, false, locale, now);
+  }
+
+  public User withStatus(UserStatus next) {
+    return new User(id, email, passwordHash, next, emailVerifiedAt, totpSecretCipher, totpEnabled, locale, createdAt);
   }
 
   public boolean emailVerified() {

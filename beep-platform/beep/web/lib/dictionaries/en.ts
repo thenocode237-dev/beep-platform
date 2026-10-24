@@ -50,7 +50,7 @@ const en: Dict = {
       hasAccount: "Already have an account?",
       loginLink: "Log in",
       doneTitle: "Check your inbox",
-      done: "We sent a confirmation link to your address. It is valid for 24 hours.",
+      done: "If your address was invited to the beta, a confirmation link is on its way (valid for 24 hours). Otherwise, an email explains how to join Beep.",
     },
     login: {
       title: "Welcome back",
@@ -99,7 +99,7 @@ const en: Dict = {
   app: {
     title: "Your workspace",
     hello: "Welcome",
-    intro: "Your account is ready. Links, QR codes and bio pages arrive with the beta.",
+    intro: "Your account is ready: create your links, QR codes and bio pages from your workspace.",
     security: "Security",
     totpTitle: "Two-factor authentication (TOTP)",
     totpOn: "Enabled on your account.",

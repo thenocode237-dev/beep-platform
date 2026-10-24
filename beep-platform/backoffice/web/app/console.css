@@ -469,3 +469,99 @@
     align-items: center;
   }
 }
+
+/* ---------- Phase 1 : modules du back office ---------- */
+.small { font-size: var(--text-small); }
+.break { overflow-wrap: anywhere; word-break: break-word; }
+.back-link, .text-link {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--touch-target-min);
+  color: var(--color-text-link); font-size: var(--text-small); font-weight: 600; text-decoration: none; width: fit-content;
+}
+.back-link:hover, .text-link:hover { text-decoration: underline; }
+.heading-badges { margin-top: var(--space-3); }
+.search { display: grid; gap: var(--space-3); align-items: end; }
+.search .bp-btn { width: 100%; }
+.detail-grid { display: grid; gap: var(--space-5); align-items: start; }
+.kv { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1) var(--space-4); margin: 0; font-size: var(--text-small); }
+.kv dt { color: var(--color-text-secondary); margin-top: var(--space-2); }
+.kv dd { margin: 0; font-weight: 500; }
+.rights, .history, .chips, .menu-list, .audit, .kpis { list-style: none; margin: 0; padding: 0; }
+.rights { display: grid; gap: 0; }
+.rights li { display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border-default); font-size: var(--text-small); }
+.rights li:last-child { border-bottom: 0; }
+.override-tag { margin-left: var(--space-2); padding: 2px var(--space-2); border-radius: var(--radius-sm); background: var(--color-surface-warm); color: var(--color-text-primary); font-size: var(--text-caption); font-weight: 600; }
+.history { display: grid; gap: var(--space-3); font-size: var(--text-small); }
+.history li { display: grid; gap: var(--space-1); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border-default); }
+.history li:last-child { border-bottom: 0; }
+.check { display: flex; align-items: center; gap: var(--space-2); min-height: var(--touch-target-min); font-size: var(--text-small); }
+.check input { width: 20px; height: 20px; accent-color: var(--color-action-primary-bg); }
+select.bp-input { appearance: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chips code { display: inline-block; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--color-bg-subtle); font-size: var(--text-caption); }
+.cards--always { display: grid; }
+.link-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.table th a, .cards__email { color: var(--color-text-primary); }
+.table-status--suspended, .table-status--pending { background: var(--color-surface-warm); color: var(--color-text-primary); }
+.page-count--danger { background: var(--color-feedback-danger-bg); color: var(--color-feedback-danger-text); }
+.warning-text { color: var(--color-feedback-warning-text); background: var(--color-feedback-warning-bg); padding: var(--space-3); border-radius: var(--radius-md); font-size: var(--text-small); }
+
+/* KPI */
+.kpis { display: grid; gap: var(--space-3); }
+.kpis .bp-card { display: grid; gap: var(--space-1); }
+.kpi__label { font-size: var(--text-small); color: var(--color-text-secondary); }
+.kpi__value { font-family: var(--font-family-display); font-size: 2rem; line-height: 1.1; font-weight: 600; }
+.kpis .small { display: inline-flex; align-items: center; gap: var(--space-1); }
+.kpi--warning { border-color: var(--color-feedback-warning-text); }
+.kpi--warning .small { color: var(--color-feedback-warning-text); }
+
+/* Histogramme mono-série */
+.chart { margin: 0; display: grid; gap: var(--space-3); }
+.chart__head { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.chart__title { font-weight: 600; }
+.chart__total { color: var(--color-text-secondary); font-size: var(--text-small); }
+.chart__plot { position: relative; height: 160px; border-bottom: 1px solid var(--color-border-strong); padding-top: var(--space-5); }
+.chart__max { position: absolute; top: 0; left: 0; font-size: var(--text-caption); color: var(--color-text-muted); }
+.chart__bars { display: flex; align-items: flex-end; gap: 2px; height: 100%; }
+.chart__bar { flex: 1 1 0; height: 100%; display: flex; align-items: flex-end; min-width: 0; cursor: default; }
+.chart__bar > span { display: block; width: 100%; min-height: 0; background: var(--color-action-primary-bg); border-radius: 4px 4px 0 0; }
+.chart__bar:hover > span { background: var(--color-action-primary-bg-hover); }
+.chart__axis { display: flex; justify-content: space-between; gap: var(--space-2); font-size: var(--text-caption); color: var(--color-text-secondary); }
+
+/* Jauges d'usage */
+.meter { display: grid; gap: var(--space-2); }
+.meter__head { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--text-small); }
+.meter__track { height: 8px; border-radius: var(--radius-pill); background: var(--color-bg-subtle); overflow: hidden; }
+.meter__track > span { display: block; height: 100%; border-radius: var(--radius-pill); background: var(--color-action-accent-bg); }
+.meter--warning .meter__track > span { background: var(--color-feedback-warning-text); }
+.meter--reached .meter__track > span { background: var(--color-feedback-danger-text); }
+.meter__level { font-size: var(--text-caption); color: var(--color-text-secondary); }
+.meter--reached .meter__level { color: var(--color-feedback-danger-text); font-weight: 600; }
+
+/* Jobs, audit, plans, menu */
+.job-state { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-caption); font-weight: 600; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); }
+.job-state--ok { background: var(--color-feedback-success-bg); color: var(--color-feedback-success-text); }
+.job-state--failed { background: var(--color-feedback-danger-bg); color: var(--color-feedback-danger-text); }
+.job-state--never { background: var(--color-bg-subtle); color: var(--color-text-secondary); }
+.audit { display: grid; gap: var(--space-3); }
+.audit .bp-card { display: grid; gap: var(--space-2); }
+.audit__action { font-weight: 600; color: var(--color-text-link); }
+.plans { display: grid; gap: var(--space-5); }
+.menu-list { display: grid; gap: var(--space-3); }
+.menu-list a { display: flex; align-items: center; gap: var(--space-3); min-height: var(--touch-target-comfortable); color: var(--color-text-primary); text-decoration: none; font-weight: 600; }
+.menu-list a span { flex: 1; }
+
+@media (min-width: 768px) {
+  .search { grid-template-columns: minmax(0, 1fr) auto; }
+  .search:has(> .bp-field + .bp-field) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .search .bp-btn { width: auto; }
+  .kv { grid-template-columns: 11rem minmax(0, 1fr); }
+  .kv dt { margin-top: 0; }
+  .kv--wide { grid-template-columns: 18rem minmax(0, 1fr); }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards--always { display: grid; }
+}
+@media (min-width: 1024px) {
+  .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

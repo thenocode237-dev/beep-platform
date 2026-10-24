@@ -87,6 +87,8 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 
 ### Phase 1 — MVP (S3–S8)
 
+> **État (24 octobre 2026)** : les trois cycles sont implémentés côté `beep` et `backoffice` (contrat admin 0.2.0) — détail, décisions et écarts dans [`beep-platform/docs/phase-1.md`](beep-platform/docs/phase-1.md). Restent les critères de sortie mesurés hors du poste de développement : bêta de 100 invités, palier de 1 000 req/s en préproduction, restauration vérifiée.
+
 **Cycle 1 (S3–S4) : liens courts et redirection**
 - `beep` : entité `Link`, création/édition, slugs (personnalisés, générés, réservés), **moteur de redirection** avec cache Caffeine (invalidation `LISTEN/NOTIFY`), threads virtuels, écriture d'événements par lots, page 404.
 - `backoffice` : recherche de liens, **désactivation d'un lien**, liste des slugs réservés.

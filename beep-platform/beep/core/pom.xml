@@ -24,6 +24,9 @@
     <module>adapter-out-postgres</module>
     <module>adapter-out-mail</module>
     <module>adapter-out-security</module>
+    <module>adapter-out-qrrender</module>
+    <module>adapter-out-geoip</module>
+    <module>adapter-out-oauth</module>
     <module>bootstrap</module>
   </modules>
 
@@ -56,6 +59,11 @@
       <dependency><groupId>io.beep</groupId><artifactId>adapter-out-postgres</artifactId><version>${project.version}</version></dependency>
       <dependency><groupId>io.beep</groupId><artifactId>adapter-out-mail</artifactId><version>${project.version}</version></dependency>
       <dependency><groupId>io.beep</groupId><artifactId>adapter-out-security</artifactId><version>${project.version}</version></dependency>
+      <dependency><groupId>io.beep</groupId><artifactId>adapter-out-qrrender</artifactId><version>${project.version}</version></dependency>
+      <dependency><groupId>io.beep</groupId><artifactId>adapter-out-geoip</artifactId><version>${project.version}</version></dependency>
+      <dependency><groupId>io.beep</groupId><artifactId>adapter-out-oauth</artifactId><version>${project.version}</version></dependency>
+      <dependency><groupId>com.google.zxing</groupId><artifactId>core</artifactId><version>3.5.3</version></dependency>
+      <dependency><groupId>com.maxmind.geoip2</groupId><artifactId>geoip2</artifactId><version>4.2.1</version></dependency>
       <dependency><groupId>com.tngtech.archunit</groupId><artifactId>archunit-junit5</artifactId><version>${archunit.version}</version></dependency>
       <dependency><groupId>org.bouncycastle</groupId><artifactId>bcprov-jdk18on</artifactId><version>${bouncycastle.version}</version></dependency>
     </dependencies>

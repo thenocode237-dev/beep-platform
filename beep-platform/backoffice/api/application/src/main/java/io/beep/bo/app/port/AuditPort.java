@@ -10,4 +10,9 @@ public interface AuditPort {
 
   /** Lecture ordonnée par numéro croissant, pour la vérification d'intégrité. */
   List<AuditChain.Entry> readAll();
+
+  /** Consultation paginée, plus récentes d'abord ; filtres facultatifs (préfixe d'action, e-mail de l'auteur). */
+  Page page(int limit, Long beforeSeq, String actionPrefix, String actorEmail);
+
+  record Page(List<AuditChain.Entry> items, Long nextBeforeSeq) {}
 }

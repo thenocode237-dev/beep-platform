@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Alert, Button, Icon, TextField } from "@beep/ui";
 import { post } from "@/lib/api";
 import type { Dict } from "@/lib/dictionaries/fr";
+import type { ConsoleDict } from "@/lib/dictionaries/console-fr";
 import { href, type Locale } from "@/lib/i18n";
 
 type Props = { dict: Dict; locale: Locale };
@@ -217,6 +218,94 @@ export function TotpSetup({ dict, enabled }: { dict: Dict; enabled: boolean }) {
       {confirm.error && <Alert tone="danger">{confirm.error}</Alert>}
       <TextField name="code" label={dict.auth.login.totp} inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required />
       <Button type="submit" loading={confirm.loading}>{dict.app.totpConfirm}</Button>
+    </form>
+  );
+}
+
+// ---- Connexion sans mot de passe (phase 1) ----
+type PwProps = Props & { t: ConsoleDict };
+
+/** Demande d'un lien de connexion (réponse identique que le compte existe ou non). */
+export function MagicLinkForm({ dict, locale, t }: PwProps) {
+  const s = useSubmit(dict, async (f) => post("/auth/magic-link", { email: f.get("email"), locale }));
+  if (s.done) return <Alert tone="success">{t.passwordless.magicDone}</Alert>;
+  return (
+    <form className="bp-stack" onSubmit={s.onSubmit}>
+      {s.error && <Alert tone="danger">{t.errors[s.code ?? ""] ?? s.error}</Alert>}
+      <TextField name="email" type="email" inputMode="email" autoComplete="email" label={dict.auth.email} required />
+      <Button type="submit" variant="secondary" block loading={s.loading}>
+        <Icon name="mail" size={18} /> {t.passwordless.magicSubmit}
+      </Button>
+    </form>
+  );
+}
+
+/** Boutons OAuth : navigation complète vers le core (état + PKCE posés en cookie). */
+export function OAuthButtons({ providers, locale, t }: { providers: string[]; locale: Locale; t: ConsoleDict }) {
+  if (!providers.length) return null;
+  return (
+    <div className="bp-stack">
+      {providers.includes("google") && (
+        <a className="bp-btn bp-btn--secondary bp-btn--block" href={`/v1/auth/oauth/google/start?locale=${locale}`}>
+          {t.passwordless.google}
+        </a>
+      )}
+      {providers.includes("github") && (
+        <a className="bp-btn bp-btn--secondary bp-btn--block" href={`/v1/auth/oauth/github/start?locale=${locale}`}>
+          {t.passwordless.github}
+        </a>
+      )}
+    </div>
+  );
+}
+
+/** Consommation du lien magique ; redirige vers l'espace ou vers le second facteur. */
+export function MagicConsume({ dict, locale, t, token }: PwProps & { token?: string }) {
+  const [state, setState] = useState<"pending" | "fail">(token ? "pending" : "fail");
+  const [code, setCode] = useState<string>();
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    post<{ status: string; token?: string }>("/auth/magic-link/consume", { token }).then((r) => {
+      if (cancelled) return;
+      if (r.ok && r.data?.status === "mfa_required" && r.data.token) window.location.assign(`${href(locale, "/login/verify")}?token=${encodeURIComponent(r.data.token)}`);
+      else if (r.ok) window.location.assign(href(locale, "/app"));
+      else {
+        setCode(r.code);
+        setState("fail");
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [token, locale]);
+  return (
+    <div className="bp-stack" aria-live="polite">
+      {state === "pending" ? <p>{t.passwordless.magicPending}</p> : <Alert tone="danger">{t.errors[code ?? "invalid_token"] ?? dict.auth.verify.fail}</Alert>}
+      {state === "fail" && (
+        <a className="bp-btn" href={href(locale, "/login")}>
+          {dict.auth.verify.toLogin}
+        </a>
+      )}
+    </div>
+  );
+}
+
+/** Second facteur après un lien magique ou OAuth. */
+export function MfaForm({ dict, locale, t, token }: PwProps & { token?: string }) {
+  const s = useSubmit(dict, async (f) => {
+    const r = await post("/auth/mfa", { token, code: f.get("code") });
+    if (r.ok) window.location.assign(href(locale, "/app"));
+    return r;
+  });
+  if (!token) return <Alert tone="danger">{t.errors.invalid_token}</Alert>;
+  return (
+    <form className="bp-stack" onSubmit={s.onSubmit}>
+      {s.error && <Alert tone="danger">{t.errors[s.code ?? ""] ?? s.error}</Alert>}
+      <TextField name="code" label={dict.auth.login.totp} hint={dict.auth.login.totpHint} inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required autoFocus />
+      <Button type="submit" block loading={s.loading}>
+        {t.passwordless.verifySubmit}
+      </Button>
     </form>
   );
 }

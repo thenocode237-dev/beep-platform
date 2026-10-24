@@ -77,6 +77,13 @@ services:
       SMTP_AUTH: ${SMTP_AUTH:-false}
       SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
       MAIL_FROM: ${MAIL_FROM:-Beep <no-reply@beep.localhost>}
+      SIGNUP_MODE: ${SIGNUP_MODE:-invite}               # bêta privée : inscription sur invitation (open : libre)
+      GEOIP_DB_PATH: ${GEOIP_DB_PATH:-}                  # base MaxMind Country (.mmdb) montée en lecture seule ; vide = pays inconnus
+      OAUTH_GOOGLE_CLIENT_ID: ${OAUTH_GOOGLE_CLIENT_ID:-}
+      OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}
+      OAUTH_GITHUB_CLIENT_ID: ${OAUTH_GITHUB_CLIENT_ID:-}
+      OAUTH_GITHUB_CLIENT_SECRET: ${OAUTH_GITHUB_CLIENT_SECRET:-}
+      BEEP_ROLLUP_INTERVAL: ${BEEP_ROLLUP_INTERVAL:-PT1M}
     networks: [edge, backend, db]
     depends_on:
       core-migrate: { condition: service_completed_successfully }

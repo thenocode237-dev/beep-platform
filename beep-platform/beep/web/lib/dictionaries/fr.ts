@@ -49,7 +49,7 @@ const fr = {
       hasAccount: "Déjà un compte ?",
       loginLink: "Se connecter",
       doneTitle: "Vérifiez votre boîte mail",
-      done: "Nous avons envoyé un lien de confirmation à votre adresse. Il est valable 24 heures.",
+      done: "Si votre adresse a été invitée à la bêta, un lien de confirmation vient de partir (valable 24 heures). Sinon, un e-mail vous explique comment rejoindre Beep.",
     },
     login: {
       title: "Content de vous revoir",
@@ -98,7 +98,7 @@ const fr = {
   app: {
     title: "Votre espace",
     hello: "Bienvenue",
-    intro: "Votre compte est prêt. Les liens, QR codes et pages bio arrivent avec la bêta.",
+    intro: "Votre compte est prêt : créez vos liens, QR codes et pages bio depuis votre espace.",
     security: "Sécurité",
     totpTitle: "Authentification à deux facteurs (TOTP)",
     totpOn: "Activée sur votre compte.",

@@ -25,6 +25,8 @@ jobs:
       - name: Contrastes WCAG des tokens (clair + sombre)
         run: npm run contrast
       - run: npm run lint
+      - name: Slugs réservés = routes du site déclarées dans Caddy
+        run: node scripts/reserved-slugs-check.mjs
       - run: npm run build:web
       - run: npm run build:bo
 
@@ -67,6 +69,10 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
       - run: make test-e2e
       - run: make test-contract
+      - name: Données de démo (lien /demo)
+        run: make seed
+      - name: Charge k6 sur la redirection (budget p95 < 50 ms ; 1 000 req/s se mesure en préproduction)
+        run: make test-load RATE=200 DURATION=30s
       - name: Journaux en cas d'échec
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.dev.yml logs --tail=200

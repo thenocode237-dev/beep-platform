@@ -17,7 +17,12 @@ public interface UserRepository {
   void update(User user);
 
   /** Pagination par curseur (plus récents d'abord). */
-  Page page(int limit, String cursor);
+  default Page page(int limit, String cursor) {
+    return page(limit, cursor, null);
+  }
+
+  /** Idem, filtrée par une sous-chaîne de l'adresse e-mail (insensible à la casse) quand {@code query} est renseigné. */
+  Page page(int limit, String cursor, String query);
 
   record Page(List<User> items, String nextCursor) {}
 

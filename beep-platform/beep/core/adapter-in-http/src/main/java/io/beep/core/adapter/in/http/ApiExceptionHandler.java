@@ -32,7 +32,36 @@ public class ApiExceptionHandler {
       Map.entry("invalid_totp", HttpStatus.UNAUTHORIZED),
       Map.entry("email_not_verified", HttpStatus.FORBIDDEN),
       Map.entry("totp_already_enabled", HttpStatus.CONFLICT),
-      Map.entry("rate_limited", HttpStatus.TOO_MANY_REQUESTS));
+      Map.entry("rate_limited", HttpStatus.TOO_MANY_REQUESTS),
+      // phase 1 : validation
+      Map.entry("invalid_slug", HttpStatus.BAD_REQUEST),
+      Map.entry("reserved_slug", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_destination", HttpStatus.BAD_REQUEST),
+      Map.entry("destination_loop", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_title", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_description", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_reason", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_qr", HttpStatus.BAD_REQUEST),
+      Map.entry("qr_low_contrast", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_format", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_block", HttpStatus.BAD_REQUEST),
+      Map.entry("too_many_blocks", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_theme", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_seo", HttpStatus.BAD_REQUEST),
+      Map.entry("unknown_entitlement", HttpStatus.BAD_REQUEST),
+      Map.entry("invalid_entitlement", HttpStatus.BAD_REQUEST),
+      Map.entry("oauth_failed", HttpStatus.BAD_REQUEST),
+      Map.entry("oauth_email_unverified", HttpStatus.BAD_REQUEST),
+      // phase 1 : droits et état
+      Map.entry("quota_exceeded", HttpStatus.FORBIDDEN),
+      Map.entry("workspace_suspended", HttpStatus.FORBIDDEN),
+      Map.entry("feature_unavailable", HttpStatus.FORBIDDEN),
+      Map.entry("invite_required", HttpStatus.FORBIDDEN),
+      Map.entry("not_found", HttpStatus.NOT_FOUND),
+      Map.entry("slug_taken", HttpStatus.CONFLICT),
+      Map.entry("link_in_use", HttpStatus.CONFLICT),
+      Map.entry("status_unchanged", HttpStatus.CONFLICT),
+      Map.entry("already_registered", HttpStatus.CONFLICT));
 
   @ExceptionHandler(DomainException.class)
   ResponseEntity<ProblemDetail> domain(DomainException e) {
@@ -44,7 +73,7 @@ public class ApiExceptionHandler {
     return problem(HttpStatus.BAD_REQUEST, "invalid_request");
   }
 
-  @ExceptionHandler(TypeMismatchException.class)
+  @ExceptionHandler({TypeMismatchException.class, org.springframework.web.bind.MissingServletRequestParameterException.class})
   ResponseEntity<ProblemDetail> typeMismatch(Exception e) {
     return problem(HttpStatus.BAD_REQUEST, "invalid_request");
   }

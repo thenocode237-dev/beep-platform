@@ -7,7 +7,7 @@ import io.beep.bo.domain.staff.Permission;
 import io.beep.bo.domain.staff.StaffUser;
 import java.time.Clock;
 
-/** Liste des utilisateurs de la plateforme (lecture seule, via l'API admin du core). La consultation est journalisée. */
+/** Liste des utilisateurs de la plateforme (lecture seule, via l'API admin du core), avec recherche. La consultation est journalisée. */
 public class ListUsersUseCase {
   private final CoreGatewayPort core;
   private final AuditPort audit;
@@ -20,9 +20,14 @@ public class ListUsersUseCase {
   }
 
   public CoreGatewayPort.UsersPage execute(StaffUser actor, int limit, String cursor, String ip) {
+    return execute(actor, limit, cursor, null, ip);
+  }
+
+  public CoreGatewayPort.UsersPage execute(StaffUser actor, int limit, String cursor, String query, String ip) {
     actor.require(Permission.USERS_READ);
-    CoreGatewayPort.UsersPage page = core.listUsers(limit, cursor, actor.id());
-    audit.append(new AuditEvent(clock.instant(), actor.id(), actor.email().value(), "users.list", "users", "count=" + page.items().size(), ip));
+    CoreGatewayPort.UsersPage page = core.listUsers(limit, cursor, query, actor.id());
+    String detail = "count=" + page.items().size() + (query == null || query.isBlank() ? "" : " q=" + query.strip());
+    audit.append(new AuditEvent(clock.instant(), actor.id(), actor.email().value(), "users.list", "users", detail, ip));
     return page;
   }
 }

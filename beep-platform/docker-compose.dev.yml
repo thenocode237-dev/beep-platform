@@ -31,6 +31,7 @@ services:
   worker:
     environment:
       SPRING_PROFILES_ACTIVE: dev,worker
+      BEEP_ROLLUP_INTERVAL: PT10S        # statistiques visibles en quelques secondes en dev (tests de bout en bout)
   backoffice-api:
     environment:
       SPRING_PROFILES_ACTIVE: dev

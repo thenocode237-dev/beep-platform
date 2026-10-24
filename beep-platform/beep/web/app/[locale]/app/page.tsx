@@ -1,107 +1,84 @@
-﻿import { cookies } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { connection } from "next/server";
-import { Badge, Icon, type IconName } from "@beep/ui";
-import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
-import { LogoutButton, TotpSetup } from "@/components/forms";
-import { experience } from "@/lib/experience";
-import { getDictionary, href, isLocale } from "@/lib/i18n";
+﻿import { notFound } from "next/navigation";
+import { Badge, Icon } from "@beep/ui";
+import { QuotaMeter, TrafficChart, fmtNumber } from "@/components/Charts";
+import { CopyButton, QuickLinkForm } from "@/components/console";
+import type { LinksPage, WorkspaceView } from "@/lib/api";
+import { coreGet } from "@/lib/core";
+import { getConsole, href, isLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-type Me = {
-  id: string;
-  email: string;
-  emailVerified: boolean;
-  totpEnabled: boolean;
-};
 
-async function fetchMe(): Promise<Me | null> {
-  const base = process.env.CORE_INTERNAL_URL ?? "http://core:8080/v1";
-  const cookie = (await cookies()).toString();
-  if (!cookie) return null;
-  try {
-    const res = await fetch(`${base}/auth/me`, {
-      headers: { cookie },
-      cache: "no-store",
-    });
-    return res.ok ? ((await res.json()) as Me) : null;
-  } catch {
-    return null;
-  }
-}
-
-export default async function Dashboard({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  await connection();
+export default async function Overview({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const me = await fetchMe();
-  if (!me) redirect(href(locale, "/login"));
-  const dict = getDictionary(locale);
-  const c = experience(locale);
+  const t = getConsole(locale);
+  const [ws, links] = await Promise.all([coreGet<WorkspaceView>("/workspace"), coreGet<LinksPage>("/links?limit=5")]);
+
   return (
-    <>
-      <SiteHeader dict={dict} locale={locale} path="/app" />
-      <main id="main" className="workspace">
-        <div className="bp-container">
-          <div className="workspace__heading">
-            <div>
-              <h1>{c.workspaceTitle}</h1>
-              <p className="muted">{c.workspaceSub}</p>
+    <div className="app-page bp-stack bp-stack--lg">
+      <div className="app-heading">
+        <h1>{t.overview.title}</h1>
+        <p className="muted">{t.overview.sub}</p>
+      </div>
+      <section className="bp-card bp-card--lg">
+        <QuickLinkForm t={t} />
+      </section>
+
+      {!ws.data ? (
+        <div className="bp-card" role="alert">
+          {t.common.unavailable}
+        </div>
+      ) : (
+        <div className="app-grid">
+          <section className="bp-card bp-stack" aria-labelledby="traffic">
+            <h2 id="traffic" className="bp-sr-only">
+              {t.overview.traffic}
+            </h2>
+            <TrafficChart title={t.overview.traffic} points={ws.data.daily} locale={locale} unit={t.common.clicks} />
+          </section>
+          <section className="bp-card bp-stack" aria-labelledby="usage">
+            <div className="section-head">
+              <h2 id="usage">{t.overview.usage}</h2>
+              <Badge>
+                {t.overview.plan} {ws.data.plan.name}
+              </Badge>
             </div>
-            <LogoutButton dict={dict} locale={locale} />
-          </div>
-          <div className="workspace__grid">
-            <section
-              className="bp-card bp-card--lg bp-stack account-card"
-              aria-labelledby="account-title"
-            >
-              <span className="workspace__symbol">
-                <Icon name="bio" />
-              </span>
-              <h2 id="account-title">{c.account}</h2>
-              <p className="account-card__email">{me.email}</p>
-              <p className="bp-row">
-                <Icon name={me.emailVerified ? "check" : "info"} size={17} />
-                {me.emailVerified ? c.accountVerified : c.accountUnverified}
-              </p>
-              <p className="muted">{dict.app.intro}</p>
-            </section>
-            <section
-              className="bp-card bp-card--lg bp-stack security-card"
-              aria-labelledby="security-title"
-            >
-              <span className="workspace__symbol">
-                <Icon name="shield" />
-              </span>
-              <h2 id="security-title">{dict.app.security}</h2>
-              <p className="muted">{c.securityText}</p>
-              <h3>{dict.app.totpTitle}</h3>
-              <TotpSetup dict={dict} enabled={me.totpEnabled} />
-            </section>
-          </div>
-          <section
-            className="bp-card bp-card--lg bp-stack upcoming-card"
-            aria-labelledby="upcoming-title"
-          >
-            <h2 id="upcoming-title">{c.workspaceFuture}</h2>
-            <p className="muted">{c.workspaceFutureText}</p>
-            <ul className="upcoming-tools">
-              {dict.home.features.map((f) => (
-                <li key={f.title}>
-                  <Icon name={f.icon as IconName} size={20} />
-                  <span>{f.title}</span>
-                  <Badge soon>{dict.common.soon}</Badge>
-                </li>
-              ))}
-            </ul>
+            {ws.data.quotas.map((q) => (
+              <QuotaMeter key={q.resource} q={q} t={t} locale={locale} />
+            ))}
+            <p className="muted small">{t.overview.usageNote}</p>
           </section>
         </div>
-      </main>
-      <SiteFooter dict={dict} locale={locale} />
-    </>
+      )}
+
+      <section className="bp-card bp-stack" aria-labelledby="recent">
+        <div className="section-head">
+          <h2 id="recent">{t.overview.recent}</h2>
+          <a className="text-link" href={href(locale, "/app/links")}>
+            {t.overview.seeAll} <Icon name="arrow-right" size={16} />
+          </a>
+        </div>
+        {links.data && links.data.items.length > 0 ? (
+          <ul className="link-list">
+            {links.data.items.map((l) => (
+              <li key={l.id}>
+                <div className="link-list__main">
+                  <a href={href(locale, `/app/links/${l.id}`)} className="link-list__slug">
+                    {l.shortUrl.replace(/^https?:\/\//, "")}
+                  </a>
+                  <span className="muted small link-list__dest">{l.title ?? l.destination}</span>
+                </div>
+                <span className="link-list__clicks bp-tabular">
+                  {fmtNumber(locale, l.clicks30d ?? 0)} <span className="muted small">{t.links.last30}</span>
+                </span>
+                <CopyButton text={l.shortUrl} t={t} compact />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">{t.overview.empty}</p>
+        )}
+      </section>
+    </div>
   );
 }

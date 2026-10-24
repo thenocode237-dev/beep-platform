@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Beep — API admin interne
-  version: 0.1.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
+  version: 0.2.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
   description: |
     Contrat entre `beep-core` (serveur) et `backoffice-api` (client). Source de vérité unique :
     on modifie ce fichier EN PREMIER, puis le core et le client.
@@ -11,6 +11,9 @@ info:
     - `X-Staff-Id` : identifiant du membre du staff à l'origine de l'appel (journalisé des deux côtés).
     - Erreurs : `application/problem+json` avec un champ `code` stable.
     - Listes paginées par curseur.
+
+    Historique : 0.1.0 (phase 0) utilisateurs en lecture ; 0.2.0 (phase 1) recherche, fiche et suspension de compte,
+    liens (recherche, désactivation), slugs réservés, plans et overrides de droits, métriques plateforme, jobs, invitations.
 servers:
   - url: http://core:8080/internal/admin/v1
 security:
@@ -27,24 +30,21 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Meta" }
-              example: { contract: "0.1.0" }
+              example: { contract: "0.2.0" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+
   /users:
     get:
       operationId: listUsers
       summary: Liste des utilisateurs (lecture seule, plus récents d'abord)
       parameters:
-        - name: limit
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - name: q
           in: query
-          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
-        - name: cursor
-          in: query
-          description: Curseur opaque renvoyé par la page précédente (`nextCursor`).
-          schema: { type: string }
-        - name: X-Staff-Id
-          in: header
-          description: Membre du staff à l'origine de l'appel.
-          schema: { type: string, format: uuid }
+          description: Recherche sur l'adresse e-mail (sous-chaîne, insensible à la casse). Ajouté en 0.2.0.
+          schema: { type: string, maxLength: 254 }
+        - $ref: "#/components/parameters/StaffId"
       responses:
         "200":
           description: Une page d'utilisateurs
@@ -53,11 +53,272 @@ paths:
               schema: { $ref: "#/components/schemas/UsersPage" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      summary: Fiche d'un utilisateur et de son workspace (plan, usage face aux quotas, overrides)
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Fiche détaillée
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /users/{id}/status:
+    patch:
+      operationId: setUserStatus
+      summary: Suspendre ou réactiver un compte
+      description: |
+        Suspension : connexion impossible, sessions révoquées, workspace suspendu (ses liens et pages affichent une page
+        d'information au lieu de rediriger). Réactivation : retour à l'état actif.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StatusChange" }
+      responses:
+        "200":
+          description: Utilisateur après changement
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /links:
+    get:
+      operationId: listLinks
+      summary: Recherche de liens (tous workspaces)
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - name: q
+          in: query
+          description: Sous-chaîne recherchée dans le slug, la destination ou l'e-mail du propriétaire.
+          schema: { type: string, maxLength: 254 }
+        - name: workspaceId
+          in: query
+          schema: { type: string, format: uuid }
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Une page de liens, plus récents d'abord
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LinksPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /links/{id}:
+    get:
+      operationId: getLink
+      summary: Un lien et son propriétaire
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Le lien
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminLink" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /links/{id}/disable:
+    post:
+      operationId: disableLink
+      summary: Désactiver un lien (page d'avertissement, plus aucune redirection)
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Reason" }
+      responses:
+        "200":
+          description: Le lien désactivé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminLink" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /links/{id}/enable:
+    post:
+      operationId: enableLink
+      summary: Réactiver un lien désactivé
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Le lien réactivé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminLink" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /reserved-slugs:
+    get:
+      operationId: listReservedSlugs
+      summary: Slugs réservés (chemins du site, routes techniques, noms protégés)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Liste triée
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReservedSlugs" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /plans:
+    get:
+      operationId: listPlans
+      summary: Plans publiés et leurs droits
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Plans
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PlansList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /workspaces/{id}/entitlements:
+    put:
+      operationId: setEntitlementOverrides
+      summary: Overrides de droits d'un workspace (ex. +50 liens offerts)
+      description: |
+        Chaque clé fournie remplace l'override existant ; `null` le supprime (retour à la valeur du plan).
+        Les clés absentes ne changent pas. `-1` signifie « illimité » ; pour une fonctionnalité, 0 ou 1.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OverridesChange" }
+      responses:
+        "200":
+          description: Droits effectifs et overrides après modification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WorkspaceEntitlements" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /metrics:
+    get:
+      operationId: getMetrics
+      summary: Métriques plateforme v1
+      parameters:
+        - name: days
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 90, default: 30 }
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Métriques
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PlatformMetrics" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /jobs:
+    get:
+      operationId: listJobs
+      summary: État des tâches de fond (worker)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Jobs
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobsList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /invitations:
+    get:
+      operationId: listInvitations
+      summary: Invitations à la bêta privée (plus récentes d'abord)
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Une page d'invitations
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationsPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      operationId: createInvitation
+      summary: Inviter une adresse (envoie l'e-mail d'invitation ; renouvelle une invitation non utilisée)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvitationRequest" }
+      responses:
+        "201":
+          description: Invitation créée
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Invitation" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
 components:
   securitySchemes:
     serviceToken:
       type: http
       scheme: bearer
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Cursor:
+      name: cursor
+      in: query
+      description: Curseur opaque renvoyé par la page précédente (`nextCursor`).
+      schema: { type: string }
+    StaffId:
+      name: X-Staff-Id
+      in: header
+      description: Membre du staff à l'origine de l'appel.
+      schema: { type: string, format: uuid }
   schemas:
     Meta:
       type: object
@@ -86,7 +347,263 @@ components:
           items: { $ref: "#/components/schemas/User" }
         nextCursor:
           type: [string, "null"]
-          description: Absent de la page suivante quand il n'y a plus de résultats (null).
+          description: null quand il n'y a plus de résultats.
+    Workspace:
+      type: object
+      required: [id, name, plan, status, createdAt, firstLinkAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        plan: { type: string, description: "Code du plan (ex. starter)." }
+        status: { type: string, enum: [active, suspended] }
+        createdAt: { type: string, format: date-time }
+        firstLinkAt:
+          type: [string, "null"]
+          format: date-time
+          description: Création du premier lien (mesure de l'activation).
+    Usage:
+      type: object
+      required: [resource, used, limit, period, level]
+      additionalProperties: false
+      properties:
+        resource: { type: string, enum: [links, qr, bio] }
+        used: { type: integer, minimum: 0 }
+        limit: { type: integer, description: "-1 : illimité." }
+        period: { type: string, enum: [stock, monthly] }
+        level: { type: string, enum: [ok, warning, reached] }
+    Override:
+      type: object
+      required: [key, value, reason, updatedAt, updatedBy]
+      additionalProperties: false
+      properties:
+        key: { type: string }
+        value: { type: integer }
+        reason: { type: string }
+        updatedAt: { type: string, format: date-time }
+        updatedBy: { type: [string, "null"] }
+    Entitlements:
+      type: object
+      description: Droits effectifs (plan + overrides). -1 = illimité ; fonctionnalités 0/1.
+      additionalProperties: { type: integer }
+    UserDetail:
+      type: object
+      required: [user, workspace, usage, entitlements, overrides]
+      additionalProperties: false
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        workspace:
+          oneOf:
+            - $ref: "#/components/schemas/Workspace"
+            - type: "null"
+        usage:
+          type: array
+          items: { $ref: "#/components/schemas/Usage" }
+        entitlements: { $ref: "#/components/schemas/Entitlements" }
+        overrides:
+          type: array
+          items: { $ref: "#/components/schemas/Override" }
+    StatusChange:
+      type: object
+      required: [status, reason]
+      additionalProperties: false
+      properties:
+        status: { type: string, enum: [active, suspended] }
+        reason: { type: string, minLength: 3, maxLength: 500 }
+    Reason:
+      type: object
+      required: [reason]
+      additionalProperties: false
+      properties:
+        reason: { type: string, minLength: 3, maxLength: 500 }
+    AdminLink:
+      type: object
+      required: [id, slug, destination, title, status, disabledReason, workspaceId, ownerEmail, createdAt, updatedAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        destination: { type: string }
+        title: { type: [string, "null"] }
+        status: { type: string, enum: [active, disabled] }
+        disabledReason: { type: [string, "null"] }
+        workspaceId: { type: string, format: uuid }
+        ownerEmail: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    LinksPage:
+      type: object
+      required: [items, nextCursor]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AdminLink" }
+        nextCursor: { type: [string, "null"] }
+    ReservedSlugs:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { type: string }
+    Plan:
+      type: object
+      required: [code, name, version, priceXaf, public, entitlements]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        name: { type: string }
+        version: { type: integer, minimum: 1 }
+        priceXaf: { type: integer, minimum: 0, description: "Prix mensuel TTC en FCFA." }
+        public: { type: boolean, description: "Commercialisé (sinon affiché « bientôt »)." }
+        entitlements: { $ref: "#/components/schemas/Entitlements" }
+    PlansList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Plan" }
+    OverridesChange:
+      type: object
+      required: [overrides, reason]
+      additionalProperties: false
+      properties:
+        overrides:
+          type: object
+          additionalProperties: { type: [integer, "null"] }
+        reason: { type: string, minLength: 3, maxLength: 500 }
+    WorkspaceEntitlements:
+      type: object
+      required: [entitlements, overrides]
+      additionalProperties: false
+      properties:
+        entitlements: { $ref: "#/components/schemas/Entitlements" }
+        overrides:
+          type: array
+          items: { $ref: "#/components/schemas/Override" }
+    DayCount:
+      type: object
+      required: [day, count]
+      additionalProperties: false
+      properties:
+        day: { type: string, format: date }
+        count: { type: integer, minimum: 0 }
+    PlatformMetrics:
+      type: object
+      required: [generatedAt, users, signups, activation, clicks, resources, database, worker, events]
+      additionalProperties: false
+      properties:
+        generatedAt: { type: string, format: date-time }
+        users:
+          type: object
+          required: [total, active, pending, suspended]
+          additionalProperties: false
+          properties:
+            total: { type: integer }
+            active: { type: integer }
+            pending: { type: integer }
+            suspended: { type: integer }
+        signups:
+          type: array
+          items: { $ref: "#/components/schemas/DayCount" }
+        activation:
+          type: object
+          required: [signups, activated, rate]
+          additionalProperties: false
+          description: Inscriptions de la période dont le premier lien a été créé dans les 10 minutes.
+          properties:
+            signups: { type: integer }
+            activated: { type: integer }
+            rate: { type: number, minimum: 0, maximum: 1 }
+        clicks:
+          type: array
+          description: Clics et scans humains par jour (bots exclus), d'après les agrégats.
+          items: { $ref: "#/components/schemas/DayCount" }
+        resources:
+          type: object
+          required: [links, qrCodes, bioPages]
+          additionalProperties: false
+          properties:
+            links: { type: integer }
+            qrCodes: { type: integer }
+            bioPages: { type: integer }
+        database:
+          type: object
+          required: [beepBytes]
+          additionalProperties: false
+          properties:
+            beepBytes: { type: integer }
+        worker:
+          type: object
+          required: [lastRollupAt, lagSeconds]
+          additionalProperties: false
+          properties:
+            lastRollupAt: { type: [string, "null"], format: date-time }
+            lagSeconds: { type: [integer, "null"], description: "Âge du dernier agrégat réussi." }
+        events:
+          type: object
+          required: [queued, dropped, written]
+          additionalProperties: false
+          description: File d'écriture des événements de l'instance qui répond.
+          properties:
+            queued: { type: integer }
+            dropped: { type: integer }
+            written: { type: integer }
+    Job:
+      type: object
+      required: [name, description, schedule, lastStartedAt, lastFinishedAt, lastOk, lastDetail, lastSuccessAt, runs24h, failures24h]
+      additionalProperties: false
+      properties:
+        name: { type: string }
+        description: { type: string }
+        schedule: { type: string, description: "Périodicité lisible (ex. PT1M)." }
+        lastStartedAt: { type: [string, "null"], format: date-time }
+        lastFinishedAt: { type: [string, "null"], format: date-time }
+        lastOk: { type: [boolean, "null"] }
+        lastDetail: { type: [string, "null"] }
+        lastSuccessAt: { type: [string, "null"], format: date-time }
+        runs24h: { type: integer }
+        failures24h: { type: integer }
+    JobsList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Job" }
+    InvitationRequest:
+      type: object
+      required: [email]
+      additionalProperties: false
+      properties:
+        email: { type: string, format: email }
+        locale: { type: string, enum: [fr, en], default: fr }
+    Invitation:
+      type: object
+      required: [id, email, status, invitedBy, createdAt, expiresAt, usedAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        status: { type: string, enum: [pending, used, expired] }
+        invitedBy: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time }
+        usedAt: { type: [string, "null"], format: date-time }
+    InvitationsPage:
+      type: object
+      required: [items, nextCursor]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Invitation" }
+        nextCursor: { type: [string, "null"] }
     Problem:
       type: object
       required: [status, code]
@@ -94,7 +611,7 @@ components:
         type: { type: string }
         title: { type: string }
         status: { type: integer }
-        code: { type: string, description: "Code stable (ex. unauthorized, invalid_request)." }
+        code: { type: string, description: "Code stable (ex. unauthorized, invalid_request, not_found)." }
   responses:
     Unauthorized:
       description: Jeton de service absent ou invalide
@@ -102,7 +619,17 @@ components:
         application/problem+json:
           schema: { $ref: "#/components/schemas/Problem" }
     BadRequest:
-      description: Paramètre invalide (ex. curseur falsifié)
+      description: Paramètre ou corps invalide (ex. curseur falsifié, clé de droit inconnue)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    NotFound:
+      description: Ressource inconnue (code `not_found`)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    Conflict:
+      description: Transition impossible (ex. compte déjà dans cet état, adresse déjà inscrite)
       content:
         application/problem+json:
           schema: { $ref: "#/components/schemas/Problem" }

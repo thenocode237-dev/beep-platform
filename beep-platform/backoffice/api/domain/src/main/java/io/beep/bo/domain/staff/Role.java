@@ -1,17 +1,19 @@
 package io.beep.bo.domain.staff;
 
+import static io.beep.bo.domain.staff.Permission.*;
+
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
-/** Rôles staff (specs §3). Phase 0 : rôles de base ; les droits fins arrivent avec chaque module. */
+/** Rôles staff (specs §3) et droits accordés. Les rôles granulaires complets arrivent en phase 4. */
 public enum Role {
   SUPERADMIN(EnumSet.allOf(Permission.class)),
-  SUPPORT(EnumSet.of(Permission.USERS_READ)),
-  FINANCE(EnumSet.noneOf(Permission.class)),
-  TRUST_SAFETY(EnumSet.of(Permission.USERS_READ)),
-  CONTENT(EnumSet.noneOf(Permission.class)),
-  READONLY(EnumSet.of(Permission.USERS_READ));
+  SUPPORT(EnumSet.of(USERS_READ, LINKS_READ, PLANS_READ, ENTITLEMENTS_WRITE, METRICS_READ, INVITATIONS_WRITE)),
+  FINANCE(EnumSet.of(PLANS_READ, METRICS_READ)),
+  TRUST_SAFETY(EnumSet.of(USERS_READ, USERS_SUSPEND, LINKS_READ, LINKS_MODERATE, METRICS_READ, AUDIT_READ)),
+  CONTENT(EnumSet.of(METRICS_READ)),
+  READONLY(EnumSet.of(USERS_READ, LINKS_READ, PLANS_READ, METRICS_READ, JOBS_READ));
 
   private final Set<Permission> permissions;
 
@@ -21,6 +23,10 @@ public enum Role {
 
   public boolean can(Permission p) {
     return permissions.contains(p);
+  }
+
+  public Set<Permission> permissions() {
+    return EnumSet.copyOf(permissions);
   }
 
   public String db() {

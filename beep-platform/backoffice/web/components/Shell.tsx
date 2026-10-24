@@ -2,37 +2,32 @@
 
 import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Icon, Logo, type IconName } from "@beep/ui";
+import { Icon, Logo } from "@beep/ui";
 import { post } from "@/lib/client";
-
-const items: { href: string; label: string; icon: IconName }[] = [
-  { href: "/users", label: "Utilisateurs", icon: "users" },
-];
+import { navItems as items, type NavItem as Item } from "@/lib/nav";
 
 export function Shell({
   email,
   role,
+  permissions,
   coreUp,
   children,
 }: {
   email: string;
   role: string;
+  permissions: string[];
   coreUp: boolean;
   children: ReactNode;
 }) {
   const path = usePathname();
   const [busy, setBusy] = useState(false);
-  const nav = items.map((i) => (
-    <a
-      key={i.href}
-      href={i.href}
-      className="nav__item"
-      aria-current={path.startsWith(i.href) ? "page" : undefined}
-    >
+  const allowed = items.filter((i) => permissions.includes(i.permission));
+  const link = (i: Item) => (
+    <a key={i.href} href={i.href} className="nav__item" aria-current={path.startsWith(i.href) ? "page" : undefined}>
       <Icon name={i.icon} size={21} />
       <span>{i.label}</span>
     </a>
-  ));
+  );
   const logout = (
     <button
       type="button"
@@ -52,16 +47,16 @@ export function Shell({
     <div className="shell">
       <aside className="sidebar" aria-label="Navigation principale">
         <div>
-          <Logo href="/users" label="Beep back office" />
+          <Logo href="/" label="Beep back office" />
           <p className="sidebar__label">Espace équipe</p>
         </div>
-        <nav className="nav">{nav}</nav>
+        <nav className="nav">{allowed.map(link)}</nav>
         <div className="sidebar__note">
           <Icon name="shield" size={20} />
           <p>
-            Chaque connexion compte.
+            Chaque action compte.
             <br />
-            <span>Accès protégé par TOTP.</span>
+            <span>Toutes sont inscrites au journal d'audit.</span>
           </p>
         </div>
         <div className="sidebar__account">
@@ -76,7 +71,7 @@ export function Shell({
         {logout}
       </aside>
       <header className="topbar">
-        <Logo href="/users" label="Beep back office" />
+        <Logo href="/" label="Beep back office" />
         <span className="topbar__who">Espace équipe</span>
       </header>
       <div className="shell__main">
@@ -90,8 +85,7 @@ export function Shell({
         {!coreUp && (
           <div className="degraded" role="status">
             <Icon name="info" size={18} />
-            Le service principal est momentanément injoignable. Les données
-            propres au back office restent disponibles.
+            Le service principal est momentanément injoignable. Les données propres au back office (journal d'audit) restent disponibles.
           </div>
         )}
         <main id="main" className="bp-container">
@@ -99,8 +93,11 @@ export function Shell({
         </main>
       </div>
       <nav className="bottombar" aria-label="Navigation principale">
-        {nav}
-        {logout}
+        {allowed.filter((i) => i.mobile).map(link)}
+        <a href="/menu" className="nav__item" aria-current={path.startsWith("/menu") ? "page" : undefined}>
+          <Icon name="menu" size={21} />
+          <span>Plus</span>
+        </a>
       </nav>
     </div>
   );

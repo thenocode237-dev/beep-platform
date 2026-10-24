@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class CoreCompatibilityCheckTest {
   @Test
   void acceptsSameMajorAndEqualOrNewerMinor() {
-    assertThat(CoreCompatibilityCheck.compatible("0.1", "0.1.0")).isTrue();
+    assertThat(CoreCompatibilityCheck.compatible("0.2", "0.2.0")).isTrue();
     assertThat(CoreCompatibilityCheck.compatible("0.1", "0.2.3")).isTrue();
   }
 

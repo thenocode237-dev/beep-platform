@@ -72,6 +72,7 @@ class StaffFlowTest {
   AuditPort auditPort = new AuditPort() {
     public void append(AuditEvent e) { audit.add(e); }
     public List<AuditChain.Entry> readAll() { return List.of(); }
+    public Page page(int limit, Long before, String action, String actor) { return new Page(List.of(), null); }
   };
   PasswordHasherPort hasher = new PasswordHasherPort() {
     public String hash(String raw) { return "h:" + raw; }
@@ -90,11 +91,7 @@ class StaffFlowTest {
     public boolean tryAcquire(String k, int max, Duration w) { return hits.merge(k, 1, Integer::sum) <= max; }
     public void reset(String k) { hits.remove(k); }
   };
-  CoreGatewayPort core = new CoreGatewayPort() {
-    public UsersPage listUsers(int limit, String cursor, UUID staffId) { return new UsersPage(List.of(), null); }
-    public String contractVersion() { return "0.1.0"; }
-    public boolean isReachable() { return true; }
-  };
+  CoreGatewayPort core = new FakeCore();
 
   StaffLoginUseCase login;
   StaffAuthenticateUseCase authenticate;

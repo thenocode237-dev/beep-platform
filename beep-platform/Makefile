@@ -63,7 +63,7 @@ migrate: ## Applique les migrations Flyway (core + backoffice)
 migrate-validate: ## Rejoue TOUTES les migrations sur une base vierge et vérifie leur intégrité (PostgreSQL réel)
 	./scripts/migrate-validate.sh
 
-seed: ## Données de démo : utilisateur demo@beep.localhost + staff admin@beep.localhost (le TOTP s'affiche dans les logs)
+seed: ## Démo : demo@beep.localhost (lien /demo, QR, page /atelier-demo) + staff admin@beep.localhost (le TOTP s'affiche dans les logs)
 	$(DEV) run --rm -e SPRING_PROFILES_ACTIVE=dev,seed core
 	$(DEV) run --rm -e SPRING_PROFILES_ACTIVE=dev,seed backoffice-api
 
@@ -79,12 +79,13 @@ restore: ## Restauration (dev : dump ; prod : PITR) make restore from=<fichier|h
 	./scripts/restore.sh $(from)
 
 # ---------- Qualité ----------
-.PHONY: fmt lint test test-unit test-int test-contract test-e2e test-web
+.PHONY: fmt lint test test-unit test-int test-contract test-e2e test-web test-load reserved-slugs
 fmt: ## Formate le code front (Prettier)
 	npm run format -w beep-web -w backoffice-web
 
-lint: ## Typage TypeScript strict + contrastes des tokens + règles d'architecture
+lint: ## Typage TypeScript strict + contrastes des tokens + slugs réservés = routes du site
 	npm run lint
+	@node scripts/reserved-slugs-check.mjs > /dev/null && echo "slugs réservés OK"
 	@node packages/design-tokens/contrast.mjs > /dev/null && echo "contrastes OK"
 
 test-unit: ## Unitaires : domaine, cas d'usage (doublures) + règles ArchUnit
@@ -103,6 +104,12 @@ test-web: ## Build des deux fronts (typage + compilation Next.js)
 
 test-e2e: ## Bout en bout sur la stack Compose : inscription -> e-mail -> connexion -> vue staff
 	./scripts/e2e.sh
+
+test-load: ## Charge k6 sur la redirection (stack démarrée + make seed) : make test-load RATE=1000 DURATION=60s
+	./scripts/load-test.sh
+
+reserved-slugs: ## Vérifie que chaque route du site (Caddy) est un slug réservé du core
+	@node scripts/reserved-slugs-check.mjs
 
 test: test-unit test-int test-contract ## Tous les tests rapides
 

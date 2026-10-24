@@ -31,7 +31,7 @@ const copy = {
     explore: "Explorer les possibilités",
     accountNote: "Compte gratuit. Sans carte bancaire.",
     release:
-      "Beep se construit avec vous. Les outils présentés arrivent avec la bêta.",
+      "Bêta privée sur invitation : liens courts, QR codes, pages bio et statistiques sont ouverts. Deeplinks et Onelink arrivent ensuite.",
     preview: "Aperçu du produit à venir",
     profileName: "Atelier Naya",
     profileBio: "Des objets qui ont une histoire.",
@@ -67,11 +67,11 @@ const copy = {
     faqs: [
       {
         q: "Qu’est-ce qui est disponible aujourd’hui ?",
-        a: "Vous pouvez créer un compte, confirmer votre adresse e-mail et sécuriser votre accès avec la double authentification. Les outils de liens, QR codes, pages bio et statistiques sont en préparation. Les visuels sont des aperçus illustratifs.",
+        a: "La bêta privée est ouverte sur invitation : liens courts personnalisables, QR codes dynamiques et statiques (SVG, PNG, PDF), une page bio et des statistiques de base (pays, appareil, origine) sur 30 jours, avec le plan Starter gratuit. Deeplinks, Onelink, domaines personnalisés et offres payantes arrivent aux prochaines étapes.",
       },
       {
         q: "Puis-je créer un compte gratuitement ?",
-        a: "Oui. L’inscription est gratuite et ne demande aucune carte bancaire. La création de liens et les offres associées seront ouvertes lors des prochaines phases.",
+        a: "Oui. L’inscription est gratuite et ne demande aucune carte bancaire. Pendant la bêta, la création de compte se fait sur invitation.",
       },
       {
         q: "Beep est-il pensé pour le mobile ?",
@@ -135,7 +135,7 @@ const copy = {
     explore: "Explore the possibilities",
     accountNote: "Free account. No credit card.",
     release:
-      "Beep is taking shape with you. The tools shown are coming with the beta.",
+      "Private beta by invitation: short links, QR codes, bio pages and analytics are open. Deeplinks and Onelink come next.",
     preview: "Preview of the upcoming product",
     profileName: "Atelier Naya",
     profileBio: "Objects with a story to tell.",
@@ -171,11 +171,11 @@ const copy = {
     faqs: [
       {
         q: "What is available today?",
-        a: "You can create an account, confirm your email address and secure your access with two-factor authentication. Links, QR codes, bio pages and analytics are in development. Product visuals are illustrative previews.",
+        a: "The private beta is open by invitation: customizable short links, dynamic and static QR codes (SVG, PNG, PDF), a bio page and basic analytics (country, device, source) over 30 days, on the free Starter plan. Deeplinks, Onelink, custom domains and paid plans come in the next stages.",
       },
       {
         q: "Can I create an account for free?",
-        a: "Yes. Signing up is free and requires no credit card. Link creation and related plans will be introduced in the next phases.",
+        a: "Yes. Signing up is free and requires no credit card. During the beta, accounts are created by invitation.",
       },
       {
         q: "Is Beep designed for mobile?",

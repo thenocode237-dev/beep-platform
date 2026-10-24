@@ -13,6 +13,9 @@
     <dependency><groupId>io.beep</groupId><artifactId>adapter-out-postgres</artifactId></dependency>
     <dependency><groupId>io.beep</groupId><artifactId>adapter-out-mail</artifactId></dependency>
     <dependency><groupId>io.beep</groupId><artifactId>adapter-out-security</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-qrrender</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-geoip</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-oauth</artifactId></dependency>
 
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
     <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>

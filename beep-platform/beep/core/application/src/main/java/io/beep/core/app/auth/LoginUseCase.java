@@ -3,9 +3,6 @@ package io.beep.core.app.auth;
 import io.beep.core.app.port.PasswordHasherPort;
 import io.beep.core.app.port.RateLimiterPort;
 import io.beep.core.app.port.SecretCipherPort;
-import io.beep.core.app.port.SessionRepository;
-import io.beep.core.app.port.SessionRepository.Session;
-import io.beep.core.app.port.TokenPort;
 import io.beep.core.app.port.UserRepository;
 import io.beep.core.domain.DomainException;
 import io.beep.core.domain.user.Email;
@@ -15,7 +12,6 @@ import io.beep.core.domain.user.UserStatus;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
 
 public class LoginUseCase {
   public record Command(String email, String password, String totp, String clientKey) {}
@@ -23,21 +19,19 @@ public class LoginUseCase {
   public record Result(String sessionToken, Instant expiresAt) {}
 
   private final UserRepository users;
-  private final SessionRepository sessions;
+  private final SessionIssuer issuer;
   private final PasswordHasherPort hasher;
-  private final TokenPort tokenPort;
   private final SecretCipherPort cipher;
   private final RateLimiterPort limiter;
   private final Clock clock;
   private final AuthSettings settings;
-  private final String dummyHash; // égalise le temps de réponse quand le compte n'existe pas
+  private final String dummyHash; // égalise le temps de réponse quand le compte n'existe pas (ou n'a pas de mot de passe)
 
-  public LoginUseCase(UserRepository users, SessionRepository sessions, PasswordHasherPort hasher, TokenPort tokenPort, SecretCipherPort cipher,
-      RateLimiterPort limiter, Clock clock, AuthSettings settings) {
+  public LoginUseCase(UserRepository users, SessionIssuer issuer, PasswordHasherPort hasher, SecretCipherPort cipher, RateLimiterPort limiter, Clock clock,
+      AuthSettings settings) {
     this.users = users;
-    this.sessions = sessions;
+    this.issuer = issuer;
     this.hasher = hasher;
-    this.tokenPort = tokenPort;
     this.cipher = cipher;
     this.limiter = limiter;
     this.clock = clock;
@@ -56,7 +50,8 @@ public class LoginUseCase {
     if (!limiter.tryAcquire(key, settings.loginMaxAttempts(), settings.loginWindow())) throw new DomainException("rate_limited");
 
     Optional<User> found = users.findByEmail(email);
-    boolean passwordOk = hasher.matches(cmd.password() == null ? "" : cmd.password(), found.map(User::passwordHash).orElse(dummyHash));
+    String hash = found.map(User::passwordHash).orElse(null);
+    boolean passwordOk = hasher.matches(cmd.password() == null ? "" : cmd.password(), hash == null ? dummyHash : hash) && hash != null;
     if (found.isEmpty() || !passwordOk) throw new DomainException("invalid_credentials");
 
     User user = found.get();
@@ -70,9 +65,6 @@ public class LoginUseCase {
     }
 
     limiter.reset(key);
-    String token = tokenPort.newToken();
-    Instant expires = now.plus(settings.sessionTtl());
-    sessions.insert(new Session(UUID.randomUUID(), user.id(), tokenPort.hash(token), now, expires));
-    return new Result(token, expires);
+    return issuer.issue(user.id());
   }
 }

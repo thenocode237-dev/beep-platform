@@ -1,5 +1,6 @@
 package io.beep.core.app.auth;
 
+import io.beep.core.app.port.InvitationRepository;
 import io.beep.core.app.port.MailPort;
 import io.beep.core.app.port.OneTimeTokenRepository;
 import io.beep.core.app.port.OneTimeTokenRepository.Purpose;
@@ -20,13 +21,14 @@ import java.util.UUID;
 /**
  * Inscription. Réponse identique que l'adresse existe ou non (anti-énumération) :
  * nouvelle adresse -> e-mail de confirmation ; compte non confirmé -> nouvel e-mail de confirmation ;
- * compte confirmé -> e-mail « vous avez déjà un compte ».
+ * compte confirmé -> e-mail « vous avez déjà un compte » ; bêta privée et adresse non invitée -> e-mail « invitation requise ».
  */
 public class SignUpUseCase {
   public record Command(String email, String password, String locale, String clientKey) {}
 
   private final UserRepository users;
   private final OneTimeTokenRepository tokens;
+  private final InvitationRepository invitations;
   private final PasswordHasherPort hasher;
   private final TokenPort tokenPort;
   private final MailPort mail;
@@ -35,10 +37,11 @@ public class SignUpUseCase {
   private final Clock clock;
   private final AuthSettings settings;
 
-  public SignUpUseCase(UserRepository users, OneTimeTokenRepository tokens, PasswordHasherPort hasher, TokenPort tokenPort, MailPort mail,
-      RateLimiterPort limiter, TransactionPort tx, Clock clock, AuthSettings settings) {
+  public SignUpUseCase(UserRepository users, OneTimeTokenRepository tokens, InvitationRepository invitations, PasswordHasherPort hasher, TokenPort tokenPort,
+      MailPort mail, RateLimiterPort limiter, TransactionPort tx, Clock clock, AuthSettings settings) {
     this.users = users;
     this.tokens = tokens;
+    this.invitations = invitations;
     this.hasher = hasher;
     this.tokenPort = tokenPort;
     this.mail = mail;
@@ -64,10 +67,17 @@ public class SignUpUseCase {
       else sendVerification(user, now);
       return;
     }
+    if (settings.inviteOnly() && !Invitations.usable(invitations, email, now)) {
+      mail.sendInvitationRequired(email, locale);
+      return;
+    }
 
     User user = User.register(UUID.randomUUID(), email, hasher.hash(cmd.password()), locale, now);
     try {
-      tx.run(() -> users.insert(user));
+      tx.run(() -> {
+        users.insert(user);
+        invitations.consume(email, now);
+      });
     } catch (UserRepository.DuplicateEmailException race) {
       return; // inscription concurrente de la même adresse : la première gagne, réponse identique
     }

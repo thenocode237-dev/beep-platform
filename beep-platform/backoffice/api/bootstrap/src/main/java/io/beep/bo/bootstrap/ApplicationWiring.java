@@ -3,13 +3,22 @@ package io.beep.bo.bootstrap;
 import io.beep.bo.adapter.in.http.HttpSettings;
 import io.beep.bo.adapter.out.coregateway.CoreGatewayAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresAuditAdapter;
+import io.beep.bo.adapter.out.postgres.PostgresDatabaseStatsAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresStaffAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresStaffSessionAdapter;
 import io.beep.bo.adapter.out.security.AesGcmSecretCipherAdapter;
 import io.beep.bo.adapter.out.security.Argon2PasswordHasherAdapter;
 import io.beep.bo.adapter.out.security.InMemoryRateLimiterAdapter;
 import io.beep.bo.adapter.out.security.SecureTokenAdapter;
+import io.beep.bo.app.audit.AuditLogUseCase;
 import io.beep.bo.app.audit.VerifyAuditChainUseCase;
+import io.beep.bo.app.auth.StepUp;
+import io.beep.bo.app.invitations.InvitationsUseCase;
+import io.beep.bo.app.links.LinksModerationUseCase;
+import io.beep.bo.app.ops.OperationsUseCase;
+import io.beep.bo.app.plans.EntitlementsUseCase;
+import io.beep.bo.app.port.DatabaseStatsPort;
+import io.beep.bo.app.users.UserAdminUseCase;
 import io.beep.bo.app.auth.StaffAuthenticateUseCase;
 import io.beep.bo.app.auth.StaffLoginUseCase;
 import io.beep.bo.app.auth.StaffLogoutUseCase;
@@ -110,6 +119,46 @@ class ApplicationWiring {
   @Bean
   ListUsersUseCase listUsers(CoreGatewayPort core, AuditPort audit, Clock clock) {
     return new ListUsersUseCase(core, audit, clock);
+  }
+
+  @Bean
+  DatabaseStatsPort databaseStats(DSLContext dsl) {
+    return new PostgresDatabaseStatsAdapter(dsl);
+  }
+
+  @Bean
+  StepUp stepUp(SecretCipherPort cipher, RateLimiterPort limiter, Clock clock, StaffSettings settings) {
+    return new StepUp(cipher, limiter, clock, settings);
+  }
+
+  @Bean
+  UserAdminUseCase userAdmin(CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new UserAdminUseCase(core, audit, stepUp, clock);
+  }
+
+  @Bean
+  LinksModerationUseCase linksModeration(CoreGatewayPort core, AuditPort audit, Clock clock) {
+    return new LinksModerationUseCase(core, audit, clock);
+  }
+
+  @Bean
+  EntitlementsUseCase entitlements(CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new EntitlementsUseCase(core, audit, stepUp, clock);
+  }
+
+  @Bean
+  OperationsUseCase operations(CoreGatewayPort core, DatabaseStatsPort database) {
+    return new OperationsUseCase(core, database);
+  }
+
+  @Bean
+  AuditLogUseCase auditLog(AuditPort audit, Clock clock) {
+    return new AuditLogUseCase(audit, clock);
+  }
+
+  @Bean
+  InvitationsUseCase invitations(CoreGatewayPort core, AuditPort audit, Clock clock) {
+    return new InvitationsUseCase(core, audit, clock);
   }
 
   @Bean

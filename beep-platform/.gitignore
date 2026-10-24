@@ -3,7 +3,9 @@ node_modules/
 
 # ---------- Build front (Next.js) ----------
 .next/
-out/
+# Export statique Next.js uniquement : un motif « out/ » nu ignorerait aussi les paquets Java `adapter/out/`.
+/beep/web/out/
+/backoffice/web/out/
 next-env.d.ts
 *.tsbuildinfo
 .turbo/

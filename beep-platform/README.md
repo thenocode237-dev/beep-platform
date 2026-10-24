@@ -1,7 +1,7 @@
 # Beep — plateforme
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
-Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : Phase 0 — Fondations**.
+Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : Phase 1 — MVP (bêta privée sur invitation)**. Détail : [`docs/phase-1.md`](docs/phase-1.md).
 
 ## Démarrer
 
@@ -10,7 +10,7 @@ Prérequis : **Docker** (Compose v2) et **Node ≥ 20**. Aucun JDK local n'est n
 ```bash
 npm install          # une fois : dépendances des fronts et des outils
 make up              # secrets générés, build, migrations, démarrage de toute la stack
-make seed            # (optionnel) comptes de démo ; le secret TOTP du staff s'affiche dans les logs
+make seed            # (optionnel) démo : demo@beep.localhost, lien /demo, page /atelier-demo ; le TOTP du staff s'affiche dans les logs
 ```
 
 | URL | Quoi |
@@ -20,6 +20,21 @@ make seed            # (optionnel) comptes de démo ; le secret TOTP du staff s'
 | http://mail.beep.localhost | Mailpit : e-mails de confirmation et de réinitialisation |
 
 `make help` liste toutes les commandes.
+
+## Ce que livre la phase 1
+
+| Domaine | Livré |
+|---|---|
+| **Liens courts** | Création en un champ, slugs générés (base62, 7 car.) ou personnalisés, slugs réservés (= routes du site, contrôlé en CI), registre commun aux liens et pages bio, modification de destination, suppression (refusée si un QR dynamique suit le lien) |
+| **Redirection** | `/{slug}`, `/q/{code}`, `/_b/c/…` : cache Caffeine invalidé par `LISTEN/NOTIFY` (cache négatif inclus), threads virtuels, paramètres entrants transmis, 302 `no-store`, page 404 et page « lien indisponible » (410), file d'événements bornée écrite par lots ; k6 en CI (budget p95 < 50 ms) |
+| **Analytics** | Clics, scans, vues ; appareil, OS, navigateur, pays (base MaxMind locale facultative), référent (hôte seul), langue ; robots et aperçus exclus ; IP jamais stockée (empreinte salée, sel quotidien détruit à J+2) ; partitions mensuelles, agrégats horaires/journaliers par le worker, rétention 13 mois / plan (Starter : 30 j) ; export CSV (droit `features.export_csv`) |
+| **QR codes** | Dynamiques (suivent un lien, scans mesurés) et statiques (URL, texte, Wi-Fi, e-mail, SMS, téléphone, vCard) ; couleurs (contraste ≥ 3:1 vérifié), correction d'erreur ; export SVG, PNG, PDF vectoriel |
+| **Pages bio** | Blocs lien, bouton, titre, texte, image, réseaux sociaux ; 4 thèmes ; SEO (titre, description, image OG, `noindex`) ; rendu serveur sans script, CSS en ligne, quelques Ko ; clics de blocs mesurés |
+| **Plans & quotas** | Domaine `Plan` + `Entitlements` ; Starter (5 liens, 5 QR dynamiques, 1 page, 30 j d'analytics), Pro/Elite publiés « bientôt » ; quotas de stock/mensuels sous verrou, avertissement 80 %, blocage 100 % ; les redirections ne dépendent jamais d'un quota |
+| **Comptes** | Bêta sur invitation (`SIGNUP_MODE`), lien magique, OAuth Google/GitHub (PKCE), TOTP toujours exigé s'il est actif, workspace personnel |
+| **Back office** | Recherche/désactivation de liens, slugs réservés, fiche utilisateur (usage vs quotas, droits effectifs), overrides et suspension avec ré-authentification TOTP, plans, métriques (inscriptions, activation, clics/jour, tailles des bases, retard du worker, file d'événements), jobs, journal d'audit (filtres, intégrité de la chaîne), invitations ; contrat admin **0.2.0** |
+
+Ce qui reste ouvert pour clore la phase 1 (bêta de 100 personnes, mesure à 1 000 req/s en préproduction) : voir [`docs/phase-1.md`](docs/phase-1.md#reste-à-faire).
 
 ## Ce que livre la phase 0
 
@@ -48,9 +63,10 @@ make test-unit       # domaine + cas d'usage + règles d'architecture
 make test-int        # adapters sur PostgreSQL réel, migrations rejouées de zéro
 make migrate-validate
 make test-contract   # contrat OpenAPI valide + core réel conforme (stack démarrée)
-make test-e2e        # parcours complet sur la stack (stack démarrée)
+make test-e2e        # parcours complet phase 0 + phase 1 sur la stack (stack démarrée)
+make seed && make test-load   # k6 sur la redirection (RATE=1000 DURATION=60s pour le palier de phase 1)
 make test-web        # typage + build des deux fronts
-make lint            # TypeScript strict + contrastes des tokens
+make lint            # TypeScript strict + contrastes des tokens + slugs réservés = routes Caddy
 ```
 
 ## Structure
@@ -71,7 +87,7 @@ docs             charte graphique, runbook de sauvegarde
 ## Décisions et écarts par rapport à la spécification
 
 - **Maven en conteneur** (`MVN_IMAGE`) plutôt que `./mvnw` : seul Docker est exigé sur le poste. Avec un JDK 21 local : `make test-unit MVN=mvn`.
-- **Client `coregateway` écrit à la main** (un seul endpoint). Il sera remplacé par un client généré (openapi-generator) quand le contrat grossira ; le test de contrat protège d'ici là.
+- **Client `coregateway` écrit à la main** (contrat 0.2, quinze opérations). DTO identiques aux schémas ; le test de contrat vérifie le core réel. Passage à un client généré (openapi-generator) dès que le contrat se stabilise (phase 2).
 - **Sessions staff en base (jeton opaque)** plutôt que `BO_SESSION_SECRET` : révocation immédiate, rien à signer. Le secret de session de la spécification n'existe donc pas ; `BO_ENCRYPTION_KEY` chiffre les secrets TOTP.
 - **`en` est un slug réservé** : le français est servi sans préfixe, l'anglais sous `/en`, et Caddy route `/en*` vers le site.
 - **Limiteur de débit en mémoire** (une instance d'API en phase 0). À remplacer par un adapter partagé à la phase 5.

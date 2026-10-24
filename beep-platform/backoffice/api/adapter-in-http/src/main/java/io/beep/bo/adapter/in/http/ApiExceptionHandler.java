@@ -26,14 +26,23 @@ public class ApiExceptionHandler {
   private static final Map<String, HttpStatus> STATUS = Map.of(
       "invalid_request", HttpStatus.BAD_REQUEST,
       "invalid_email", HttpStatus.BAD_REQUEST,
+      "invalid_reason", HttpStatus.BAD_REQUEST,
       "invalid_credentials", HttpStatus.UNAUTHORIZED,
       "unauthorized", HttpStatus.UNAUTHORIZED,
       "forbidden", HttpStatus.FORBIDDEN,
+      "reauth_required", HttpStatus.FORBIDDEN,
       "rate_limited", HttpStatus.TOO_MANY_REQUESTS);
 
   @ExceptionHandler(DomainException.class)
   ResponseEntity<ProblemDetail> domain(DomainException e) {
     return problem(STATUS.getOrDefault(e.code(), HttpStatus.UNPROCESSABLE_ENTITY), e.code());
+  }
+
+  /** Refus du core (validation, ressource inconnue, conflit) : statut et code relayés au front. */
+  @ExceptionHandler(CoreGatewayPort.CoreRejectedException.class)
+  ResponseEntity<ProblemDetail> coreRejected(CoreGatewayPort.CoreRejectedException e) {
+    HttpStatus status = HttpStatus.resolve(e.status());
+    return problem(status == null || status == HttpStatus.UNAUTHORIZED ? HttpStatus.BAD_GATEWAY : status, e.code()); // 401 du core = jeton de service invalide
   }
 
   @ExceptionHandler(CoreGatewayPort.CoreUnavailableException.class)
