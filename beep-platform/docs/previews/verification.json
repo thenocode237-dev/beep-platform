@@ -1,0 +1,716 @@
+{
+  "date": "2026-10-24",
+  "environment": "Chromium, builds Next.js de production, API de recette locale pour les sessions et réponses de formulaires",
+  "results": [
+    {
+      "name": "Accueil FR : nouveau discours",
+      "ok": true
+    },
+    {
+      "name": "Bénéfices Beep présents",
+      "ok": true
+    },
+    {
+      "name": "Fonctionnalités à venir explicites",
+      "ok": true
+    },
+    {
+      "name": "Photo de l’aperçu chargée",
+      "ok": true
+    },
+    {
+      "name": "Légende lisible sur fond dédié",
+      "ok": true
+    },
+    {
+      "name": "Ressource locale /assets/atelier.webp",
+      "ok": true
+    },
+    {
+      "name": "Ressource locale /assets/workspace.webp",
+      "ok": true
+    },
+    {
+      "name": "Ressource locale /icon.svg",
+      "ok": true
+    },
+    {
+      "name": "320px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "320px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "320px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "375px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "375px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "375px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "390px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "390px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "768px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "768px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1024px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1024px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1024px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px / : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px / : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px / : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /signup : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /signup : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /signup : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /forgot-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /forgot-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /forgot-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /reset-password : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /reset-password : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /reset-password : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /verify-email : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /verify-email : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /verify-email : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /en : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /en : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /en : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "1440px /en/login : HTTP 200",
+      "ok": true
+    },
+    {
+      "name": "1440px /en/login : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /en/login : un titre principal",
+      "ok": true
+    },
+    {
+      "name": "Mobile : action fixe >= 44px",
+      "ok": true
+    },
+    {
+      "name": "FAQ : ouverture native",
+      "ok": true
+    },
+    {
+      "name": "CTA mobile : accès inscription",
+      "ok": true
+    },
+    {
+      "name": "Mot de passe visible",
+      "ok": true
+    },
+    {
+      "name": "Inscription : retour de confirmation",
+      "ok": true
+    },
+    {
+      "name": "Connexion : étape TOTP affichée",
+      "ok": true
+    },
+    {
+      "name": "Espace sans session : retour connexion",
+      "ok": true
+    },
+    {
+      "name": "Espace client : session rendue côté serveur",
+      "ok": true
+    },
+    {
+      "name": "320px espace client : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px espace client : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px espace client : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "320px équipe : données serveur",
+      "ok": true
+    },
+    {
+      "name": "320px équipe : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "390px équipe : données serveur",
+      "ok": true
+    },
+    {
+      "name": "390px équipe : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "768px équipe : données serveur",
+      "ok": true
+    },
+    {
+      "name": "768px équipe : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px équipe : données serveur",
+      "ok": true
+    },
+    {
+      "name": "1440px équipe : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "Connexion équipe mobile : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "Thème sombre actif",
+      "ok": true
+    },
+    {
+      "name": "Mouvement réduit : scroll instantané",
+      "ok": true
+    },
+    {
+      "name": "Lien d’évitement : focus clavier",
+      "ok": true
+    },
+    {
+      "name": "Images locales chargées",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "Aucune erreur JavaScript",
+      "ok": true,
+      "detail": "[]"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+# ---------- Dépendances ----------
+node_modules/
+
+# ---------- Build front (Next.js) ----------
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.turbo/
+.eslintcache
+
+# ---------- Build back (Java / Maven) ----------
+target/
+*.class
+*.jar
+*.war
+dependency-reduced-pom.xml
+.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+
+# ---------- Artefacts générés ----------
+dist/
+build/
+coverage/
+test-results/
+playwright-report/
+
+# ---------- Secrets et environnement ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+
+# ---------- Données locales ----------
+backups/
+*.dump
+*.sql.gz
+pgdata/
+postgres-data/
+docker-compose.override.yml
+
+# ---------- Logs et fichiers temporaires ----------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.bak
+*.tmp
+*.swp
+.cache/
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- IDE ----------
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# ---------- Outils locaux ----------
+.claude/

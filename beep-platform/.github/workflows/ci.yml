@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  front:
+    name: Fronts (typage, tokens, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run tokens
+      - name: Les tokens générés sont à jour (aucune dérive avec tokens.json)
+        run: git diff --exit-code -- packages/design-tokens/TOKENS.md
+      - name: Contrastes WCAG des tokens (clair + sombre)
+        run: npm run contrast
+      - run: npm run lint
+      - run: npm run build:web
+      - run: npm run build:bo
+
+  java:
+    name: Java — ${{ matrix.project }} (lint d'architecture + unitaires + intégration)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [beep/core, backoffice/api]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21, cache: maven }
+      # Les règles ArchUnit tournent ici : une violation d'architecture fait échouer la CI.
+      - name: Unitaires + règles d'architecture
+        working-directory: ${{ matrix.project }}
+        run: mvn -B -ntp test
+      - name: Intégration (PostgreSQL réel via Testcontainers) + politique de migrations
+        working-directory: ${{ matrix.project }}
+        run: mvn -B -ntp verify -Pintegration -Dtest=NoSuchTest -Dsurefire.failIfNoSpecifiedTests=false
+
+  stack:
+    name: Stack Compose (build, e2e, contrat)
+    needs: [front, java]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: make up
+      - name: Attendre les services
+        run: |
+          for i in $(seq 1 60); do
+            [ "$(docker compose -f docker-compose.yml -f docker-compose.dev.yml ps --format '{{.Health}}' | grep -vc -E 'healthy|^$')" = "0" ] && break
+            sleep 5
+          done
+          docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
+      - run: make test-e2e
+      - run: make test-contract
+      - name: Journaux en cas d'échec
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml logs --tail=200
+
+  images:
+    name: Images de production
+    needs: [stack]
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env && ./scripts/init-env.sh .env
+      - run: docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile prod build

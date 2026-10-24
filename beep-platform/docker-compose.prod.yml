@@ -1,0 +1,41 @@
+# Surcharge de production : PostgreSQL + WAL-G (archivage WAL continu, RPO <= 1 min) et sauvegarde de base quotidienne.
+services:
+  postgres:
+    build: ./infra/postgres
+    command: ["postgres",
+              "-c", "shared_preload_libraries=pg_stat_statements",
+              "-c", "archive_mode=on",
+              "-c", "archive_timeout=60",
+              "-c", "archive_command=wal-g wal-push %p",
+              "-c", "max_connections=200"]
+    environment:
+      WALG_S3_PREFIX: ${BACKUP_S3_PREFIX}
+      AWS_ACCESS_KEY_ID: ${BACKUP_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_SECRET_KEY}
+      AWS_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+      AWS_S3_FORCE_PATH_STYLE: ${BACKUP_S3_PATH_STYLE:-false}
+      AWS_REGION: ${BACKUP_S3_REGION:-eu-west-3}
+      PGHOST: /var/run/postgresql
+
+  pg-backup:                          # sauvegarde de base quotidienne + rétention
+    build: ./infra/postgres
+    profiles: ["prod"]
+    restart: unless-stopped
+    entrypoint: ["/usr/local/bin/backup-cron.sh"]
+    environment:
+      PGHOST: postgres
+      PGUSER: ${PG_SUPERUSER}
+      PGPASSWORD: ${PG_SUPERUSER_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+      WALG_S3_PREFIX: ${BACKUP_S3_PREFIX}
+      AWS_ACCESS_KEY_ID: ${BACKUP_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_SECRET_KEY}
+      AWS_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+      AWS_S3_FORCE_PATH_STYLE: ${BACKUP_S3_PATH_STYLE:-false}
+      AWS_REGION: ${BACKUP_S3_REGION:-eu-west-3}
+      BACKUP_RETAIN_FULL: ${BACKUP_RETAIN_FULL:-7}
+    volumes:
+      - pg_data:/var/lib/postgresql/data:ro
+    networks: [db]
+    depends_on:
+      postgres: { condition: service_healthy }

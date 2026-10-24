@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: beep-backoffice-api
+  threads:
+    virtual:
+      enabled: true
+  main:
+    banner-mode: "off"
+  flyway:
+    enabled: false           # migrations jouées par le service one-shot `backoffice-migrate`
+  jooq:
+    sql-dialect: postgres
+
+server:
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+  forward-headers-strategy: native
+  max-http-request-header-size: 16KB
+
+management:
+  server:
+    port: 8091               # port de gestion : jamais routé par Caddy
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: beep-backoffice-api
+
+beep:
+  bo:
+    public-url: ${BO_PUBLIC_URL:http://dashboard.beep.localhost}
+    encryption-key: ${BO_ENCRYPTION_KEY:}
+    core-admin-url: ${CORE_ADMIN_URL:http://core:8080/internal/admin/v1}
+    core-admin-token: ${CORE_ADMIN_TOKEN:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  structured:
+    format:
+      console: ecs           # logs JSON en production
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: migrate
+  main:
+    web-application-type: none
+  flyway:
+    enabled: true

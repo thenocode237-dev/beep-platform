@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: beep-core
+  threads:
+    virtual:
+      enabled: true          # Java 21 : forte concurrence sans programmation réactive
+  main:
+    banner-mode: "off"
+  flyway:
+    enabled: false           # les migrations sont jouées par le service one-shot `core-migrate` (profil migrate)
+  jooq:
+    sql-dialect: postgres
+  mail:
+    host: ${SMTP_HOST:mailpit}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
+
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: native   # IP réelle du client derrière Caddy (limites de débit, journaux)
+  tomcat:
+    max-http-form-post-size: 16KB
+  max-http-request-header-size: 16KB
+
+management:
+  server:
+    port: 8090                       # port de gestion : jamais routé par Caddy
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    mail:
+      enabled: false                 # un SMTP en panne ne doit pas retirer l'API du service
+  metrics:
+    tags:
+      application: beep-core
+
+beep:
+  public-url: ${BEEP_PUBLIC_URL:http://beep.localhost}
+  mail-from: ${MAIL_FROM:Beep <no-reply@beep.localhost>}
+  totp-encryption-key: ${TOTP_ENCRYPTION_KEY:}
+  admin-tokens: ${ADMIN_API_TOKEN:},${ADMIN_API_TOKEN_NEXT:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  structured:
+    format:
+      console: ecs           # logs JSON en production (agrégables, un champ par attribut)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: true            # en dev, Flyway au démarrage ; logs lisibles (pas de JSON)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: migrate
+  main:
+    web-application-type: none
+  flyway:
+    enabled: true

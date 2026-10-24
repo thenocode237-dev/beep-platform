@@ -1,0 +1,22 @@
+{
+  "name": "beep-platform",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "beep/web",
+    "backoffice/web"
+  ],
+  "scripts": {
+    "tokens": "npm run build -w @beep/design-tokens",
+    "contrast": "npm run contrast -w @beep/design-tokens",
+    "lint": "npm run lint -w beep-web -w backoffice-web",
+    "build:web": "npm run tokens && npm run build -w beep-web",
+    "build:bo": "npm run tokens && npm run build -w backoffice-web"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.6.0"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,52 @@
+{
+	auto_https off
+	admin off
+}
+
+# Développement : HTTP simple sur *.localhost (aucun certificat). Mêmes routes que la production.
+http://beep.localhost {
+	handle /internal/* {
+		respond 404
+	}
+	handle /actuator/* {
+		respond 404
+	}
+
+	@web path / /en /en/* /fr /fr/* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
+	handle @web {
+		reverse_proxy web:3000
+	}
+	handle /v1/* {
+		reverse_proxy core:8080
+	}
+	handle {
+		reverse_proxy core:8080
+	}
+}
+
+http://dashboard.beep.localhost {
+	# Mêmes en-têtes qu'en production (hors HSTS, sans objet en HTTP)
+	header {
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+
+	handle /actuator/* {
+		respond 404
+	}
+	handle /api/* {
+		reverse_proxy backoffice-api:8081
+	}
+	handle {
+		reverse_proxy backoffice-web:3000
+	}
+}
+
+# Boîte de réception factice (e-mails de vérification et de réinitialisation)
+http://mail.beep.localhost {
+	reverse_proxy mailpit:8025
+}

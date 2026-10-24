@@ -1,0 +1,14 @@
+{
+  "name": "@beep/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "contrast": "node contrast.mjs"
+  },
+  "exports": {
+    "./tokens.css": "./dist/tokens.css",
+    "./tokens.json": "./tokens.json"
+  }
+}

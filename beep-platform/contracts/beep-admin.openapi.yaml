@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  title: Beep — API admin interne
+  version: 0.1.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
+  description: |
+    Contrat entre `beep-core` (serveur) et `backoffice-api` (client). Source de vérité unique :
+    on modifie ce fichier EN PREMIER, puis le core et le client.
+
+    - Exposée uniquement sur le réseau Docker `backend` ; jamais routée par Caddy.
+    - Authentification : jeton de service (`Authorization: Bearer`). Deux jetons sont acceptés pendant une rotation.
+    - `X-Staff-Id` : identifiant du membre du staff à l'origine de l'appel (journalisé des deux côtés).
+    - Erreurs : `application/problem+json` avec un champ `code` stable.
+    - Listes paginées par curseur.
+servers:
+  - url: http://core:8080/internal/admin/v1
+security:
+  - serviceToken: []
+paths:
+  /meta:
+    get:
+      operationId: getMeta
+      summary: Version du contrat implémentée par le core
+      description: Le back office la compare à sa version minimale requise au démarrage.
+      responses:
+        "200":
+          description: Version du contrat
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Meta" }
+              example: { contract: "0.1.0" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /users:
+    get:
+      operationId: listUsers
+      summary: Liste des utilisateurs (lecture seule, plus récents d'abord)
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: cursor
+          in: query
+          description: Curseur opaque renvoyé par la page précédente (`nextCursor`).
+          schema: { type: string }
+        - name: X-Staff-Id
+          in: header
+          description: Membre du staff à l'origine de l'appel.
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Une page d'utilisateurs
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+components:
+  securitySchemes:
+    serviceToken:
+      type: http
+      scheme: bearer
+  schemas:
+    Meta:
+      type: object
+      required: [contract]
+      additionalProperties: false
+      properties:
+        contract: { type: string, pattern: "^\\d+\\.\\d+\\.\\d+$" }
+    User:
+      type: object
+      required: [id, email, status, emailVerified, totpEnabled, createdAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        status: { type: string, enum: [pending, active, suspended] }
+        emailVerified: { type: boolean }
+        totpEnabled: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    UsersPage:
+      type: object
+      required: [items, nextCursor]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        nextCursor:
+          type: [string, "null"]
+          description: Absent de la page suivante quand il n'y a plus de résultats (null).
+    Problem:
+      type: object
+      required: [status, code]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        code: { type: string, description: "Code stable (ex. unauthorized, invalid_request)." }
+  responses:
+    Unauthorized:
+      description: Jeton de service absent ou invalide
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    BadRequest:
+      description: Paramètre invalide (ex. curseur falsifié)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }

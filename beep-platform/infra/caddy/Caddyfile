@@ -1,0 +1,87 @@
+{
+	email {$ACME_EMAIL}
+	on_demand_tls {
+		# Seuls les domaines vérifiés par le core obtiennent un certificat (endpoint livré en phase 2 ;
+		# d'ici là il répond 404 et aucun certificat à la demande n'est émis).
+		ask http://core:8080/internal/tls/allow
+	}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# --- Site + espace client + API + redirections ---------------------------
+{$BEEP_SITE} {
+	encode zstd gzip
+	import security_headers
+
+	handle /internal/* {
+		respond 404
+	}
+	handle /actuator/* {
+		respond 404
+	}
+
+	# `en` et `fr` sont des slugs réservés côté core : /en/* (anglais) et /fr/* (redirigé vers l'URL sans préfixe) appartiennent au site
+	@web path / /en /en/* /fr /fr/* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
+	handle @web {
+		reverse_proxy web:3000
+	}
+
+	handle /v1/* {
+		reverse_proxy core:8080
+	}
+
+	# tout le reste : slug de lien court ou de page bio (phase 1)
+	handle {
+		reverse_proxy core:8080
+	}
+}
+
+# --- Back office ----------------------------------------------------------
+{$BO_SITE} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+
+	# Optionnel : restreindre à une IP/VPN d'entreprise
+	# @blocked not remote_ip {$BO_ALLOWED_IPS}
+	# respond @blocked 403
+
+	handle /actuator/* {
+		respond 404
+	}
+	handle /api/* {
+		reverse_proxy backoffice-api:8081
+	}
+	handle {
+		reverse_proxy backoffice-web:3000
+	}
+}
+
+# --- Domaines personnalisés des clients (TLS à la demande) ----------------
+https:// {
+	tls {
+		on_demand
+	}
+
+	handle /internal/* {
+		respond 404
+	}
+	handle {
+		reverse_proxy core:8080
+	}
+}

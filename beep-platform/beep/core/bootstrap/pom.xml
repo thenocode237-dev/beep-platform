@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.beep</groupId><artifactId>beep-core</artifactId><version>0.1.0-SNAPSHOT</version></parent>
+  <artifactId>bootstrap</artifactId>
+  <name>bootstrap</name>
+  <dependencies>
+    <dependency><groupId>io.beep</groupId><artifactId>domain</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>application</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-in-http</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-in-admin</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-postgres</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-mail</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>adapter-out-security</artifactId></dependency>
+
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
+    <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
+
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>com.tngtech.archunit</groupId><artifactId>archunit-junit5</artifactId><scope>test</scope></dependency>
+  </dependencies>
+
+  <build>
+    <finalName>beep-core</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

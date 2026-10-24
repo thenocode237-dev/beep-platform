@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.beep</groupId><artifactId>beep-core</artifactId><version>0.1.0-SNAPSHOT</version></parent>
+  <artifactId>adapter-out-security</artifactId>
+  <name>adapter-out-security</name>
+  <description>Argon2id, jetons aléatoires, chiffrement des secrets TOTP, limiteur de débit.</description>
+  <dependencies>
+    <dependency><groupId>io.beep</groupId><artifactId>application</artifactId></dependency>
+    <dependency><groupId>io.beep</groupId><artifactId>domain</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-crypto</artifactId></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></dependency> <!-- spring-jcl : journalisation requise par spring-security-crypto -->
+    <dependency><groupId>org.bouncycastle</groupId><artifactId>bcprov-jdk18on</artifactId></dependency>
+  </dependencies>
+</project>
