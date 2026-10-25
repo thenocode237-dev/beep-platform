@@ -31,7 +31,9 @@ public class ApiExceptionHandler {
       "unauthorized", HttpStatus.UNAUTHORIZED,
       "forbidden", HttpStatus.FORBIDDEN,
       "reauth_required", HttpStatus.FORBIDDEN,
-      "rate_limited", HttpStatus.TOO_MANY_REQUESTS);
+      "rate_limited", HttpStatus.TOO_MANY_REQUESTS,
+      "not_found", HttpStatus.NOT_FOUND,
+      "draft_outdated", HttpStatus.CONFLICT);
 
   @ExceptionHandler(DomainException.class)
   ResponseEntity<ProblemDetail> domain(DomainException e) {

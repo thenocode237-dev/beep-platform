@@ -47,6 +47,11 @@ public class PostgresWorkspaceAdapter implements WorkspaceRepository {
   }
 
   @Override
+  public void updatePlan(UUID id, String planCode) {
+    dsl.update(WORKSPACES).set(W_PLAN, planCode).where(W_ID.eq(id)).execute();
+  }
+
+  @Override
   public void markFirstLink(UUID id, Instant at) {
     dsl.update(WORKSPACES).set(W_FIRST_LINK, odt(at)).where(W_ID.eq(id).and(W_FIRST_LINK.isNull())).execute();
   }

@@ -12,6 +12,8 @@ import java.util.UUID;
 
 /** Liens côté staff : recherche tous workspaces, désactivation (modération) et réactivation, slugs réservés. */
 public class AdminLinksUseCase {
+  private io.beep.core.app.trust.TrustUseCase trust;
+  public AdminLinksUseCase withTrust(io.beep.core.app.trust.TrustUseCase trust) {this.trust=trust;return this;}
   private final LinkRepository links;
   private final TransactionPort tx;
   private final Clock clock;
@@ -41,7 +43,7 @@ public class AdminLinksUseCase {
   public LinkRepository.AdminRow enable(UUID id) {
     LinkRepository.AdminRow row = get(id);
     Link enabled = row.link().enable(clock.instant());
-    tx.run(() -> links.update(enabled));
+    tx.run(() -> {if(trust!=null)io.beep.core.app.trust.LinkSafety.requireSafe(trust,enabled);links.update(enabled);});
     return new LinkRepository.AdminRow(enabled, row.ownerEmail());
   }
 

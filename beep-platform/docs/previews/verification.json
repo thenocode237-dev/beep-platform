@@ -11,7 +11,7 @@
       "ok": true
     },
     {
-      "name": "Fonctionnalités à venir explicites",
+      "name": "Statuts des six fonctionnalités explicites",
       "ok": true
     },
     {
@@ -647,11 +647,59 @@
       "ok": true
     },
     {
+      "name": "320px /app/links : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /app/qr : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /app/bio : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "320px /app/settings : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
       "name": "390px espace client : pas de débordement",
       "ok": true
     },
     {
+      "name": "390px /app/links : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /app/qr : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /app/bio : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "390px /app/settings : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
       "name": "1440px espace client : pas de débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /app/links : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /app/qr : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /app/bio : HTTP 200 et contenu sans débordement",
+      "ok": true
+    },
+    {
+      "name": "1440px /app/settings : HTTP 200 et contenu sans débordement",
       "ok": true
     },
     {

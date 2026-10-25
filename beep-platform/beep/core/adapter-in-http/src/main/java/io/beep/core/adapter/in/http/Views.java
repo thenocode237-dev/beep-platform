@@ -17,12 +17,23 @@ import java.util.stream.Collectors;
 final class Views {
   private Views() {}
 
-  record LinkView(UUID id, String slug, String shortUrl, String destination, String title, String status, Instant createdAt, Instant updatedAt, Long clicks30d) {}
+  record LinkView(UUID id, String slug, String shortUrl, String destination, String title, String status, Instant createdAt, Instant updatedAt, Long clicks30d, UUID domainId,
+      String domain, RulesView rules, boolean passwordProtected) {}
+
+  record OnelinkView(String ios, String android, String desktop) {}
+
+  record RouteView(java.util.Set<String> countries, java.util.Set<String> os, java.util.Set<String> devices, java.util.Set<String> languages, String url) {}
+
+  record VariantView(String url, int weight) {}
+
+  record UtmView(String source, String medium, String campaign, String term, String content) {}
+
+  record RulesView(Instant expiresAt, boolean deeplink, OnelinkView onelink, List<RouteView> routes, List<VariantView> variants, UtmView utm) {}
 
   record QuotaView(String resource, String period, long used, long limit, String level) {}
 
   record QrView(UUID id, String kind, String code, UUID linkId, String contentType, Map<String, String> fields, String foreground, String background,
-      String errorCorrection, int margin, String title, String encoded, Instant createdAt, Instant updatedAt, long scans30d) {}
+      String errorCorrection, int margin, String title, String encoded, Instant createdAt, Instant updatedAt, long scans30d, io.beep.core.domain.qr.QrStyle.Decoration advanced) {}
 
   record BlockView(String id, String type, Map<String, String> config) {}
 
@@ -33,7 +44,14 @@ final class Views {
       List<AnalyticsRepository.Point> series, Map<String, List<AnalyticsRepository.Breakdown>> breakdowns, boolean advanced, boolean exportAllowed) {}
 
   static LinkView link(Link l, String shortUrl, Long clicks30d) {
-    return new LinkView(l.id(), l.slug().value(), shortUrl, l.destination().url(), l.title(), l.status().db(), l.createdAt(), l.updatedAt(), clicks30d);
+    return new LinkView(l.id(), l.slug().value(), shortUrl, l.destination().url(), l.title(), l.status().db(), l.createdAt(), l.updatedAt(), clicks30d, l.domainId(), l.domainHost(), rules(l.rules()), l.passwordProtected());
+  }
+
+  static RulesView rules(io.beep.core.domain.link.LinkRules r) {
+    return new RulesView(r.expiresAt(), r.deeplink(), r.onelink() == null ? null : new OnelinkView(r.onelink().ios(), r.onelink().android(), r.onelink().desktop()),
+        r.routes().stream().map(x -> new RouteView(new java.util.TreeSet<>(x.countries()), new java.util.TreeSet<>(x.os()), new java.util.TreeSet<>(x.devices()), new java.util.TreeSet<>(x.languages()), x.url())).toList(),
+        r.variants().stream().map(v -> new VariantView(v.url(), v.weight())).toList(),
+        r.utm() == null ? null : new UtmView(r.utm().source(), r.utm().medium(), r.utm().campaign(), r.utm().term(), r.utm().content()));
   }
 
   static QuotaView quota(QuotaPolicy.Status s) {
@@ -43,7 +61,7 @@ final class Views {
   static QrView qr(QrCode q, String encoded, long scans) {
     return new QrView(q.id(), q.kind().db(), q.code(), q.linkId(), q.content() == null ? null : q.content().type().db(), q.content() == null ? null : q.content().fields(),
         q.style().foreground(), q.style().background(), String.valueOf(q.style().errorCorrection()), q.style().margin(), q.title(), encoded, q.createdAt(),
-        q.updatedAt(), scans);
+        q.updatedAt(), scans,q.style().advanced());
   }
 
   static BioView bio(BioPage p, String publicUrl, long views) {

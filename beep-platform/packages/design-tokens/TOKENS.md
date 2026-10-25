@@ -13,17 +13,17 @@
 ## Primitifs
 | Token | Valeur |
 |---|---|
-| `--color-ink-50` | `#F8F7F2` |
-| `--color-ink-100` | `#EFECE3` |
-| `--color-ink-200` | `#DCDED5` |
-| `--color-ink-300` | `#B7C2B4` |
-| `--color-ink-400` | `#879683` |
-| `--color-ink-500` | `#65715B` |
-| `--color-ink-600` | `#58634F` |
-| `--color-ink-700` | `#3E5143` |
-| `--color-ink-800` | `#2D3E32` |
-| `--color-ink-900` | `#222B25` |
-| `--color-ink-950` | `#18231C` |
+| `--color-ink-50` | `#F5F8FF` |
+| `--color-ink-100` | `#EDF2FA` |
+| `--color-ink-200` | `#D9E2F0` |
+| `--color-ink-300` | `#B9C8DE` |
+| `--color-ink-400` | `#8195B3` |
+| `--color-ink-500` | `#5D708D` |
+| `--color-ink-600` | `#4C607D` |
+| `--color-ink-700` | `#354B6C` |
+| `--color-ink-800` | `#253752` |
+| `--color-ink-900` | `#192B46` |
+| `--color-ink-950` | `#101D32` |
 | `--color-green-100` | `#DCFCE7` |
 | `--color-green-400` | `#4ADE80` |
 | `--color-green-700` | `#15803D` |
@@ -39,22 +39,22 @@
 | `--color-sky-700` | `#0369A1` |
 | `--color-white` | `#FFFFFF` |
 | `--color-black` | `#000000` |
-| `--color-terracotta-50` | `#FCF1E9` |
-| `--color-terracotta-100` | `#F5E8DD` |
-| `--color-terracotta-200` | `#F9B99B` |
-| `--color-terracotta-300` | `#FFAD86` |
-| `--color-terracotta-400` | `#FF815B` |
-| `--color-terracotta-500` | `#E94B23` |
-| `--color-terracotta-600` | `#BD3516` |
-| `--color-terracotta-700` | `#9F2D12` |
-| `--color-terracotta-800` | `#822710` |
-| `--color-terracotta-900` | `#4B271E` |
-| `--color-forest-100` | `#E8EDE3` |
-| `--color-forest-300` | `#BCD0BA` |
-| `--color-forest-500` | `#44654F` |
-| `--color-forest-700` | `#243D30` |
-| `--color-forest-800` | `#1C3026` |
-| `--color-forest-900` | `#14251C` |
+| `--color-cobalt-50` | `#EEF3FF` |
+| `--color-cobalt-100` | `#E1EAFF` |
+| `--color-cobalt-200` | `#C2D6FF` |
+| `--color-cobalt-300` | `#A8CAFF` |
+| `--color-cobalt-400` | `#7CABFF` |
+| `--color-cobalt-500` | `#457BFF` |
+| `--color-cobalt-600` | `#2457D6` |
+| `--color-cobalt-700` | `#1C45AF` |
+| `--color-cobalt-800` | `#183A8F` |
+| `--color-cobalt-900` | `#192F5B` |
+| `--color-navy-100` | `#E7F0FF` |
+| `--color-navy-300` | `#B8D4FF` |
+| `--color-navy-500` | `#4F6EA3` |
+| `--color-navy-700` | `#233C69` |
+| `--color-navy-800` | `#1B2F53` |
+| `--color-navy-900` | `#12213B` |
 | `--font-family-display` | `var(--font-display), 'Manrope', ui-sans-serif, system-ui, sans-serif` |
 | `--font-family-body` | `var(--font-body), 'DM Sans', ui-sans-serif, system-ui, sans-serif` |
 | `--font-family-mono` | `ui-monospace, 'SF Mono', Menlo, Consolas, monospace` |
@@ -107,27 +107,27 @@
 ## Sémantique — clair
 | Token | Valeur |
 |---|---|
-| `--color-bg-page` | `{color.ink.50}` |
+| `--color-bg-page` | `{color.white}` |
 | `--color-bg-surface` | `{color.white}` |
 | `--color-bg-subtle` | `{color.ink.100}` |
-| `--color-bg-inverse` | `{color.forest.700}` |
+| `--color-bg-inverse` | `{color.navy.700}` |
 | `--color-text-primary` | `{color.ink.900}` |
 | `--color-text-secondary` | `{color.ink.600}` |
 | `--color-text-muted` | `{color.ink.500}` |
 | `--color-text-inverse` | `{color.ink.50}` |
-| `--color-text-link` | `{color.terracotta.700}` |
+| `--color-text-link` | `{color.cobalt.700}` |
 | `--color-border-default` | `{color.ink.200}` |
 | `--color-border-strong` | `{color.ink.400}` |
-| `--color-action-primary-bg` | `{color.terracotta.600}` |
-| `--color-action-primary-bg-hover` | `{color.terracotta.700}` |
-| `--color-action-primary-bg-active` | `{color.terracotta.800}` |
+| `--color-action-primary-bg` | `{color.cobalt.600}` |
+| `--color-action-primary-bg-hover` | `{color.cobalt.700}` |
+| `--color-action-primary-bg-active` | `{color.cobalt.800}` |
 | `--color-action-primary-text` | `{color.white}` |
-| `--color-action-accent-bg` | `{color.forest.700}` |
-| `--color-action-accent-bg-hover` | `{color.forest.800}` |
+| `--color-action-accent-bg` | `{color.navy.700}` |
+| `--color-action-accent-bg-hover` | `{color.navy.800}` |
 | `--color-action-accent-text` | `{color.white}` |
-| `--color-brand-tint` | `{color.terracotta.50}` |
-| `--color-brand-tint-strong` | `{color.terracotta.100}` |
-| `--color-focus-ring` | `{color.terracotta.600}` |
+| `--color-brand-tint` | `{color.cobalt.50}` |
+| `--color-brand-tint-strong` | `{color.cobalt.100}` |
+| `--color-focus-ring` | `{color.cobalt.600}` |
 | `--color-feedback-success-bg` | `{color.green.100}` |
 | `--color-feedback-success-text` | `{color.green.700}` |
 | `--color-feedback-warning-bg` | `{color.amber.100}` |
@@ -140,18 +140,18 @@
 | `--shadow-1` | `0 1px 2px rgb(10 11 30 / 0.06), 0 1px 1px rgb(10 11 30 / 0.04)` |
 | `--shadow-2` | `0 4px 12px rgb(10 11 30 / 0.08), 0 1px 3px rgb(10 11 30 / 0.06)` |
 | `--shadow-3` | `0 16px 40px rgb(10 11 30 / 0.14), 0 4px 10px rgb(10 11 30 / 0.06)` |
-| `--color-surface-sage` | `{color.forest.100}` |
-| `--color-surface-warm` | `{color.terracotta.100}` |
-| `--color-brand-signature` | `{color.terracotta.600}` |
-| `--color-on-sage` | `{color.forest.700}` |
-| `--color-scene-forest` | `{color.forest.700}` |
-| `--color-scene-deep` | `{color.forest.900}` |
+| `--color-surface-blue` | `{color.navy.100}` |
+| `--color-surface-mist` | `{color.cobalt.100}` |
+| `--color-brand-signature` | `{color.cobalt.600}` |
+| `--color-on-blue` | `{color.navy.700}` |
+| `--color-scene-navy` | `{color.navy.700}` |
+| `--color-scene-deep` | `{color.navy.900}` |
 | `--color-scene-paper` | `{color.ink.50}` |
-| `--color-scene-sage` | `{color.forest.100}` |
+| `--color-scene-mist` | `{color.navy.100}` |
 | `--color-scene-ink` | `{color.ink.900}` |
 | `--color-scene-muted` | `{color.ink.600}` |
-| `--color-scene-orange` | `{color.terracotta.500}` |
-| `--color-scene-peach` | `{color.terracotta.200}` |
+| `--color-scene-electric` | `{color.cobalt.500}` |
+| `--color-scene-sky` | `{color.cobalt.200}` |
 
 ## Sémantique — sombre
 | Token | Valeur |
@@ -164,19 +164,19 @@
 | `--color-text-secondary` | `{color.ink.300}` |
 | `--color-text-muted` | `{color.ink.400}` |
 | `--color-text-inverse` | `{color.ink.950}` |
-| `--color-text-link` | `{color.terracotta.300}` |
+| `--color-text-link` | `{color.cobalt.300}` |
 | `--color-border-default` | `{color.ink.700}` |
 | `--color-border-strong` | `{color.ink.400}` |
-| `--color-action-primary-bg` | `{color.terracotta.300}` |
-| `--color-action-primary-bg-hover` | `{color.terracotta.200}` |
-| `--color-action-primary-bg-active` | `{color.terracotta.100}` |
+| `--color-action-primary-bg` | `{color.cobalt.300}` |
+| `--color-action-primary-bg-hover` | `{color.cobalt.200}` |
+| `--color-action-primary-bg-active` | `{color.cobalt.100}` |
 | `--color-action-primary-text` | `{color.ink.950}` |
-| `--color-action-accent-bg` | `{color.forest.300}` |
-| `--color-action-accent-bg-hover` | `{color.forest.100}` |
-| `--color-action-accent-text` | `{color.forest.900}` |
-| `--color-brand-tint` | `{color.terracotta.900}` |
-| `--color-brand-tint-strong` | `{color.terracotta.800}` |
-| `--color-focus-ring` | `{color.terracotta.300}` |
+| `--color-action-accent-bg` | `{color.navy.300}` |
+| `--color-action-accent-bg-hover` | `{color.navy.100}` |
+| `--color-action-accent-text` | `{color.navy.900}` |
+| `--color-brand-tint` | `{color.cobalt.900}` |
+| `--color-brand-tint-strong` | `{color.cobalt.800}` |
+| `--color-focus-ring` | `{color.cobalt.300}` |
 | `--color-feedback-success-bg` | `rgb(22 163 74 / 0.18)` |
 | `--color-feedback-success-text` | `{color.green.400}` |
 | `--color-feedback-warning-bg` | `rgb(245 158 11 / 0.18)` |
@@ -189,18 +189,18 @@
 | `--shadow-1` | `0 1px 2px rgb(0 0 0 / 0.5)` |
 | `--shadow-2` | `0 4px 12px rgb(0 0 0 / 0.5)` |
 | `--shadow-3` | `0 16px 40px rgb(0 0 0 / 0.6)` |
-| `--color-surface-sage` | `{color.forest.800}` |
-| `--color-surface-warm` | `{color.terracotta.900}` |
-| `--color-brand-signature` | `{color.terracotta.300}` |
-| `--color-on-sage` | `{color.forest.300}` |
-| `--color-scene-forest` | `{color.forest.700}` |
-| `--color-scene-deep` | `{color.forest.900}` |
+| `--color-surface-blue` | `{color.navy.800}` |
+| `--color-surface-mist` | `{color.cobalt.900}` |
+| `--color-brand-signature` | `{color.cobalt.300}` |
+| `--color-on-blue` | `{color.navy.300}` |
+| `--color-scene-navy` | `{color.navy.700}` |
+| `--color-scene-deep` | `{color.navy.900}` |
 | `--color-scene-paper` | `{color.ink.50}` |
-| `--color-scene-sage` | `{color.forest.100}` |
+| `--color-scene-mist` | `{color.navy.100}` |
 | `--color-scene-ink` | `{color.ink.900}` |
 | `--color-scene-muted` | `{color.ink.600}` |
-| `--color-scene-orange` | `{color.terracotta.500}` |
-| `--color-scene-peach` | `{color.terracotta.200}` |
+| `--color-scene-electric` | `{color.cobalt.500}` |
+| `--color-scene-sky` | `{color.cobalt.200}` |
 
 ## Sémantique — statique (typo, gabarits, tactile)
 | Token | Valeur |

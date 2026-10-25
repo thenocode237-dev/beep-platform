@@ -50,6 +50,8 @@ final class Schema {
   static final Field<String> P_NAME = field(name("plans", "name"), SQLDataType.CLOB);
   static final Field<Integer> P_VERSION = field(name("plans", "version"), SQLDataType.INTEGER);
   static final Field<Long> P_PRICE = field(name("plans", "price_xaf"), SQLDataType.BIGINT);
+  static final Field<Long> P_PRICE_Q = field(name("plans", "price_quarterly_xaf"), SQLDataType.BIGINT);
+  static final Field<Long> P_PRICE_A = field(name("plans", "price_annual_xaf"), SQLDataType.BIGINT);
   static final Field<Boolean> P_PUBLIC = field(name("plans", "public"), SQLDataType.BOOLEAN);
   static final Field<JSONB> P_ENTITLEMENTS = field(name("plans", "entitlements"), SQLDataType.JSONB);
 
@@ -81,6 +83,9 @@ final class Schema {
   static final Field<String> L_SLUG = field(name("links", "slug"), SQLDataType.CLOB);
   static final Field<String> L_DESTINATION = field(name("links", "destination"), SQLDataType.CLOB);
   static final Field<String> L_TITLE = field(name("links", "title"), SQLDataType.CLOB);
+  static final Field<org.jooq.JSONB> L_RULES = field(name("links", "rules"), SQLDataType.JSONB);
+  static final Field<String> L_PASSWORD = field(name("links", "password_hash"), SQLDataType.CLOB);
+  static final Field<UUID> L_DOMAIN = field(name("links", "domain_id"), SQLDataType.UUID);
   static final Field<String> L_STATUS = field(name("links", "status"), SQLDataType.CLOB);
   static final Field<String> L_REASON = field(name("links", "disabled_reason"), SQLDataType.CLOB);
   static final Field<OffsetDateTime> L_CREATED = field(name("links", "created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);

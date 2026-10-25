@@ -12,7 +12,7 @@ import java.util.Map;
  */
 final class PublicPages {
   /** Aucun script, aucun cadre ; images https des pages bio autorisées. */
-  static final String CSP = "default-src 'none'; img-src https: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  static final String CSP = "default-src 'none'; img-src https: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 
   private record Palette(String bg, String text, String muted, String card, String border, String buttonBg, String buttonText, String scheme) {}
 
@@ -123,14 +123,111 @@ final class PublicPages {
         en ? "Discover Beep" : "Découvrir Beep");
   }
 
+  String expired(String lang) {
+    boolean en = "en".equals(lang);
+    return simple(lang, en ? "Link expired" : "Lien expiré", en ? "This link was only valid until a set date and no longer redirects." : "Ce lien n'était valable que jusqu'à une date donnée et ne redirige plus.",
+        en ? "Discover Beep" : "Découvrir Beep");
+  }
+
+  /** Formulaire de mot de passe : sans script, envoi vers la même adresse (POST). */
+  String password(String lang, boolean wrong) {
+    boolean en = "en".equals(lang);
+    String title = en ? "Protected link" : "Lien protégé";
+    return "<!doctype html><html lang=\"" + lang + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+        + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · Beep</title><style>" + PAGE_CSS
+        + "form{display:grid;gap:.75rem;text-align:left}label{font-weight:600}input{min-height:48px;padding:0 .75rem;border-radius:8px;border:1px solid #8F8878;font:inherit;background:#fff;color:#2B2922}"
+        + "button{min-height:48px;border:0;border-radius:8px;background:#F0CF65;color:#2B2922;font:inherit;font-weight:600;cursor:pointer}"
+        + ".err{color:#9B2C1B;font-weight:600;margin:0 0 .75rem}</style></head><body><main><div class=\"mark\">beep<span>.</span></div><h1>" + esc(title) + "</h1><p>"
+        + esc(en ? "Enter the password to continue." : "Saisissez le mot de passe pour continuer.") + "</p>"
+        + (wrong ? "<p class=\"err\" role=\"alert\">" + esc(en ? "Incorrect password." : "Mot de passe incorrect.") + "</p>" : "")
+        + "<form method=\"post\" action=\"\"><label for=\"p\">" + esc(en ? "Password" : "Mot de passe") + "</label>"
+        + "<input id=\"p\" name=\"password\" type=\"password\" autocomplete=\"off\" required maxlength=\"200\" autofocus><button type=\"submit\">"
+        + esc(en ? "Continue" : "Continuer") + "</button></form></main></body></html>";
+  }
+
+  /**
+   * Page intermédiaire d'ouverture d'application (iOS et navigateurs intégrés). Le script, protégé par un nonce, tente d'ouvrir l'application puis,
+   * hors navigateur intégré, bascule sur l'adresse web si la page reste visible. Dans un navigateur intégré, rien n'est automatique : l'aide à la sortie
+   * est affichée avec les deux boutons.
+   */
+  String openApp(String lang, io.beep.core.app.redirect.Outcome.Deeplink d, String nonce) {
+    boolean en = "en".equals(lang);
+    String app = d.plan().appName();
+    String open = "android".equals(d.os()) ? d.plan().androidUrl() : d.plan().iosUrl();
+    String web = d.plan().webUrl();
+    String inApp = d.inApp() ? browserName(d.browser()) : null;
+    StringBuilder h = new StringBuilder(2048);
+    h.append("<!doctype html><html lang=\"").append(lang).append("\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">")
+        .append("<meta name=\"robots\" content=\"noindex\"><title>").append(esc(en ? "Opening " : "Ouverture de ")).append(esc(app)).append(" · Beep</title><style>").append(PAGE_CSS)
+        .append("a.alt{background:transparent;color:inherit;border:1px solid #8F8878;margin-top:.75rem}.help{background:rgba(240,207,101,.25);border-radius:8px;padding:.75rem 1rem;margin:0 0 1.25rem;text-align:left}")
+        .append("</style></head><body><main><div class=\"mark\">beep<span>.</span></div><h1>").append(esc(en ? "Open in " + app : "Ouvrir dans " + app)).append("</h1>");
+    if (inApp != null) {
+      h.append("<p class=\"help\">").append(esc(en ? "You are in the " + inApp + " in-app browser, which can block apps. Tap the button below, or open this page in your browser (⋯ menu → “Open in browser”)."
+          : "Vous êtes dans le navigateur intégré de " + inApp + ", qui peut bloquer l'ouverture des applications. Appuyez sur le bouton ci-dessous, ou ouvrez cette page dans votre navigateur (menu ⋯ → « Ouvrir dans le navigateur »).")).append("</p>");
+    } else {
+      h.append("<p>").append(esc(en ? "Opening the app…" : "Ouverture de l'application…")).append("</p>");
+    }
+    if (open != null) h.append("<a id=\"open\" href=\"").append(esc(open)).append("\">").append(esc(en ? "Open " + app : "Ouvrir " + app)).append("</a>");
+    h.append("<br><a class=\"alt\" href=\"").append(esc(web)).append("\" rel=\"noopener\">").append(esc(en ? "Continue on the web" : "Continuer sur le web")).append("</a></main>");
+    if (open != null) {
+      h.append("<script nonce=\"").append(nonce).append("\">var o=").append(js(open)).append(",w=").append(js(web)).append(",inapp=").append(inApp != null)
+          .append(";setTimeout(function(){location.href=o},60);if(!inapp){setTimeout(function(){if(!document.hidden)location.replace(w)},1800)}</script>");
+    } else if (inApp == null) {
+      h.append("<script nonce=\"").append(nonce).append("\">location.replace(").append(js(web)).append(")</script>");
+    }
+    return h.append("</body></html>").toString();
+  }
+
+  static String openAppCsp(String nonce) {
+    return "default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-" + nonce + "'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  }
+
+  /** Chaîne JavaScript sûre dans un bloc <script> : guillemets, barres, chevrons et séparateurs de ligne échappés. */
+  static String js(String s) {
+    StringBuilder b = new StringBuilder("\"");
+    for (char ch : s.toCharArray()) {
+      switch (ch) {
+        case '"' -> b.append("\\u0022");
+        case '\\' -> b.append("\\\\");
+        case '<' -> b.append("\\u003c");
+        case '>' -> b.append("\\u003e");
+        case '&' -> b.append("\\u0026");
+        case '\'' -> b.append("\\u0027");
+        case '\n' -> b.append("\\n");
+        case '\r' -> b.append("\\r");
+        case '\u2028' -> b.append("\\u2028");
+        case '\u2029' -> b.append("\\u2029");
+        default -> b.append(ch);
+      }
+    }
+    return b.append('"').toString();
+  }
+
+  private static String browserName(String browser) {
+    return switch (browser) {
+      case "instagram" -> "Instagram";
+      case "facebook" -> "Facebook";
+      case "tiktok" -> "TikTok";
+      case "linkedin" -> "LinkedIn";
+      case "snapchat" -> "Snapchat";
+      default -> browser;
+    };
+  }
+
+  private static final String PAGE_CSS = "body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#FFFCF3;color:#2B2922;font:16px/1.6 system-ui,sans-serif;padding:1rem}"
+      + "main{max-width:28rem;width:100%;text-align:center}h1{font-size:1.6rem;margin:0 0 .5rem}p{color:#625C4C;margin:0 0 1.25rem}"
+      + "a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 1.25rem;border-radius:8px;background:#F0CF65;color:#2B2922;text-decoration:none;font-weight:600}"
+      + "a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #2B2922;outline-offset:3px}.mark{font-weight:800;font-size:1.4rem;margin-bottom:1.5rem}.mark span{color:#826006}"
+      + "@media (prefers-color-scheme:dark){body{background:#1C1B16;color:#FFFCF3}p{color:#C6C0AF}a{background:#F0CF65;color:#1C1B16}.mark span{color:#F0CF65}}";
+
   private String simple(String lang, String title, String text, String cta) {
     return "<!doctype html><html lang=\"" + lang + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
         + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · Beep</title><style>"
-        + "body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#F8F7F2;color:#222B25;font:16px/1.6 system-ui,sans-serif;padding:1rem}"
-        + "main{max-width:28rem;text-align:center}h1{font-size:1.6rem;margin:0 0 .5rem}p{color:#58634F;margin:0 0 1.5rem}"
-        + "a{display:inline-flex;align-items:center;min-height:48px;padding:0 1.25rem;border-radius:8px;background:#BD3516;color:#fff;text-decoration:none;font-weight:600}"
-        + "a:focus-visible{outline:3px solid #222B25;outline-offset:3px}.mark{font-weight:800;font-size:1.4rem;margin-bottom:1.5rem}.mark span{color:#BD3516}"
-        + "@media (prefers-color-scheme:dark){body{background:#18231C;color:#F8F7F2}p{color:#B7C2B4}a{background:#FFAD86;color:#18231C}a:focus-visible{outline-color:#F8F7F2}.mark span{color:#FFAD86}}"
+        + "body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#FFFFFF;color:#192B46;font:16px/1.6 system-ui,sans-serif;padding:1rem}"
+        + "main{max-width:28rem;text-align:center}h1{font-size:1.6rem;margin:0 0 .5rem}p{color:#4C607D;margin:0 0 1.5rem}"
+        + "a{display:inline-flex;align-items:center;min-height:48px;padding:0 1.25rem;border-radius:8px;background:#2457D6;color:#fff;text-decoration:none;font-weight:600}"
+        + "a:focus-visible{outline:3px solid #192B46;outline-offset:3px}.mark{font-weight:800;font-size:1.4rem;margin-bottom:1.5rem}.mark span{color:#2457D6}"
+        + "@media (prefers-color-scheme:dark){body{background:#101D32;color:#F5F8FF}p{color:#B9C8DE}a{background:#A8CAFF;color:#101D32}a:focus-visible{outline-color:#F5F8FF}.mark span{color:#A8CAFF}}"
         + "</style></head><body><main><div class=\"mark\">beep<span>.</span></div><h1>" + esc(title) + "</h1><p>" + esc(text) + "</p><a href=\""
         + esc(site.url()) + ("en".equals(lang) ? "/en" : "/") + "\">" + esc(cta) + "</a></main></body></html>";
   }

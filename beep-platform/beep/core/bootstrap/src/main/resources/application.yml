@@ -75,6 +75,25 @@ beep:
     flush-interval: PT1S
   jobs:
     rollup-interval: ${BEEP_ROLLUP_INTERVAL:PT1M}
+  domains:
+    cname-target: ${DOMAINS_CNAME_TARGET:}          # cible CNAME demandée aux clients (vide : domains.<site>)
+    ips: ${DOMAINS_IPS:}                             # adresses A acceptées en alternative au CNAME (séparées par des virgules)
+    resolver: ${DOMAINS_DNS_RESOLVER:}               # serveur DNS interrogé pour la vérification (vide : celui du système)
+    main-hosts: ${BEEP_MAIN_HOSTS:localhost,127.0.0.1,core}   # noms qui désignent le domaine de Beep, en plus du site public
+  billing:
+    provider: ${PAYMENT_PROVIDER:sandbox}       # sandbox (dev, sans réseau) | notchpay (Mobile Money MTN/Orange + cartes)
+    sandbox-secret: ${PAYMENT_SANDBOX_SECRET:sandbox-secret}
+    notchpay:
+      base-url: ${NOTCHPAY_BASE_URL:https://api.notchpay.co}
+      public-key: ${NOTCHPAY_PUBLIC_KEY:}
+      hash-key: ${NOTCHPAY_HASH_KEY:}            # clé de hachage des webhooks (tableau de bord Notch Pay)
+    vat-rates: ${BILLING_VAT_RATES:CM=1925,GA=1800}   # points de base par pays : à valider avec un expert-comptable
+    default-country: ${BILLING_DEFAULT_COUNTRY:CM}
+    seller:
+      name: ${BILLING_SELLER_NAME:Beep}
+      address: ${BILLING_SELLER_ADDRESS:}
+      tax-id: ${BILLING_SELLER_TAX_ID:}
+    reconcile-interval: ${BILLING_RECONCILE_INTERVAL:PT1M}
 
 ---
 spring:

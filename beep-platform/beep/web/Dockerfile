@@ -18,4 +18,5 @@ COPY --from=build --chown=app:app /repo/beep/web/.next/static ./beep/web/.next/s
 COPY --from=build --chown=app:app /repo/beep/web/public ./beep/web/public
 USER app
 EXPOSE 3000
+COPY --from=build --chown=app:app /repo/beep/web/content ./beep/web/content
 CMD ["node", "beep/web/server.js"]

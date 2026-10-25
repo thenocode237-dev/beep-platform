@@ -12,7 +12,7 @@ http://beep.localhost {
 		respond 404
 	}
 
-	@web path / /en /en/* /fr /fr/* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
+	@web path / /en /en/* /fr /fr/* /status* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
 	handle @web {
 		reverse_proxy web:3000
 	}
@@ -49,4 +49,14 @@ http://dashboard.beep.localhost {
 # Boîte de réception factice (e-mails de vérification et de réinitialisation)
 http://mail.beep.localhost {
 	reverse_proxy mailpit:8025
+}
+
+# Domaines personnalisés (développement) : tout autre nom d'hôte est servi par le core, qui le route par domaine.
+http:// {
+	handle /internal/* {
+		respond 404
+	}
+	handle {
+		reverse_proxy core:8080
+	}
 }

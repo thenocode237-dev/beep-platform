@@ -1,8 +1,8 @@
 {
 	email {$ACME_EMAIL}
 	on_demand_tls {
-		# Seuls les domaines vérifiés par le core obtiennent un certificat (endpoint livré en phase 2 ;
-		# d'ici là il répond 404 et aucun certificat à la demande n'est émis).
+		# Seuls les domaines personnalisés vérifiés, non bloqués et au workspace actif obtiennent un certificat
+		# (le core répond 200 ou 404 ; jamais exposé à l'extérieur).
 		ask http://core:8080/internal/tls/allow
 	}
 }
@@ -29,7 +29,7 @@
 	}
 
 	# `en` et `fr` sont des slugs réservés côté core : /en/* (anglais) et /fr/* (redirigé vers l'URL sans préfixe) appartiennent au site
-	@web path / /en /en/* /fr /fr/* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
+	@web path / /en /en/* /fr /fr/* /status* /pricing* /blog* /features* /docs* /roadmap* /changelog* /affiliates* /report* /login* /signup* /forgot-password* /reset-password* /verify-email* /app* /legal* /_next/* /assets/* /icon.svg /favicon.ico /robots.txt /sitemap.xml
 	handle @web {
 		reverse_proxy web:3000
 	}

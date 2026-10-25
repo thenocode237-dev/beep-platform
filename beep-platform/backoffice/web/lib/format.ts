@@ -7,6 +7,11 @@ export const fmtDateTime = (iso: string | null | undefined) => (iso ? `${dateTim
 export const fmtDay = (iso: string) => day.format(new Date(`${iso}T00:00:00Z`));
 export const fmtNumber = (n: number) => number.format(n);
 export const fmtPercent = (r: number) => `${number.format(Math.round(r * 1000) / 10)} %`;
+export const fmtXaf = (n: number) => `${number.format(n)} FCFA`;
+export const cycleLabels: Record<string, string> = { monthly: "Mensuel", quarterly: "Trimestriel", annual: "Annuel" };
+export const methodLabels: Record<string, string> = { mtn_momo: "MTN MoMo", orange_money: "Orange Money", card: "Carte", manual: "Manuel" };
+export const subscriptionLabels: Record<string, string> = { trialing: "Essai", active: "Actif", grace: "Impayé (grâce)", expired: "Expiré" };
+export const paymentLabels: Record<string, string> = { pending: "En attente", succeeded: "Payé", failed: "Échoué", refunded: "Remboursé" };
 export const fmtLimit = (n: number) => (n === -1 ? "illimité" : number.format(n));
 
 export function fmtBytes(n: number) {

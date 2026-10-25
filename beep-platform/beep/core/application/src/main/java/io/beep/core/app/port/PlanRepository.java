@@ -13,6 +13,9 @@ public interface PlanRepository {
 
   List<Plan> findAll();
 
+  /** Publie une nouvelle version d'un plan (création ou remplacement) et en conserve l'instantané. */
+  void publish(Plan plan, String staffId, Instant at);
+
   List<EntitlementOverride> overrides(UUID workspaceId);
 
   /** Applique les changements : une valeur remplace l'override, `null` le supprime. */

@@ -18,7 +18,37 @@ export type LinkRow = {
   workspaceId: string; ownerEmail: string | null; createdAt: string; updatedAt: string;
 };
 export type LinksPage = { items: LinkRow[]; nextCursor: string | null };
-export type Plan = { code: string; name: string; version: number; priceXaf: number; isPublic: boolean; entitlements: Record<string, number> };
+export type Plan = {
+  code: string; name: string; version: number; priceXaf: number; priceQuarterlyXaf: number; priceAnnualXaf: number; isPublic: boolean; entitlements: Record<string, number>;
+};
+export type AppRow = { code: string; name: string; hosts: string[]; iosTemplate: string | null; androidPackage: string | null; androidTemplate: string | null; enabled: boolean; version: number };
+export type AppTest = { profile: string; appFound: boolean; appName: string | null; mode: "web" | "android_intent" | "interstitial"; webUrl: string; iosUrl: string | null; androidUrl: string | null; os: string; inApp: boolean; note: string };
+export type DomainRow = {
+  id: string; workspaceId: string; ownerEmail: string | null; hostname: string; dnsStatus: "pending" | "verified" | "failed"; tlsStatus: "pending" | "active"; isDefault: boolean;
+  blocked: boolean; blockedReason: string | null; lastError: string | null; links: number; verifiedAt: string | null; lastCheckAt: string | null; createdAt: string;
+};
+export type DomainsPage = { items: DomainRow[]; nextCursor: string | null };
+export type BillingSummary = {
+  trialing: number; active: number; grace: number; expired: number; mrrXaf: number; arrXaf: number; revenue30dXaf: number; pendingPayments: number; failedPayments: number;
+};
+export type Subscription = {
+  workspaceId: string; workspaceName: string | null; ownerEmail: string | null; plan: string; status: "trialing" | "active" | "grace" | "expired"; cycle: string | null;
+  periodStart: string; periodEnd: string; graceEnd: string; monthlyRateXaf: number;
+};
+export type Payment = {
+  id: string; workspaceId: string; workspaceName: string | null; ownerEmail: string | null; plan: string; cycle: string; method: string; provider: string;
+  status: "pending" | "succeeded" | "failed" | "refunded"; amountXaf: number; listPriceXaf: number; discountXaf: number; creditXaf: number; coupon: string | null;
+  country: string; note: string | null; recordedBy: string | null; failureReason: string | null; createdAt: string; paidAt: string | null;
+};
+export type PaymentsPage = { items: Payment[]; nextCursor: string | null };
+export type InvoiceRow = { number: string; paymentId: string; plan: string; cycle: string; grossXaf: number; netXaf: number; vatXaf: number; vatRateBp: number; country: string; issuedAt: string };
+export type Coupon = {
+  code: string; percentOff: number; amountOffXaf: number; maxRedemptions: number | null; redeemed: number; validUntil: string | null; plans: string[]; active: boolean; createdAt: string;
+};
+export type PlanDraft = {
+  code: string; name: string; priceXaf: number; priceQuarterlyXaf: number | null; priceAnnualXaf: number | null; isPublic: boolean; entitlements: Record<string, number>;
+  baseVersion: number; note: string | null; updatedBy: string; updatedAt: string; publishedVersion: number | null; publishedAt: string | null;
+};
 export type DayCount = { day: string; count: number };
 export type Metrics = {
   core: {
@@ -70,7 +100,25 @@ export const getLinks = (p: { q?: string; workspaceId?: string; cursor?: string 
 export const getLink = (id: string) => get<LinkRow>(`/links/${encodeURIComponent(id)}`);
 export const getReservedSlugs = () => get<{ items: string[] }>("/reserved-slugs");
 export const getPlans = () => get<{ items: Plan[] }>("/plans");
+export const getCatalog = () => get<{ items: AppRow[] }>("/catalog");
+export const getDomains = (p: { q?: string; status?: string; cursor?: string }) => get<DomainsPage>(`/domains${qs({ limit: 20, ...p })}`);
+export const getBillingSummary = () => get<BillingSummary>("/billing/summary");
+export const getSubscriptions = (status?: string) => get<{ items: Subscription[] }>(`/billing/subscriptions${qs({ limit: 50, status })}`);
+export const getUpcoming = (days = 14) => get<{ items: Subscription[] }>(`/billing/upcoming${qs({ days, limit: 50 })}`);
+export const getPayments = (p: { status?: string; workspaceId?: string; cursor?: string }) => get<PaymentsPage>(`/billing/payments${qs({ limit: 20, ...p })}`);
+export const getWorkspaceInvoices = (id: string) => get<{ items: InvoiceRow[] }>(`/workspaces/${encodeURIComponent(id)}/invoices`);
+export const getCoupons = () => get<{ items: Coupon[] }>("/coupons");
+export const getPlanDrafts = () => get<{ items: PlanDraft[] }>("/plan-drafts");
 export const getMetrics = (days = 30) => get<Metrics>(`/metrics${qs({ days })}`);
 export const getJobs = () => get<{ items: Job[] }>("/jobs");
 export const getAudit = (p: { before?: string; action?: string; actor?: string }) => get<AuditPage>(`/audit${qs({ limit: 50, ...p })}`);
 export const getInvitations = (cursor?: string) => get<InvitationsPage>(`/invitations${qs({ limit: 20, cursor })}`);
+
+
+export type AbuseReport={id:string;url:string;category:string;detail:string;source:string;status:string;reason:string|null;createdAt:string;resolvedAt:string|null};
+export type Reports={items:AbuseReport[];open:number;overdue:number};
+export type BlockedHost={host:string;reason:string;createdAt:string};
+export type FeatureFlag={key:string;enabled:boolean;rolloutPercent:number;version:number;reason:string};
+export const getReports=(status="open",offset=0)=>get<Reports>(`/moderation/reports${qs({status,offset,limit:50})}`);
+export const getBlocks=()=>get<{items:BlockedHost[]}>("/moderation/blocklist");
+export const getFlags=()=>get<{items:FeatureFlag[]}>("/feature-flags");

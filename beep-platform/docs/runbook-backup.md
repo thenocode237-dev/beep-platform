@@ -32,7 +32,8 @@ Le service `pg-backup` pousse une sauvegarde de base par jour (03:00 UTC) et con
    ```
    puis `touch $PGDATA/recovery.signal`.
 5. Démarrer PostgreSQL ; attendre « database system is ready to accept connections » et la promotion.
-6. Vérifier (`select now(), count(*) from users;` sur `beep`, `select max(seq) from audit_log;` sur `backoffice`), puis redémarrer les applications.
+6. Avant de rouvrir le service, rapprocher la restauration du registre d’effacement le plus récent : événements `privacy.erase` de `trust_audit` et identifiants de `erased_workspaces`, conservés depuis l’état postérieur au point restauré. Réappliquer les effacements de compte sur l’API admin privée et vérifier l’absence des utilisateurs, ressources et statistiques concernés. Sans registre fiable, garder le service fermé et faire examiner la restauration.
+7. Vérifier (`select now(), count(*) from users;` sur `beep`, `select max(seq) from audit_log;` sur `backoffice`), puis redémarrer les applications. Tester ce rapprochement d’effacements lors de la démonstration PITR de staging.
 
 ### Exigence de sortie de la phase 0
 

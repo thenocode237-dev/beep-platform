@@ -1,7 +1,7 @@
 import type { ConsoleDict } from "./console-fr";
 
 const consoleEn: ConsoleDict = {
-  nav: { overview: "Home", links: "Links", qr: "QR codes", bio: "Bio pages", settings: "Account", label: "Workspace" },
+  nav: { overview: "Home", links: "Links", qr: "QR codes", bio: "Bio pages", settings: "Account", billing: "Subscription", domains: "Domains", label: "Workspace" },
   common: {
     save: "Save",
     cancel: "Cancel",

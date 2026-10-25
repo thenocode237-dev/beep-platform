@@ -17,4 +17,9 @@ public record PublicSite(String url) {
   public String shortUrl(String slug) {
     return url + "/" + slug;
   }
+
+  /** URL courte d'un lien : sur son domaine personnalisé (https) s'il en a un, sinon sur le domaine de Beep. */
+  public String shortUrl(io.beep.core.domain.link.Link link) {
+    return link.domainHost() == null ? shortUrl(link.slug().value()) : "https://" + link.domainHost() + "/" + link.slug().value();
+  }
 }

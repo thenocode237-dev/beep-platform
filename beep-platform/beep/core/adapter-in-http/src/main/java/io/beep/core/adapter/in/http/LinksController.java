@@ -4,6 +4,7 @@ import io.beep.core.app.analytics.GetStatsUseCase;
 import io.beep.core.app.common.PublicSite;
 import io.beep.core.app.link.CreateLinkUseCase;
 import io.beep.core.app.link.DeleteLinkUseCase;
+import io.beep.core.app.link.LinkRulesCommand;
 import io.beep.core.app.link.ListLinksUseCase;
 import io.beep.core.app.link.UpdateLinkUseCase;
 import io.beep.core.app.port.AnalyticsRepository.Resource;
@@ -32,7 +33,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/links")
 @Profile("!worker & !migrate")
 public class LinksController {
-  record LinkRequest(String destination, String slug, String title) {}
+  record RulesRequest(String expiresAt, String password, Boolean deeplink, OnelinkRequest onelink, List<RouteRequest> routes, List<VariantRequest> variants, UtmRequest utm) {}
+
+  record OnelinkRequest(String ios, String android, String desktop) {}
+
+  record RouteRequest(java.util.Set<String> countries, java.util.Set<String> os, java.util.Set<String> devices, java.util.Set<String> languages, String url) {}
+
+  record VariantRequest(String url, int weight) {}
+
+  record UtmRequest(String source, String medium, String campaign, String term, String content) {}
+
+  record LinkRequest(String destination, String slug, String title, String domain, RulesRequest rules) {}
+
+  static LinkRulesCommand rules(RulesRequest r) {
+    if (r == null) return null;
+    return new LinkRulesCommand(r.expiresAt(), r.password(), r.deeplink(), r.onelink() == null ? null : new LinkRulesCommand.Onelink(r.onelink().ios(), r.onelink().android(), r.onelink().desktop()),
+        r.routes() == null ? null : r.routes().stream().map(x -> new LinkRulesCommand.RouteCmd(x.countries(), x.os(), x.devices(), x.languages(), x.url())).toList(),
+        r.variants() == null ? null : r.variants().stream().map(x -> new LinkRulesCommand.VariantCmd(x.url(), x.weight())).toList(),
+        r.utm() == null ? null : new LinkRulesCommand.UtmCmd(r.utm().source(), r.utm().medium(), r.utm().campaign(), r.utm().term(), r.utm().content()));
+  }
 
   record LinksPage(List<Views.LinkView> items, String nextCursor) {}
 
@@ -64,7 +83,7 @@ public class LinksController {
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<Views.LinkView> create(@RequestBody LinkRequest r, HttpServletRequest req) {
-    Link link = create.execute(cookies.requireUser(req), new CreateLinkUseCase.Command(r.destination(), r.slug(), r.title()));
+    Link link = create.execute(cookies.requireUser(req), new CreateLinkUseCase.Command(r.destination(), r.slug(), r.title(), r.domain(), rules(r.rules())));
     return ResponseEntity.status(HttpStatus.CREATED).body(view(link, 0L));
   }
 
@@ -75,7 +94,7 @@ public class LinksController {
 
   @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   Views.LinkView update(@PathVariable UUID id, @RequestBody LinkRequest r, HttpServletRequest req) {
-    return view(update.execute(cookies.requireUser(req), id, new UpdateLinkUseCase.Command(r.destination(), r.slug(), r.title())), null);
+    return view(update.execute(cookies.requireUser(req), id, new UpdateLinkUseCase.Command(r.destination(), r.slug(), r.title(), rules(r.rules()))), null);
   }
 
   @DeleteMapping("/{id}")
@@ -98,6 +117,6 @@ public class LinksController {
   }
 
   private Views.LinkView view(Link l, Long clicks) {
-    return Views.link(l, site.shortUrl(l.slug().value()), clicks);
+    return Views.link(l, site.shortUrl(l), clicks);
   }
 }

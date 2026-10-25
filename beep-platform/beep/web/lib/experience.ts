@@ -1,6 +1,6 @@
 ﻿import type { Locale } from "./i18n";
 
-/** Textes de la direction Atelier : mêmes informations et mêmes parcours en FR et EN. */
+/** Textes de la direction Signal : mêmes informations et mêmes parcours en FR et EN. */
 const copy = {
   fr: {
     navFeatures: "Les possibilités",

@@ -23,6 +23,11 @@ public record UserAgent(DeviceType device, String os, String browser, boolean bo
     return new UserAgent(device(ua), os(ua), browser(ua), false);
   }
 
+  /** Navigateur intégré d'une application (Instagram, Facebook, TikTok, LinkedIn, Snapchat). */
+  public boolean inApp() {
+    return io.beep.core.domain.link.DeeplinkDecision.inAppBrowser(this);
+  }
+
   private static DeviceType device(String ua) {
     String l = ua.toLowerCase(Locale.ROOT);
     if (l.contains("ipad") || l.contains("tablet") || (l.contains("android") && !l.contains("mobile"))) return DeviceType.TABLET;

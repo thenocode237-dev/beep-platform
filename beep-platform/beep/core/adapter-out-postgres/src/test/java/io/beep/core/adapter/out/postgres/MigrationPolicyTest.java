@@ -22,7 +22,7 @@ class MigrationPolicyTest {
 
   private static List<Path> migrations() throws IOException {
     try (Stream<Path> s = Files.list(DIR)) {
-      return s.sorted().toList();
+      return s.sorted(java.util.Comparator.comparingInt(p -> Integer.parseInt(p.getFileName().toString().substring(1).split("__")[0]))).toList();
     }
   }
 

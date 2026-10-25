@@ -236,7 +236,8 @@ video {
   color: var(--color-feedback-danger-text);
   font-size: var(--text-small);
 }
-.bp-input {
+.bp-input,
+label.bp-field > :is(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="hidden"]), select, textarea) {
   width: 100%;
   min-height: var(--input-height);
   padding-inline: var(--input-padding-x);
@@ -258,6 +259,22 @@ video {
 }
 .bp-input:disabled {
   opacity: 0.5;
+}
+
+.bp-btn--danger {
+  background: var(--color-feedback-danger-bg);
+  color: var(--color-feedback-danger-text);
+  border: 1px solid var(--color-feedback-danger-text);
+}
+.bp-btn--danger:hover:not(:disabled) {
+  background: var(--color-feedback-danger-text);
+  color: var(--color-bg-surface);
+}
+.bp-stack > fieldset {
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
 }
 
 /* ---------- Card / Badge / Alert ---------- */

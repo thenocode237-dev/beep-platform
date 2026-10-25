@@ -14,6 +14,8 @@ public class JobCatalog {
   public static final String PARTITIONS = "analytics.partitions";
   public static final String RETENTION = "analytics.retention";
   public static final String AUTH_PURGE = "auth.purge";
+  public static final String BILLING_LIFECYCLE = "billing.lifecycle";
+  public static final String BILLING_RECONCILE = "billing.reconcile";
 
   public record Job(String name, String description, String schedule) {}
 
@@ -23,7 +25,11 @@ public class JobCatalog {
       new Job(ROLLUP, "Agrégats horaires et journaliers des clics, scans et vues", "PT1M"),
       new Job(PARTITIONS, "Partitions mensuelles des événements (création à 2 mois, suppression après 13 mois)", "PT6H"),
       new Job(RETENTION, "Purge des événements et agrégats hors rétention du plan, sels quotidiens, historique des jobs", "PT1H"),
-      new Job(AUTH_PURGE, "Purge des sessions et jetons expirés", "PT15M"));
+      new Job("trust.scan", "Contrôle asynchrone des destinations (Safe Browsing)", "PT5M"),
+      new Job("billing.quotas", "Préavis et liens en excès : pause J+30, suppression J+90", "PT1H"),
+      new Job(AUTH_PURGE, "Purge des sessions et jetons expirés", "PT15M"),
+      new Job(BILLING_LIFECYCLE, "Abonnements : rappels d'échéance J−7/J−3/J−1, période de grâce, retour au plan Starter", "PT15M"),
+      new Job(BILLING_RECONCILE, "Rapprochement des paiements en attente auprès de l'agrégateur", "PT1M"));
 
   private final JobRunRepository runs;
   private final Clock clock;

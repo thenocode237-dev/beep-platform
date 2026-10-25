@@ -1,6 +1,6 @@
 /** Textes de l'espace client (liens, QR codes, pages bio, statistiques) et des connexions sans mot de passe. */
 const consoleFr = {
-  nav: { overview: "Accueil", links: "Liens", qr: "QR codes", bio: "Pages bio", settings: "Compte", label: "Espace client" },
+  nav: { overview: "Accueil", links: "Liens", qr: "QR codes", bio: "Pages bio", settings: "Compte", billing: "Abonnement", domains: "Domaines", label: "Espace client" },
   common: {
     save: "Enregistrer",
     cancel: "Annuler",

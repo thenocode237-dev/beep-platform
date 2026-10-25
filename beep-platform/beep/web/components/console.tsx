@@ -1,4 +1,5 @@
 "use client";
+import { QrDecorationFields } from "@/components/QrDecorationFields";
 
 import { useState, type FormEvent } from "react";
 import { Alert, Button, Icon, TextField } from "@beep/ui";
@@ -90,14 +91,14 @@ export function QuickLinkForm({ t }: T) {
   );
 }
 
-export function CreateLinkForm({ t, locale }: T & { locale: Locale }) {
+export function CreateLinkForm({ t, locale, domains = [], labels }: T & { locale: Locale; domains?: { id: string; hostname: string }[]; labels?: { title: string; byDefault: string; main: string } }) {
   const a = useAction(t);
   return (
     <form
       className="bp-stack"
       onSubmit={(e) => {
         e.preventDefault();
-        const body = { destination: val(e, "destination"), slug: val(e, "slug") || undefined, title: val(e, "title") || undefined };
+        const body = { destination: val(e, "destination"), slug: val(e, "slug") || undefined, title: val(e, "title") || undefined, domain: val(e, "domain") || undefined };
         a.run<LinkView>(() => send<LinkView>("POST", "/links", body), (link) => window.location.assign(href(locale, `/app/links/${link!.id}`)));
       }}
     >
@@ -105,6 +106,22 @@ export function CreateLinkForm({ t, locale }: T & { locale: Locale }) {
       <TextField name="destination" label={t.links.destination} hint={t.links.destinationHint} inputMode="url" required />
       <TextField name="slug" label={`${t.links.slug} (${t.common.optional})`} hint={t.links.slugHint} autoCapitalize="none" autoCorrect="off" maxLength={64} />
       <TextField name="title" label={`${t.links.title_} (${t.common.optional})`} hint={t.links.titleHint} maxLength={200} />
+      {domains.length > 0 && labels && (
+        <div className="bp-field">
+          <label className="bp-field__label" htmlFor="link-domain">
+            {labels.title}
+          </label>
+          <select id="link-domain" name="domain" className="bp-input" defaultValue="">
+            <option value="">{labels.byDefault}</option>
+            <option value="main">{labels.main}</option>
+            {domains.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.hostname}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <Button type="submit" loading={a.busy}>
         {t.links.submit}
       </Button>
@@ -179,7 +196,7 @@ const STATIC_FIELDS: Record<string, string[]> = {
 };
 const REQUIRED = new Set(["url", "text", "ssid", "to", "phone", "name"]);
 
-export function QrCreateForm({ t, locale, links, presetLink }: T & { locale: Locale; links: LinkView[]; presetLink?: string }) {
+export function QrCreateForm({ t, locale, links, presetLink, advancedAllowed=false }: T & { locale: Locale; links: LinkView[]; presetLink?: string; advancedAllowed?: boolean }) {
   const a = useAction(t);
   const [kind, setKind] = useState<"dynamic" | "static">(links.length ? "dynamic" : "static");
   const [type, setType] = useState("url");
@@ -202,6 +219,7 @@ export function QrCreateForm({ t, locale, links, presetLink }: T & { locale: Loc
           foreground: val(e, "foreground"),
           background: val(e, "background"),
           errorCorrection: val(e, "ecc"),
+          advanced: val(e,"advancedEnabled") ? {shape:val(e,"shape"),gradient:val(e,"gradientEnabled")?val(e,"gradient"):null,logo:val(e,"logo")||null,frame:val(e,"frame")} : undefined,
           title: val(e, "title") || undefined,
         };
         a.run(() => send("POST", "/qr-codes", body), () => window.location.assign(href(locale, "/app/qr")));
@@ -292,6 +310,7 @@ export function QrCreateForm({ t, locale, links, presetLink }: T & { locale: Loc
           {t.qr.eccHint}
         </p>
       </div>
+      <QrDecorationFields en={locale==="en"} allowed={advancedAllowed}/>
       <TextField name="title" label={`${t.qr.title_} (${t.common.optional})`} maxLength={200} />
       <Button type="submit" loading={a.busy} disabled={kind === "dynamic" && !links.length}>
         {t.qr.submit}

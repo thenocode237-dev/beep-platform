@@ -5,7 +5,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 > Statut : v1.1 du document (PostgreSQL + Java) · Périmètre : `beep` (plateforme) + `backoffice` (administration)
 > Domaine de référence dans ce document : `beep.example` (en local : `beep.localhost`).
 
-> Direction d’interface actualisée le **24 octobre 2026** : [charte Atelier](beep-platform/docs/design-system.md), inspirée de Vendeer (ivoire, terre cuite, forêt, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de Beep. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas l’ordre de livraison fonctionnel : les outils de liens restent à venir après la phase 0.
+> Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de Beep. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
 
 ---
 

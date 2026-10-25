@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 ./scripts/openapi-lint.sh
 
 [ -f .env ] || { echo "créez .env (make init) et démarrez la stack (make up)" >&2; exit 1; }
-token="$(grep -E '^ADMIN_API_TOKEN=' .env | cut -d= -f2- | sed 's/[[:space:]]*#.*$//; s/[[:space:]]*$//')"
+token="$(docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T core printenv ADMIN_API_TOKEN | tr -d '\r')"
 
 # Le réseau `backend` est interne : on s'y attache pour joindre le core comme le fait le back office.
 MSYS_NO_PATHCONV=1 docker run --rm --network beep_backend \

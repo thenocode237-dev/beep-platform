@@ -31,12 +31,12 @@ const pairs = [
   ["color-action-accent-text", "color-action-accent-bg", 4.5],
   ["color-border-strong", "color-bg-surface", 3],
   ["color-focus-ring", "color-bg-surface", 3],
-  ["color-on-sage", "color-surface-sage", 4.5],
-  ["color-text-secondary", "color-surface-warm", 4.5],
+  ["color-on-blue", "color-surface-blue", 4.5],
+  ["color-text-secondary", "color-surface-mist", 4.5],
   ["color-brand-signature", "color-bg-page", 4.5],
-  ["color-scene-paper", "color-scene-forest", 4.5],
-  ["color-scene-sage", "color-scene-forest", 4.5],
-  ["color-scene-ink", "color-scene-peach", 4.5],
+  ["color-scene-paper", "color-scene-navy", 4.5],
+  ["color-scene-mist", "color-scene-navy", 4.5],
+  ["color-scene-ink", "color-scene-sky", 4.5],
 ];
 
 let failed = 0;

@@ -161,6 +161,9 @@ final class Platform {
     public Workspace ensure(Workspace c) { return findByOwner(c.ownerId()).orElseGet(() -> { byId.put(c.id(), c); return c; }); }
     public void lock(UUID id) { locks++; }
     public void updateStatus(UUID id, WorkspaceStatus s) { byId.computeIfPresent(id, (k, w) -> w.withStatus(s)); }
+    public void updatePlan(UUID id, String plan) {
+      byId.computeIfPresent(id, (k, w) -> new Workspace(w.id(), w.ownerId(), w.name(), plan, w.status(), w.firstLinkAt(), w.createdAt()));
+    }
     public void markFirstLink(UUID id, Instant at) {
       byId.computeIfPresent(id, (k, w) -> w.firstLinkAt() != null ? w : new Workspace(w.id(), w.ownerId(), w.name(), w.planCode(), w.status(), at, w.createdAt()));
     }
@@ -168,9 +171,11 @@ final class Platform {
 
   class MemPlans implements PlanRepository {
     final Map<UUID, Map<String, EntitlementOverride>> overrides = new HashMap<>();
+    final Map<String, Plan> published = new LinkedHashMap<>(Map.of("starter", STARTER));
 
-    public Optional<Plan> findByCode(String code) { return "starter".equals(code) ? Optional.of(STARTER) : Optional.empty(); }
-    public List<Plan> findAll() { return List.of(STARTER); }
+    public Optional<Plan> findByCode(String code) { return Optional.ofNullable(published.get(code)); }
+    public List<Plan> findAll() { return List.copyOf(published.values()); }
+    public void publish(Plan plan, String staffId, Instant at) { published.put(plan.code(), plan); }
     public List<EntitlementOverride> overrides(UUID ws) { return List.copyOf(overrides.getOrDefault(ws, Map.of()).values()); }
     public void applyOverrides(UUID ws, Map<String, Long> changes, String reason, String staffId, Instant at) {
       Map<String, EntitlementOverride> m = overrides.computeIfAbsent(ws, k -> new LinkedHashMap<>());
@@ -182,18 +187,18 @@ final class Platform {
     final Map<UUID, Link> byId = new LinkedHashMap<>();
 
     public void insert(Link l) {
-      if (!slugRegistry.add(l.slug().value())) throw new SlugRegistryPort.SlugTakenException();
+      if (!slugRegistry.add(l.registryKey())) throw new SlugRegistryPort.SlugTakenException();
       byId.put(l.id(), l);
     }
     public void update(Link l) {
       Link old = byId.get(l.id());
       if (!old.slug().equals(l.slug())) {
-        if (!slugRegistry.add(l.slug().value())) throw new SlugRegistryPort.SlugTakenException();
-        slugRegistry.remove(old.slug().value());
+        if (!slugRegistry.add(l.registryKey())) throw new SlugRegistryPort.SlugTakenException();
+        slugRegistry.remove(old.registryKey());
       }
       byId.put(l.id(), l);
     }
-    public void delete(UUID id) { Link l = byId.remove(id); if (l != null) slugRegistry.remove(l.slug().value()); }
+    public void delete(UUID id) { Link l = byId.remove(id); if (l != null) slugRegistry.remove(l.registryKey()); }
     public Optional<Link> findById(UUID id) { return Optional.ofNullable(byId.get(id)); }
     public Page page(UUID ws, String q, int limit, String cursor) {
       return new Page(byId.values().stream().filter(l -> l.workspaceId().equals(ws)).filter(l -> q == null || l.slug().value().contains(q) || l.destination().url().contains(q))
@@ -248,7 +253,7 @@ final class Platform {
   class MemResolver implements SlugResolverPort {
     public Resolution resolve(String slug) {
       for (Link l : links.byId.values()) {
-        if (l.slug().value().equals(slug)) return new Resolution(Resolution.Kind.LINK, l.id(), l.workspaceId(), l.destination().url(), l.disabled(), suspended(l.workspaceId()));
+        if (l.registryKey().equals(slug)) return new Resolution(Resolution.Kind.LINK, l.id(), l.workspaceId(), l.destination().url(), l.disabled(), suspended(l.workspaceId()), l.rules(), l.passwordHash());
       }
       for (BioPage p : bioPages.byId.values()) {
         if (p.slug().value().equals(slug)) return new Resolution(Resolution.Kind.BIO, p.id(), p.workspaceId(), null, false, suspended(p.workspaceId()));
@@ -258,7 +263,7 @@ final class Platform {
     public Optional<QrTarget> resolveQr(String code) {
       return qrCodes.byId.values().stream().filter(q -> code.equals(q.code())).findFirst().map(q -> {
         Link l = links.byId.get(q.linkId());
-        return new QrTarget(q.id(), q.workspaceId(), l.id(), l.destination().url(), l.disabled(), suspended(q.workspaceId()));
+        return new QrTarget(q.id(), q.workspaceId(), l.id(), l.destination().url(), l.disabled(), suspended(q.workspaceId()), l.rules(), l.passwordHash());
       });
     }
     public Optional<PublishedBio> bioPage(UUID id) { return bioPages.findById(id).map(p -> new PublishedBio(p, suspended(p.workspaceId()))); }

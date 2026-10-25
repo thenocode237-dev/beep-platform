@@ -33,7 +33,9 @@ import java.util.UUID;
  */
 public class QrCodesUseCase {
   public record Command(String kind, UUID linkId, String contentType, Map<String, String> fields, String foreground, String background,
-      String errorCorrection, Integer margin, String title) {}
+      String errorCorrection, Integer margin, String title, QrStyle.Decoration advanced) {
+    public Command(String kind,UUID linkId,String contentType,Map<String,String> fields,String foreground,String background,String errorCorrection,Integer margin,String title) {this(kind,linkId,contentType,fields,foreground,background,errorCorrection,margin,title,null);}
+  }
 
   public record Item(QrCode qr, String encoded, long scans30d) {}
 
@@ -69,7 +71,9 @@ public class QrCodesUseCase {
   public QrCode create(User actor, Command cmd) {
     Workspaces.Context ctx = workspaces.context(actor);
     ctx.workspace().requireWritable();
-    QrStyle style = QrStyle.of(cmd.foreground(), cmd.background(), cmd.errorCorrection(), cmd.margin());
+    QrStyle style = QrStyle.of(cmd.foreground(), cmd.background(), cmd.errorCorrection(), cmd.margin()).decorated(cmd.advanced());
+    if(cmd.advanced()!=null && !ctx.entitlements().enabled("features.qr_advanced")) throw new DomainException("feature_unavailable");
+    renderer.validateStyle(style);
     Instant now = clock.instant();
     QrCode.Kind kind = parseKind(cmd.kind());
     if (kind == QrCode.Kind.STATIC) {
@@ -102,7 +106,9 @@ public class QrCodesUseCase {
     QrStyle style = QrStyle.of(cmd.foreground() == null ? qr.style().foreground() : cmd.foreground(),
         cmd.background() == null ? qr.style().background() : cmd.background(),
         cmd.errorCorrection() == null ? String.valueOf(qr.style().errorCorrection()) : cmd.errorCorrection(),
-        cmd.margin() == null ? qr.style().margin() : cmd.margin());
+        cmd.margin() == null ? qr.style().margin() : cmd.margin()).decorated(cmd.advanced()==null?qr.style().advanced():cmd.advanced());
+    if(cmd.advanced()!=null && !cmd.advanced().equals(qr.style().advanced()) && !ctx.entitlements().enabled("features.qr_advanced")) throw new DomainException("feature_unavailable");
+    renderer.validateStyle(style);
     QrCode updated = qr.edit(linkId, content, style, cmd.title() == null ? qr.title() : cmd.title(), clock.instant());
     tx.run(() -> qrCodes.update(updated));
     return updated;

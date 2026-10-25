@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Icon } from "@beep/ui";
+import { PrivacyPanel } from "@/components/PrivacyPanel";
 import { LogoutButton, TotpSetup } from "@/components/forms";
 import type { Me } from "@/lib/api";
 import { coreGet } from "@/lib/core";
@@ -22,6 +23,8 @@ export default async function Settings({ params }: { params: Promise<{ locale: s
         <h1>{t.settings.title}</h1>
         <p className="muted">{t.settings.sub}</p>
       </div>
+      <a className="bp-btn bp-btn--secondary" href={href(locale,"/app/support")}>{locale==="fr"?"Contacter le support":"Contact support"}</a>
+      <PrivacyPanel locale={locale} totpEnabled={me.data.totpEnabled}/>
       <div className="app-grid">
         <section className="bp-card bp-card--lg bp-stack account-card" aria-labelledby="account-title">
           <h2 id="account-title">{c.account}</h2>

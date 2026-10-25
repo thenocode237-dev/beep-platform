@@ -14,6 +14,7 @@ export default async function QrCodes({ params, searchParams }: { params: Promis
   const { link } = await searchParams;
   const t = getConsole(locale);
   const [qrs, links] = await Promise.all([coreGet<{ items: QrView[] }>("/qr-codes?limit=100"), coreGet<LinksPage>("/links?limit=100")]);
+  const workspace=await coreGet<{entitlements:Record<string,number>}>("/workspace");
   const linkById = new Map((links.data?.items ?? []).map((l) => [l.id, l]));
 
   return (
@@ -74,7 +75,7 @@ export default async function QrCodes({ params, searchParams }: { params: Promis
         </section>
         <section className="bp-card bp-card--lg bp-stack" aria-labelledby="qr-create">
           <h2 id="qr-create">{t.qr.create}</h2>
-          <QrCreateForm t={t} locale={locale} links={links.data?.items ?? []} presetLink={link} />
+          <QrCreateForm t={t} locale={locale} links={links.data?.items ?? []} presetLink={link} advancedAllowed={workspace.data?.entitlements["features.qr_advanced"]===1} />
         </section>
       </div>
     </div>

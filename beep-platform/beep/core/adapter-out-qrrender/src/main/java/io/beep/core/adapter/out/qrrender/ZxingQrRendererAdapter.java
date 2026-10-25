@@ -27,9 +27,11 @@ import javax.imageio.ImageIO;
  * SVG (un seul chemin), PNG net (multiple entier de pixels par module), PDF 1.4 vectoriel prêt à imprimer.
  */
 public class ZxingQrRendererAdapter implements QrRendererPort {
+  @Override public void validateStyle(QrStyle style) {if(style.advanced()!=null) AdvancedQrRenderer.validate(style.advanced().logo());}
   @Override
   public byte[] render(String content, QrStyle style, QrFormat format, int sizePx) {
     ByteMatrix m = matrix(content, style);
+    if(style.advanced()!=null) return AdvancedQrRenderer.render(m,style,format,sizePx);
     return switch (format) {
       case SVG -> svg(m, style, sizePx).getBytes(StandardCharsets.UTF_8);
       case PNG -> png(m, style, sizePx);

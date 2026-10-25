@@ -19,6 +19,9 @@ public interface WorkspaceRepository {
 
   void updateStatus(UUID id, WorkspaceStatus status);
 
+  /** Plan effectif du workspace : modifié uniquement par les transitions de facturation. */
+  void updatePlan(UUID id, String planCode);
+
   /** Mémorise la date du premier lien (mesure de l'activation) ; sans effet si elle est déjà connue. */
   void markFirstLink(UUID id, Instant at);
 }

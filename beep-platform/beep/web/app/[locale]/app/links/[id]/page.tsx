@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Alert, Icon } from "@beep/ui";
+import { LinkRulesPanel } from "@/components/LinkRulesPanel";
 import { StatsPanel } from "@/components/StatsPanel";
 import { CopyButton, DeleteButton, EditLinkForm } from "@/components/console";
 import type { LinkView, Stats } from "@/lib/api";
@@ -29,6 +30,7 @@ export default async function LinkDetail({ params, searchParams }: { params: Pro
         </div>
       </div>
     );
+  const workspace=await coreGet<{entitlements:Record<string,number>}>("/workspace");
   const l = link.data;
   const self = href(locale, `/app/links/${l.id}`);
   return (
@@ -61,6 +63,7 @@ export default async function LinkDetail({ params, searchParams }: { params: Pro
         </div>
       )}
 
+      <LinkRulesPanel link={l} locale={locale} entitlements={workspace.data?.entitlements??{}}/>
       <div className="app-grid">
         <section className="bp-card bp-card--lg bp-stack" aria-labelledby="settings">
           <h2 id="settings">{t.links.settings}</h2>

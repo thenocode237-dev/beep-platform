@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { Badge, Button, Icon, TextField } from "@beep/ui";
 import { fmtNumber } from "@/components/Charts";
 import { CopyButton, CreateLinkForm } from "@/components/console";
-import type { LinksPage } from "@/lib/api";
+import type { DomainsView, LinksPage } from "@/lib/api";
+import { getDomains } from "@/lib/dictionaries/domains";
 import { coreGet } from "@/lib/core";
 import { getConsole, href, isLocale } from "@/lib/i18n";
 
@@ -14,7 +15,9 @@ export default async function Links({ params, searchParams }: { params: Promise<
   const { q, cursor } = await searchParams;
   const t = getConsole(locale);
   const query = new URLSearchParams({ limit: "20", ...(q ? { q } : {}), ...(cursor ? { cursor } : {}) });
-  const res = await coreGet<LinksPage>(`/links?${query}`);
+  const [res, doms] = await Promise.all([coreGet<LinksPage>(`/links?${query}`), coreGet<DomainsView>("/domains")]);
+  const dd = getDomains(locale);
+  const usable = (doms.data?.items ?? []).filter((x) => x.dnsStatus === "verified" && !x.blocked).map((x) => ({ id: x.id, hostname: x.hostname }));
 
   return (
     <div className="app-page bp-stack bp-stack--lg">
@@ -73,7 +76,7 @@ export default async function Links({ params, searchParams }: { params: Promise<
         </section>
         <section className="bp-card bp-card--lg bp-stack" aria-labelledby="create">
           <h2 id="create">{t.links.create}</h2>
-          <CreateLinkForm t={t} locale={locale} />
+          <CreateLinkForm t={t} locale={locale} domains={usable} labels={{ title: dd.linkDomain, byDefault: dd.linkDomainDefault, main: dd.linkDomainMain }} />
         </section>
       </div>
     </div>

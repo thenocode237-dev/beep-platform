@@ -38,6 +38,51 @@ public interface CoreGatewayPort {
 
   InvitationView invite(String email, String locale, UUID staffId);
 
+  // ---- Catalogue d'applications (contrat 0.5) ----
+  List<AppView> catalog(UUID staffId);
+
+  AppView publishApp(String code, String name, List<String> hosts, String iosTemplate, String androidPackage, String androidTemplate, boolean enabled, UUID staffId);
+
+  List<AppView> setAppEnabled(String code, boolean enabled, UUID staffId);
+
+  AppTestResult testApp(String url, String profile, AppView candidate, UUID staffId);
+
+  // ---- Domaines personnalisés (contrat 0.4) ----
+  DomainsPage domains(String query, String status, int limit, String cursor, UUID staffId);
+
+  DomainView domain(UUID id, UUID staffId);
+
+  DomainView recheckDomain(UUID id, UUID staffId);
+
+  DomainView blockDomain(UUID id, String reason, UUID staffId);
+
+  DomainView unblockDomain(UUID id, UUID staffId);
+
+  // ---- Facturation (contrat 0.3) ----
+  BillingSummary billingSummary(UUID staffId);
+
+  List<SubscriptionView> subscriptions(String status, int limit, int offset, UUID staffId);
+
+  List<SubscriptionView> upcomingRenewals(int days, int limit, UUID staffId);
+
+  PaymentsPage payments(String status, UUID workspaceId, int limit, String cursor, UUID staffId);
+
+  List<InvoiceView> workspaceInvoices(UUID workspaceId, UUID staffId);
+
+  byte[] invoicePdf(String number, UUID staffId);
+
+  ManualPaymentResult recordManualPayment(UUID workspaceId, String plan, String cycle, long amountXaf, String reference, String country, UUID staffId);
+
+  SubscriptionView changePlan(UUID workspaceId, String plan, Instant until, String reason, UUID staffId);
+
+  List<CouponView> coupons(UUID staffId);
+
+  CouponView createCoupon(String code, Integer percentOff, Long amountOffXaf, Integer maxRedemptions, Instant validUntil, List<String> plans, UUID staffId);
+
+  CouponView setCouponActive(String code, boolean active, UUID staffId);
+
+  PlanView publishPlan(String code, String name, long priceXaf, Long priceQuarterlyXaf, Long priceAnnualXaf, boolean isPublic, Map<String, Long> entitlements, UUID staffId);
+
   /** Version du contrat admin implémentée par le core (ex. « 0.2.0 »). */
   String contractVersion();
 
@@ -60,7 +105,34 @@ public interface CoreGatewayPort {
 
   record LinksPage(List<LinkView> items, String nextCursor) {}
 
-  record PlanView(String code, String name, int version, long priceXaf, boolean isPublic, Map<String, Long> entitlements) {}
+  record PlanView(String code, String name, int version, long priceXaf, long priceQuarterlyXaf, long priceAnnualXaf, boolean isPublic, Map<String, Long> entitlements) {}
+
+  record AppView(String code, String name, List<String> hosts, String iosTemplate, String androidPackage, String androidTemplate, boolean enabled, int version) {}
+
+  record AppTestResult(String profile, boolean appFound, String appName, String mode, String webUrl, String iosUrl, String androidUrl, String os, boolean inApp, String note) {}
+
+  record DomainView(UUID id, UUID workspaceId, String ownerEmail, String hostname, String dnsStatus, String tlsStatus, boolean isDefault, boolean blocked, String blockedReason,
+      String lastError, long links, Instant verifiedAt, Instant lastCheckAt, Instant createdAt) {}
+
+  record DomainsPage(List<DomainView> items, String nextCursor) {}
+
+  record BillingSummary(long trialing, long active, long grace, long expired, long mrrXaf, long arrXaf, long revenue30dXaf, long pendingPayments, long failedPayments) {}
+
+  record SubscriptionView(UUID workspaceId, String workspaceName, String ownerEmail, String plan, String status, String cycle, Instant periodStart, Instant periodEnd,
+      Instant graceEnd, long monthlyRateXaf) {}
+
+  record PaymentView(UUID id, UUID workspaceId, String workspaceName, String ownerEmail, String plan, String cycle, String method, String provider, String status,
+      long amountXaf, long listPriceXaf, long discountXaf, long creditXaf, String coupon, String country, String note, String recordedBy, String failureReason,
+      Instant createdAt, Instant paidAt) {}
+
+  record PaymentsPage(List<PaymentView> items, String nextCursor) {}
+
+  record InvoiceView(String number, UUID paymentId, String plan, String cycle, long grossXaf, long netXaf, long vatXaf, int vatRateBp, String country, Instant issuedAt) {}
+
+  record ManualPaymentResult(PaymentView payment, InvoiceView invoice, Instant validUntil) {}
+
+  record CouponView(String code, int percentOff, long amountOffXaf, Integer maxRedemptions, int redeemed, Instant validUntil, List<String> plans, boolean active,
+      Instant createdAt) {}
 
   record WorkspaceEntitlements(Map<String, Long> entitlements, List<OverrideView> overrides) {}
 
@@ -114,4 +186,20 @@ public interface CoreGatewayPort {
       return code;
     }
   }
+
+  record AbuseReport(UUID id,String url,String category,String detail,String source,String status,String reason,Instant createdAt,Instant resolvedAt) {}
+  record Reports(List<AbuseReport> items,long open,long overdue) {}
+  record BlockedHost(String host,String reason,Instant createdAt) {}
+  record BlockedHosts(List<BlockedHost> items) {}
+  record FeatureFlag(String key,boolean enabled,int rolloutPercent,int version,String reason) {}
+  record FeatureFlags(List<FeatureFlag> items) {}
+  default Reports reports(String status,int limit,int offset,UUID staff) {throw new UnsupportedOperationException();}
+  default AbuseReport resolveReport(UUID id,String decision,String reason,UUID staff) {throw new UnsupportedOperationException();}
+  default BlockedHosts blockedHosts(UUID staff) {throw new UnsupportedOperationException();}
+  default BlockedHosts blockHost(String host,boolean blocked,String reason,UUID staff) {throw new UnsupportedOperationException();}
+  default FeatureFlags featureFlags(UUID staff) {throw new UnsupportedOperationException();}
+  default FeatureFlag publishFlag(String key,boolean enabled,int rollout,int version,String reason,UUID staff) {throw new UnsupportedOperationException();}
+  default Map<String,Object> exportUser(UUID id,UUID staff) {throw new UnsupportedOperationException();}
+  default void eraseUser(UUID id,String reason,UUID staff) {throw new UnsupportedOperationException();}
+
 }

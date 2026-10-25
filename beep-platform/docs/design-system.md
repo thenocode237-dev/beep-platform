@@ -1,6 +1,6 @@
-﻿# Beep — charte Atelier
+# Beep — charte Signal
 
-Direction du 24 octobre 2026, inspirée du projet local Vendeer et adaptée au produit Beep. Cette charte remplace la palette violet/vert signal, les boutons en pilule et l’ancienne contrainte « zéro image ».
+Direction Signal : thème bleu sur fond blanc, actualisé le 25 octobre 2026 à la demande du porteur du projet. Bleu encre, cobalt et brume structurent les accents et les cartes. La composition et la priorité mobile sont conservées.
 
 Source exécutable : [tokens.json](../packages/design-tokens/tokens.json). Inventaire généré : [TOKENS.md](../packages/design-tokens/TOKENS.md). Composants partagés : [packages/ui](../packages/ui). Décisions produit et recette : [refonte-atelier.md](refonte-atelier.md).
 
@@ -12,27 +12,28 @@ Le discours commence par les situations de partage : conversation WhatsApp, bio 
 
 La voix est chaleureuse, concrète et honnête sur l’avancement. Aucun taux de conversion, témoignage, nombre de clients ou résultat commercial fictif. Les photos et aperçus mettent en scène un atelier fictif, pas une cliente de Beep.
 
-**Disponibilité :** en phase 0, compte, vérification d’e-mail, connexion, récupération de mot de passe et TOTP. Liens, deeplinks, Onelink, QR codes, pages bio et analytics restent en préparation. Les visuels portent une légende d’aperçu ; les cartes affichent « Bientôt » ; la FAQ précise le périmètre. Ne pas transformer une maquette en commande qui semble fonctionnelle.
+**Disponibilité :** l’état fonctionnel suit la [phase 1](phase-1.md) et la [phase 2 en cours](phase-2.md). Liens courts, QR codes, pages bio et statistiques de base font partie de la bêta sur invitation. Deeplinks et Onelink restent des évolutions prévues. Les maquettes marketing restent des illustrations, sans données clients réelles. Les mentions de disponibilité doivent suivre ces documents.
 
 ## Palette et thèmes
 
 | Usage | Clair | Sombre | Token |
 | --- | --- | --- | --- |
-| Fond de page | Ivoire `#F8F7F2` | Encre `#18231C` | `--color-bg-page` |
-| Surface | Blanc `#FFFFFF` | Encre `#222B25` | `--color-bg-surface` |
-| Texte principal | Encre `#222B25` | Ivoire `#F8F7F2` | `--color-text-primary` |
-| Texte secondaire | Olive `#58634F` | Sauge `#B7C2B4` | `--color-text-secondary` |
-| Action principale | Terre cuite `#BD3516` | Pêche `#FFAD86` | `--color-action-primary-bg` |
-| Action au survol | `#9F2D12` | `#F9B99B` | `--color-action-primary-bg-hover` |
-| Signature typographique | `#BD3516` | `#FFAD86` | `--color-brand-signature` |
-| Action secondaire forte | Forêt `#243D30` | Sauge `#BCD0BA` | `--color-action-accent-bg` |
-| Surface sauge | `#E8EDE3` | `#1C3026` | `--color-surface-sage` |
-| Surface terre claire | `#F5E8DD` | `#4B271E` | `--color-surface-warm` |
-| Bordure courante | `#DCDED5` | `#3E5143` | `--color-border-default` |
+| Fond de page | Blanc #FFFFFF | Encre #101D32 | --color-bg-page |
+| Surface | Blanc #FFFFFF | Encre #192B46 | --color-bg-surface |
+| Texte principal | Encre #192B46 | Glacier #F5F8FF | --color-text-primary |
+| Texte secondaire | Bleu ardoise #4C607D | Bleu brume #B9C8DE | --color-text-secondary |
+| Action principale | Cobalt #2457D6 | Bleu ciel #A8CAFF | --color-action-primary-bg |
+| Texte sur action | Blanc #FFFFFF | Encre #101D32 | --color-action-primary-text |
+| Action au survol | #1C45AF | #C2D6FF | --color-action-primary-bg-hover |
+| Signature typographique | #2457D6 | #A8CAFF | --color-brand-signature |
+| Action secondaire forte | Bleu nuit #233C69 | Bleu brume #B8D4FF | --color-action-accent-bg |
+| Surface bleu brume | #E7F0FF | #1B2F53 | --color-surface-blue |
+| Surface bleutée | #E1EAFF | #192F5B | --color-surface-mist |
+| Bordure courante | #D9E2F0 | #354B6C | --color-border-default |
 
-L’orange vif `#E94B23` reste réservé aux détails illustratifs. L’action et les titres orange emploient une terre cuite plus sombre, pour leur lisibilité. Ne pas confondre palette décorative et couleurs de retour d’état : erreurs, avertissements et succès gardent leurs tokens et un libellé explicite.
+Le bleu électrique #457BFF sert aux détails illustratifs. Les actions et titres utilisent le cobalt plus sombre #2457D6 pour leur lisibilité. Les boutons principaux ont un texte blanc en clair et encre en sombre.
 
-Les scènes illustrées, le pied de page et la navigation latérale staff conservent un fond forêt avec texte ivoire. Les tokens `color-scene-*` sont stables entre les thèmes pour que photos, papier et textes gardent leur contraste. Les surfaces du produit suivent `prefers-color-scheme`, ou `data-theme="light|dark"` sur `html`.
+Les illustrations, le pied de page et la navigation staff utilisent un fond bleu nuit avec texte glacier. Les tokens color-scene-* conservent leurs paires de contraste entre les thèmes. L’interface suit prefers-color-scheme ou data-theme="light|dark". Les couleurs de retour d’état gardent un texte ou une icône explicite.
 
 ## Typographie, formes et rythme
 
@@ -55,7 +56,7 @@ Les titres se composent en casse naturelle, avec approche resserrée. Les sous-t
 
 ## Logo, illustrations et médias
 
-Le signe Beep est un **b ouvert avec une impulsion**, accompagné du mot « beep. ». Il reprend l’idée de connexion du produit et conserve une identité distincte du V de Vendeer. Le composant [Logo.tsx](../packages/ui/src/Logo.tsx) hérite des couleurs sémantiques ; les favicons des deux applications reprennent le même signe.
+Le signe Beep est un **point émetteur entouré de deux paires d’ondes**, accompagné du mot « beep. ». Il reprend l’idée de connexion du produit et conserve une identité distincte du V de Vendeer. Le composant [Logo.tsx](../packages/ui/src/Logo.tsx) hérite des couleurs sémantiques ; les favicons des deux applications reprennent le même signe.
 
 Une seule famille d’icônes SVG à trait cohérent, dans [Icon.tsx](../packages/ui/src/Icon.tsx). Les icônes décoratives sont masquées aux lecteurs d’écran. Les commandes qui n’affichent qu’une icône ont un nom accessible.
 
@@ -81,9 +82,11 @@ L’objectif LCP < 2 s en 4G des futures pages bio reste une exigence à mesurer
 
 Trois couches : primitives → sémantique clair/sombre/statique → composants. Les couleurs des composants passent par les alias sémantiques. Les tailles partagées (boutons, champs, cartes) viennent des tokens ; les géométries spécifiques à une illustration peuvent rester dans sa feuille CSS.
 
-`Button` : primary, accent forêt, secondary et ghost, état de chargement. `TextField` : label, hint et erreur reliée. `Alert`, `Badge`, `Icon`, `Logo`. Utilitaires : `bp-container`, `bp-stack`, `bp-row`, `bp-card`, `bp-sr-only`, `bp-skip-link`, `bp-tabular`.
+`Button` : primary cobalt, accent bleu nuit, secondary et ghost, état de chargement. `TextField` : label, hint et erreur reliée. `Alert`, `Badge`, `Icon`, `Logo`. Utilitaires : `bp-container`, `bp-stack`, `bp-row`, `bp-card`, `bp-sr-only`, `bp-skip-link`, `bp-tabular`.
 
-`SiteChrome` porte la navigation et le pied de page. `ProductPreview` porte la scène illustrative. `AuthShell` sert tous les écrans d’authentification. L’espace client possède sa propre composition : compte, sécurité et outils à venir. Le back office utilise `Shell` avec la même identité.
+Les thèmes personnalisables des pages bio (Ivoire, Forêt, Nuit, Soleil) sont des choix de contenu indépendants de l’identité de la plateforme. Leur palette et leurs identifiants persistent ; changer la marque Beep ne recolore pas les pages de leurs propriétaires.
+
+`SiteChrome` porte la navigation et le pied de page. `ProductPreview` porte la scène illustrative. `AuthShell` sert les écrans d’authentification. `AppShell` encadre l’espace client et ses écrans de gestion ; les paramètres donnent accès à la sécurité. Le back office utilise `Shell` avec la même identité. Les nouveaux écrans réutilisent les tokens sémantiques Signal.
 
 Les textes d’authentification restent dans `lib/dictionaries/fr.ts` et `en.ts`. Les nouveaux textes éditoriaux sont regroupés dans `lib/experience.ts`, avec parité FR/EN. Toute nouvelle promesse doit être alignée avec la phase réellement livrée.
 

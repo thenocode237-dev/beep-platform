@@ -1,7 +1,9 @@
 # Beep — plateforme
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
-Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : Phase 1 — MVP (bêta privée sur invitation)**. Détail : [`docs/phase-1.md`](docs/phase-1.md).
+Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 2 développée et recette locale validée ; lancement public en attente des validations externes**. Détail : [`docs/phase-2.md`](docs/phase-2.md).
+
+La phase 2 ajoute facturation, domaines personnalisés, règles et simulateur, QR avancés, modération, feature flags et gestion des données du compte. Pages publiques : `/features`, `/pricing`, `/blog`, `/legal`, `/report`, `/status`. La stack locale reste sur invitation et les paiements de recette sont simulés.
 
 ## Démarrer
 
@@ -46,15 +48,15 @@ Ce qui reste ouvert pour clore la phase 1 (bêta de 100 personnes, mesure à 1 0
 | **Auth (staff)** | TOTP **obligatoire** à chaque connexion, session courte (8 h max, 30 min d'inactivité), rôles de base, **journal d'audit append-only à chaînage de hachage** (UPDATE/DELETE/TRUNCATE refusés par la base) |
 | **Contrat** | `contracts/beep-admin.openapi.yaml` v0.1 ; API admin `GET /users`, `GET /meta`, jeton de service à rotation (deux jetons acceptés) ; test de compatibilité de version au démarrage du back office ; test de contrat contre le core réel |
 | **Fronts** | Next.js 15 : site (accueil, connexion, inscription, vérification, mot de passe oublié, espace client), back office (connexion, coque adaptative, utilisateurs) ; **i18n FR/EN** |
-| **Charte** | Direction **Atelier**, inspirée de Vendeer : ivoire, terre cuite, forêt, Manrope/DM Sans locales, illustrations et photos WebP. Tokens primitive → sémantique → composant, clair/sombre, 34 paires de contrastes vérifiées — voir [`docs/design-system.md`](docs/design-system.md) |
+| **Charte** | Direction **Signal**, inspirée de Vendeer : fond blanc, cobalt, bleu encre, Manrope/DM Sans locales, illustrations et photos WebP. Tokens primitive → sémantique → composant, clair/sombre, 34 paires de contrastes vérifiées — voir [`docs/design-system.md`](docs/design-system.md) |
 | **Infra** | Caddy (routage par hôte, en-têtes de sécurité, `/internal` et `/actuator` jamais exposés), réseaux `edge` / `backend` (interne) / `db` (interne), images non-root, Makefile, CI |
 | **Observabilité** | `/healthz`, logs JSON en prod, métriques Prometheus sur le port de gestion (8090 / 8091, jamais routé) |
 
 ## Direction graphique et expérience mobile
 
-La [refonte Atelier du 24 octobre 2026](docs/refonte-atelier.md) couvre le site FR/EN, les parcours de compte et le back office. Le discours explique les bénéfices de Beep pour le partage sur WhatsApp, les réseaux et les supports physiques. L’interface est conçue dès 320 px, avec formulaires à 16 px, actions de 44 à 52 px, CTA mobile fixe et tableaux remplacés par des cartes sur téléphone.
+La [refonte Signal du 24 octobre 2026](docs/refonte-atelier.md) couvre le site FR/EN, les parcours de compte et le back office. Le discours explique les bénéfices de Beep pour le partage sur WhatsApp, les réseaux et les supports physiques. L’interface est conçue dès 320 px, avec formulaires à 16 px, actions de 44 à 52 px, CTA mobile fixe et tableaux remplacés par des cartes sur téléphone.
 
-Les outils de liens, QR codes, pages bio et analytics restent annoncés comme **à venir**. Les aperçus sont illustratifs ; la phase 0 livre la gestion de compte et la sécurité. Voir les [captures et la recette](docs/refonte-atelier.md#recette-du-rendu) et la [provenance des médias](docs/assets.md).
+Les aperçus marketing sont illustratifs. L’état de livraison des liens, QR codes, pages bio, statistiques et évolutions suivantes est suivi dans les documents de phase. Voir les [captures et la recette](docs/refonte-atelier.md#recette-du-rendu) et la [provenance des médias](docs/assets.md).
 
 ## Qualité
 

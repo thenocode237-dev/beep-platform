@@ -15,6 +15,8 @@ export function AppShell({ t, locale, email, logoutLabel, children }: { t: Conso
     { path: "/app/links", label: t.nav.links, icon: "link" },
     { path: "/app/qr", label: t.nav.qr, icon: "qr" },
     { path: "/app/bio", label: t.nav.bio, icon: "bio" },
+    { path: "/app/domains", label: t.nav.domains, icon: "globe" },
+    { path: "/app/billing", label: t.nav.billing, icon: "bag" },
     { path: "/app/settings", label: t.nav.settings, icon: "settings" },
   ];
   const current = (p: string) => {

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Beep — API admin interne
-  version: 0.2.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
+  version: 0.6.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
   description: |
     Contrat entre `beep-core` (serveur) et `backoffice-api` (client). Source de vérité unique :
     on modifie ce fichier EN PREMIER, puis le core et le client.
@@ -13,12 +13,164 @@ info:
     - Listes paginées par curseur.
 
     Historique : 0.1.0 (phase 0) utilisateurs en lecture ; 0.2.0 (phase 1) recherche, fiche et suspension de compte,
-    liens (recherche, désactivation), slugs réservés, plans et overrides de droits, métriques plateforme, jobs, invitations.
+    liens (recherche, désactivation), slugs réservés, plans et overrides de droits, métriques plateforme, jobs, invitations ;
+    0.3.0 (phase 2, cycle 4) facturation : abonnements, paiements, échéances, MRR/ARR, paiements manuels, changement de plan manuel,
+    coupons, factures, publication de plans versionnés (prix trimestriel / annuel ajoutés à `Plan`) ;
+    0.4.0 (phase 2, cycle 5) domaines personnalisés : liste globale, état DNS/TLS, relance de la vérification, blocage ;
+    0.5.0 (phase 2, cycle 6) catalogue d'applications (deeplinks) : lecture, publication versionnée, activation, test en direct ;
+    0.6.0 (phase 2) signalements, modération, liste noire, feature flags et export/suppression de compte.
 servers:
   - url: http://core:8080/internal/admin/v1
 security:
   - serviceToken: []
 paths:
+
+  /moderation/reports:
+    get:
+      operationId: listAbuseReports
+      summary: Lister les signalements et leur retard de traitement
+      parameters:
+        - {name: status, in: query, schema: {type: string, enum: [open, dismissed, blocked]}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 50}}
+        - {name: offset, in: query, schema: {type: integer, minimum: 0, default: 0}}
+      responses:
+        '200':
+          description: Signalements, plus anciens en premier (SLA 24 h)
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Reports'}
+  /moderation/reports/{id}/resolve:
+    post:
+      operationId: resolveAbuseReport
+      summary: Classer un signalement ou bloquer sa destination
+      parameters:
+        - {$ref: '#/components/parameters/Id'}
+        - {$ref: '#/components/parameters/StaffId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision, reason]
+              properties:
+                decision: {type: string, enum: [dismissed, blocked]}
+                reason: {type: string, minLength: 3, maxLength: 1000}
+      responses:
+        '200':
+          description: Signalement traité
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AbuseReport'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /moderation/blocklist:
+    get:
+      operationId: listBlockedHosts
+      summary: Lister les hôtes bloqués
+      responses:
+        '200':
+          description: Hôtes bloqués (inclut les sous-domaines)
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BlockedHosts'}
+  /moderation/blocklist/{host}:
+    put:
+      operationId: setBlockedHost
+      summary: Bloquer ou débloquer un hôte et ses sous-domaines
+      parameters:
+        - {name: host, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/StaffId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [blocked, reason]
+              properties:
+                blocked: {type: boolean}
+                reason: {type: string, minLength: 3, maxLength: 1000}
+      responses:
+        '200':
+          description: Liste mise à jour
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BlockedHosts'}
+  /feature-flags:
+    get:
+      operationId: listFeatureFlags
+      summary: Lister les feature flags publiés
+      responses:
+        '200':
+          description: Flags publiés
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlags'}
+  /feature-flags/{key}:
+    put:
+      operationId: publishFeatureFlag
+      summary: Publier une version de feature flag
+      parameters:
+        - {name: key, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/StaffId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled, rolloutPercent, reason, version]
+              properties:
+                enabled: {type: boolean}
+                rolloutPercent: {type: integer, minimum: 0, maximum: 100}
+                reason: {type: string, minLength: 3, maxLength: 1000}
+                version: {type: integer, minimum: 1}
+      responses:
+        '200':
+          description: Flag publié (version optimiste)
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeatureFlag'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /users/{id}/export:
+    post:
+      operationId: exportUserData
+      summary: Exporter les données portables d’un compte
+      parameters:
+        - {$ref: '#/components/parameters/Id'}
+        - {$ref: '#/components/parameters/StaffId'}
+      responses:
+        '200':
+          description: Export portable, sans secrets ni empreintes visiteurs
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /users/{id}/erase:
+    post:
+      operationId: eraseUserData
+      summary: Effacer un compte et archiver ses pièces comptables
+      parameters:
+        - {$ref: '#/components/parameters/Id'}
+        - {$ref: '#/components/parameters/StaffId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: {type: string, minLength: 3, maxLength: 1000}
+      responses:
+        '200':
+          description: Compte effacé ; pièces comptables conservées séparément
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [erased]
+                properties:
+                  erased: {type: boolean}
   /meta:
     get:
       operationId: getMeta
@@ -30,7 +182,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Meta" }
-              example: { contract: "0.2.0" }
+              example: { contract: "0.6.0" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
   /users:
@@ -294,6 +446,444 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "409": { $ref: "#/components/responses/Conflict" }
 
+  /billing/summary:
+    get:
+      operationId: getBillingSummary
+      summary: Abonnements par état, MRR / ARR, encaissements des 30 derniers jours
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Synthèse de facturation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BillingSummary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /billing/subscriptions:
+    get:
+      operationId: listSubscriptions
+      summary: Abonnements (échéance la plus lointaine d'abord), filtrables par état ; `grace` = impayés
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [trialing, active, grace, expired] }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Abonnements
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SubscriptionsList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /billing/upcoming:
+    get:
+      operationId: listUpcomingRenewals
+      summary: Échéances à venir (périodes payées et essais), les plus proches d'abord
+      parameters:
+        - name: days
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 90, default: 14 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Échéances
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SubscriptionsList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /billing/payments:
+    get:
+      operationId: listPayments
+      summary: Paiements (plus récents d'abord)
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, succeeded, failed, refunded] }
+        - name: workspaceId
+          in: query
+          schema: { type: string, format: uuid }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Une page de paiements
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaymentsPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /billing/invoices/{number}/pdf:
+    get:
+      operationId: getInvoicePdf
+      summary: Facture au format PDF
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema: { type: string, pattern: "^BEEP-\\d{4}-\\d{6}$" }
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: PDF
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /workspaces/{id}/invoices:
+    get:
+      operationId: listWorkspaceInvoices
+      summary: Factures d'un workspace
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Factures
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvoicesList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /workspaces/{id}/payments:
+    post:
+      operationId: recordManualPayment
+      summary: Enregistre un paiement hors ligne (virement, espèces)
+      description: |
+        Prolonge l'abonnement comme un paiement en ligne, émet la facture et envoie le reçu. Le plan peut ne pas être commercialisé
+        (décision explicite du staff). Erreurs : `invalid_amount`, `plan_not_purchasable`, `invalid_cycle`, `unsupported_country`.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ManualPayment" }
+      responses:
+        "201":
+          description: Paiement enregistré et facture émise
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ManualPaymentResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /workspaces/{id}/plan:
+    put:
+      operationId: changeWorkspacePlan
+      summary: Changement de plan manuel (période offerte, ou retour à Starter)
+      description: >-
+        Plan payant : `until` (futur, au plus 5 ans) obligatoire. `starter` : retour immédiat, sans message d'expiration.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PlanChange" }
+      responses:
+        "200":
+          description: Abonnement après modification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Subscription" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /coupons:
+    get:
+      operationId: listCoupons
+      summary: Coupons (plus récents d'abord)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Coupons
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CouponsList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      operationId: createCoupon
+      summary: Crée un coupon (remise en % OU en montant fixe)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CouponCreate" }
+      responses:
+        "201":
+          description: Coupon créé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Coupon" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /coupons/{code}/active:
+    put:
+      operationId: setCouponActive
+      summary: Active ou désactive un coupon
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [active]
+              additionalProperties: false
+              properties:
+                active: { type: boolean }
+      responses:
+        "200":
+          description: Coupon après modification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Coupon" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /plans/{code}:
+    put:
+      operationId: publishPlan
+      summary: Publie une nouvelle version d'un plan (création si le code est nouveau)
+      description: |
+        Le brouillon est édité dans le back office ; la publication remplace la copie lue à l'exécution par le core et incrémente la
+        version. Prix trimestriel / annuel absents : calculés (−10 % / −30 %). `starter` reste gratuit et public.
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string, pattern: "^[a-z][a-z0-9_-]{1,31}$" }
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PlanPublish" }
+      responses:
+        "200":
+          description: Plan publié
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Plan" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /domains:
+    get:
+      operationId: listDomains
+      summary: Domaines personnalisés de tous les workspaces (plus récents d'abord)
+      parameters:
+        - name: q
+          in: query
+          description: Sous-chaîne du nom d'hôte.
+          schema: { type: string, maxLength: 254 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, verified, failed, blocked] }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Une page de domaines
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DomainsPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /domains/{id}:
+    get:
+      operationId: getDomain
+      summary: Un domaine personnalisé
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Domaine
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /domains/{id}/recheck:
+    post:
+      operationId: recheckDomain
+      summary: Relance la vérification DNS
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Domaine après vérification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /domains/{id}/block:
+    post:
+      operationId: blockDomain
+      summary: Bloque un domaine (ses liens cessent de répondre, plus de certificat)
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Reason" }
+      responses:
+        "200":
+          description: Domaine bloqué
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /domains/{id}/unblock:
+    post:
+      operationId: unblockDomain
+      summary: Débloque un domaine
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Domaine débloqué
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /catalog:
+    get:
+      operationId: listCatalog
+      summary: Catalogue d'applications (actives ou non)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      responses:
+        "200":
+          description: Applications
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppsList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /catalog/{code}:
+    put:
+      operationId: publishApp
+      summary: Publie une nouvelle version d'une entrée du catalogue (création si le code est nouveau)
+      description: Les modèles ne peuvent pas utiliser les schémas `javascript:`, `data:`, `file:` ni `vbscript:`.
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string, pattern: "^[a-z][a-z0-9_-]{1,31}$" }
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AppPublish" }
+      responses:
+        "200":
+          description: Entrée publiée
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/App" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /catalog/{code}/enabled:
+    put:
+      operationId: setAppEnabled
+      summary: Active ou désactive une entrée
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled]
+              additionalProperties: false
+              properties:
+                enabled: { type: boolean }
+      responses:
+        "200":
+          description: Catalogue après modification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppsList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /catalog/test:
+    post:
+      operationId: testApp
+      summary: Test en direct d'une adresse sur un profil d'appareil (entrée publiée, ou entrée candidate non publiée)
+      parameters:
+        - $ref: "#/components/parameters/StaffId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AppTest" }
+      responses:
+        "200":
+          description: Comportement simulé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppTestResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
 components:
   securitySchemes:
     serviceToken:
@@ -320,6 +910,53 @@ components:
       description: Membre du staff à l'origine de l'appel.
       schema: { type: string, format: uuid }
   schemas:
+
+    AbuseReport:
+      type: object
+      required: [id, url, category, detail, source, status, createdAt]
+      properties:
+        id: {type: string, format: uuid}
+        url: {type: string, format: uri}
+        category: {type: string}
+        detail: {type: string}
+        source: {type: string}
+        status: {type: string, enum: [open, dismissed, blocked]}
+        reason: {type: [string, 'null']}
+        createdAt: {type: string, format: date-time}
+        resolvedAt: {type: [string, 'null'], format: date-time}
+    Reports:
+      type: object
+      required: [items, open, overdue]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/AbuseReport'}}
+        open: {type: integer}
+        overdue: {type: integer}
+    BlockedHost:
+      type: object
+      required: [host, reason, createdAt]
+      properties:
+        host: {type: string}
+        reason: {type: string}
+        createdAt: {type: string, format: date-time}
+    BlockedHosts:
+      type: object
+      required: [items]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/BlockedHost'}}
+    FeatureFlag:
+      type: object
+      required: [key, enabled, rolloutPercent, version, reason]
+      properties:
+        key: {type: string}
+        enabled: {type: boolean}
+        rolloutPercent: {type: integer}
+        version: {type: integer}
+        reason: {type: string}
+    FeatureFlags:
+      type: object
+      required: [items]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/FeatureFlag'}}
     Meta:
       type: object
       required: [contract]
@@ -450,13 +1087,15 @@ components:
           items: { type: string }
     Plan:
       type: object
-      required: [code, name, version, priceXaf, public, entitlements]
+      required: [code, name, version, priceXaf, priceQuarterlyXaf, priceAnnualXaf, public, entitlements]
       additionalProperties: false
       properties:
         code: { type: string }
         name: { type: string }
         version: { type: integer, minimum: 1 }
         priceXaf: { type: integer, minimum: 0, description: "Prix mensuel TTC en FCFA." }
+        priceQuarterlyXaf: { type: integer, minimum: 0, description: "Prix pour 3 mois (ajouté en 0.3.0)." }
+        priceAnnualXaf: { type: integer, minimum: 0, description: "Prix pour 12 mois (ajouté en 0.3.0)." }
         public: { type: boolean, description: "Commercialisé (sinon affiché « bientôt »)." }
         entitlements: { $ref: "#/components/schemas/Entitlements" }
     PlansList:
@@ -604,6 +1243,273 @@ components:
           type: array
           items: { $ref: "#/components/schemas/Invitation" }
         nextCursor: { type: [string, "null"] }
+    Cycle:
+      type: string
+      enum: [monthly, quarterly, annual]
+    BillingSummary:
+      type: object
+      required: [trialing, active, grace, expired, mrrXaf, arrXaf, revenue30dXaf, pendingPayments, failedPayments]
+      additionalProperties: false
+      properties:
+        trialing: { type: integer, minimum: 0 }
+        active: { type: integer, minimum: 0 }
+        grace: { type: integer, minimum: 0, description: "Impayés : échéance dépassée, accès maintenu 7 jours." }
+        expired: { type: integer, minimum: 0 }
+        mrrXaf: { type: integer, minimum: 0 }
+        arrXaf: { type: integer, minimum: 0 }
+        revenue30dXaf: { type: integer, minimum: 0 }
+        pendingPayments: { type: integer, minimum: 0 }
+        failedPayments: { type: integer, minimum: 0 }
+    Subscription:
+      type: object
+      required: [workspaceId, workspaceName, ownerEmail, plan, status, cycle, periodStart, periodEnd, graceEnd, monthlyRateXaf]
+      additionalProperties: false
+      properties:
+        workspaceId: { type: string, format: uuid }
+        workspaceName: { type: [string, "null"] }
+        ownerEmail: { type: [string, "null"] }
+        plan: { type: string }
+        status: { type: string, enum: [trialing, active, grace, expired] }
+        cycle:
+          oneOf:
+            - $ref: "#/components/schemas/Cycle"
+            - type: "null"
+        periodStart: { type: string, format: date-time }
+        periodEnd: { type: string, format: date-time }
+        graceEnd: { type: string, format: date-time }
+        monthlyRateXaf: { type: integer, minimum: 0 }
+    SubscriptionsList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Subscription" }
+    Payment:
+      type: object
+      required: [id, workspaceId, workspaceName, ownerEmail, plan, cycle, method, provider, status, amountXaf, listPriceXaf, discountXaf, creditXaf, coupon, country, note, recordedBy, failureReason, createdAt, paidAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        workspaceId: { type: string, format: uuid }
+        workspaceName: { type: [string, "null"] }
+        ownerEmail: { type: [string, "null"] }
+        plan: { type: string }
+        cycle: { $ref: "#/components/schemas/Cycle" }
+        method: { type: string, enum: [mtn_momo, orange_money, card, manual] }
+        provider: { type: string }
+        status: { type: string, enum: [pending, succeeded, failed, refunded] }
+        amountXaf: { type: integer, minimum: 0, description: "Montant TTC réellement dû." }
+        listPriceXaf: { type: integer, minimum: 0 }
+        discountXaf: { type: integer, minimum: 0 }
+        creditXaf: { type: integer, minimum: 0 }
+        coupon: { type: [string, "null"] }
+        country: { type: string }
+        note: { type: [string, "null"] }
+        recordedBy: { type: [string, "null"] }
+        failureReason: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        paidAt: { type: [string, "null"], format: date-time }
+    PaymentsPage:
+      type: object
+      required: [items, nextCursor]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Payment" }
+        nextCursor: { type: [string, "null"] }
+    Invoice:
+      type: object
+      required: [number, paymentId, plan, cycle, grossXaf, netXaf, vatXaf, vatRateBp, country, issuedAt]
+      additionalProperties: false
+      properties:
+        number: { type: string, pattern: "^BEEP-\\d{4}-\\d{6}$" }
+        paymentId: { type: string, format: uuid }
+        plan: { type: string }
+        cycle: { $ref: "#/components/schemas/Cycle" }
+        grossXaf: { type: integer, minimum: 0, description: "TTC." }
+        netXaf: { type: integer, minimum: 0, description: "HT." }
+        vatXaf: { type: integer, minimum: 0 }
+        vatRateBp: { type: integer, minimum: 0, description: "Taux en points de base (1925 = 19,25 %)." }
+        country: { type: string }
+        issuedAt: { type: string, format: date-time }
+    InvoicesList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Invoice" }
+    ManualPayment:
+      type: object
+      required: [plan, cycle, amountXaf, reference]
+      additionalProperties: false
+      properties:
+        plan: { type: string }
+        cycle: { $ref: "#/components/schemas/Cycle" }
+        amountXaf: { type: integer, minimum: 1, maximum: 100000000, description: "Montant TTC encaissé." }
+        reference: { type: string, minLength: 3, maxLength: 500, description: "Référence du virement ou de la quittance." }
+        country: { type: string, minLength: 2, maxLength: 2, description: "Pays de facturation (TVA) ; défaut : pays par défaut du core." }
+    ManualPaymentResult:
+      type: object
+      required: [payment, invoice, validUntil]
+      additionalProperties: false
+      properties:
+        payment: { $ref: "#/components/schemas/Payment" }
+        invoice: { $ref: "#/components/schemas/Invoice" }
+        validUntil: { type: string, format: date-time }
+    PlanChange:
+      type: object
+      required: [plan, reason]
+      additionalProperties: false
+      properties:
+        plan: { type: string }
+        until: { type: [string, "null"], format: date-time }
+        reason: { type: string, minLength: 3, maxLength: 500 }
+    Coupon:
+      type: object
+      required: [code, percentOff, amountOffXaf, maxRedemptions, redeemed, validUntil, plans, active, createdAt]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        percentOff: { type: integer, minimum: 0, maximum: 100 }
+        amountOffXaf: { type: integer, minimum: 0 }
+        maxRedemptions: { type: [integer, "null"], minimum: 1 }
+        redeemed: { type: integer, minimum: 0 }
+        validUntil: { type: [string, "null"], format: date-time }
+        plans:
+          type: array
+          description: Vide = tous les plans payants.
+          items: { type: string }
+        active: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    CouponsList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Coupon" }
+    CouponCreate:
+      type: object
+      required: [code]
+      additionalProperties: false
+      properties:
+        code: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9_-]{2,31}$" }
+        percentOff: { type: integer, minimum: 1, maximum: 100 }
+        amountOffXaf: { type: integer, minimum: 1 }
+        maxRedemptions: { type: [integer, "null"], minimum: 1 }
+        validUntil: { type: [string, "null"], format: date-time }
+        plans:
+          type: array
+          items: { type: string }
+    PlanPublish:
+      type: object
+      required: [name, priceXaf, public, entitlements]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, maxLength: 60 }
+        priceXaf: { type: integer, minimum: 0, maximum: 10000000 }
+        priceQuarterlyXaf: { type: [integer, "null"], minimum: 0 }
+        priceAnnualXaf: { type: [integer, "null"], minimum: 0 }
+        public: { type: boolean }
+        entitlements: { $ref: "#/components/schemas/Entitlements" }
+    Domain:
+      type: object
+      required: [id, workspaceId, ownerEmail, hostname, dnsStatus, tlsStatus, isDefault, blocked, blockedReason, lastError, links, verifiedAt, lastCheckAt, createdAt]
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        workspaceId: { type: string, format: uuid }
+        ownerEmail: { type: [string, "null"] }
+        hostname: { type: string }
+        dnsStatus: { type: string, enum: [pending, verified, failed] }
+        tlsStatus: { type: string, enum: [pending, active], description: "active : Caddy a demandé l'autorisation d'émettre (première visite HTTPS)." }
+        isDefault: { type: boolean }
+        blocked: { type: boolean }
+        blockedReason: { type: [string, "null"] }
+        lastError: { type: [string, "null"], description: "txt_missing, routing_missing ou dns_unreachable." }
+        links: { type: integer, minimum: 0 }
+        verifiedAt: { type: [string, "null"], format: date-time }
+        lastCheckAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+    DomainsPage:
+      type: object
+      required: [items, nextCursor]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Domain" }
+        nextCursor: { type: [string, "null"] }
+    App:
+      type: object
+      required: [code, name, hosts, iosTemplate, androidPackage, androidTemplate, enabled, version]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        name: { type: string }
+        hosts: { type: array, items: { type: string } }
+        iosTemplate: { type: [string, "null"], description: "Modèle de schéma iOS ; {url} {host} {path} {rest} {path1} {path2} {query}." }
+        androidPackage: { type: [string, "null"] }
+        androidTemplate: { type: [string, "null"] }
+        enabled: { type: boolean }
+        version: { type: integer, minimum: 0 }
+    AppsList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/App" }
+    AppPublish:
+      type: object
+      required: [name, hosts, enabled]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, maxLength: 60 }
+        hosts: { type: array, minItems: 1, maxItems: 20, items: { type: string } }
+        iosTemplate: { type: [string, "null"] }
+        androidPackage: { type: [string, "null"] }
+        androidTemplate: { type: [string, "null"] }
+        enabled: { type: boolean }
+    AppTest:
+      type: object
+      required: [url, profile]
+      additionalProperties: false
+      properties:
+        url: { type: string }
+        profile: { type: string, enum: [iphone-safari, iphone-instagram, iphone-facebook, android-chrome, android-instagram, android-tiktok, desktop-chrome] }
+        candidate:
+          type: [object, "null"]
+          additionalProperties: false
+          properties:
+            code: { type: string }
+            name: { type: string }
+            hosts: { type: array, items: { type: string } }
+            iosTemplate: { type: [string, "null"] }
+            androidPackage: { type: [string, "null"] }
+            androidTemplate: { type: [string, "null"] }
+    AppTestResult:
+      type: object
+      required: [profile, appFound, appName, mode, webUrl, iosUrl, androidUrl, os, inApp, note]
+      additionalProperties: false
+      properties:
+        profile: { type: string }
+        appFound: { type: boolean }
+        appName: { type: [string, "null"] }
+        mode: { type: string, enum: [web, android_intent, interstitial] }
+        webUrl: { type: string }
+        iosUrl: { type: [string, "null"] }
+        androidUrl: { type: [string, "null"] }
+        os: { type: string }
+        inApp: { type: boolean }
+        note: { type: string }
     Problem:
       type: object
       required: [status, code]

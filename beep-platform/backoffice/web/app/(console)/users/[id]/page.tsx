@@ -1,9 +1,11 @@
+import { StaffPrivacy } from "@/components/TrustForms";
 import { Badge, Icon } from "@beep/ui";
 import { UsageMeter } from "@/components/Charts";
 import { AccountStatusForm, OverrideForm } from "@/components/ConsoleForms";
 import { Unavailable } from "@/components/Unavailable";
-import { getMe, getUser } from "@/lib/api";
-import { entitlementLabels, fmtDateTime, fmtLimit, resourceLabels } from "@/lib/format";
+import { ManualPaymentForm, PlanChangeForm } from "@/components/BillingForms";
+import { getMe, getPlans, getUser, getWorkspaceInvoices } from "@/lib/api";
+import { cycleLabels, entitlementLabels, fmtDateTime, fmtLimit, fmtXaf, resourceLabels } from "@/lib/format";
 
 const statusLabel: Record<string, string> = { active: "Actif", pending: "En attente de confirmation", suspended: "Suspendu" };
 
@@ -22,6 +24,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
     );
   }
   const { user, workspace, usage, entitlements, overrides } = res.data;
+  const [plans, invoices] = await Promise.all([can("BILLING_WRITE") ? getPlans() : undefined, workspace && can("BILLING_READ") ? getWorkspaceInvoices(workspace.id) : undefined]);
   const overridden = new Set(overrides.map((o) => o.key));
 
   return (
@@ -40,6 +43,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
+      {(can("PRIVACY_EXPORT")||can("PRIVACY_ERASE"))&&<StaffPrivacy userId={user.id} canExport={can("PRIVACY_EXPORT")} canErase={can("PRIVACY_ERASE")}/>}
       <div className="detail-grid">
         <section className="bp-card bp-stack" aria-labelledby="account">
           <h2 id="account">Compte</h2>
@@ -107,7 +111,44 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         </section>
       )}
 
+      {workspace && invoices?.data && (
+        <section className="bp-card bp-stack" aria-labelledby="invoices">
+          <h2 id="invoices">Factures</h2>
+          {invoices.data.items.length === 0 ? (
+            <p className="muted">Aucune facture.</p>
+          ) : (
+            <ul className="history">
+              {invoices.data.items.map((i) => (
+                <li key={i.number}>
+                  <div className="link-row">
+                    <strong className="bp-tabular">{i.number}</strong>
+                    <a className="text-link" href={`/api/billing/invoices/${i.number}/pdf`}>
+                      PDF
+                    </a>
+                  </div>
+                  <span className="muted small bp-tabular">
+                    {i.plan} {cycleLabels[i.cycle]} · {fmtXaf(i.grossXaf)} TTC (TVA {fmtXaf(i.vatXaf)}) · {fmtDateTime(i.issuedAt)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
       <div className="detail-grid">
+        {workspace && plans?.data && can("BILLING_WRITE") && (
+          <section className="bp-card bp-stack" aria-labelledby="manual">
+            <h2 id="manual">Enregistrer un paiement manuel</h2>
+            <ManualPaymentForm workspaceId={workspace.id} plans={plans.data.items} />
+          </section>
+        )}
+        {workspace && plans?.data && can("BILLING_WRITE") && (
+          <section className="bp-card bp-stack" aria-labelledby="planchange">
+            <h2 id="planchange">Changer de plan</h2>
+            <PlanChangeForm workspaceId={workspace.id} plans={plans.data.items} current={workspace.plan} />
+          </section>
+        )}
         {workspace && can("ENTITLEMENTS_WRITE") && (
           <section className="bp-card bp-stack" aria-labelledby="override">
             <h2 id="override">Ajuster un droit</h2>

@@ -394,7 +394,9 @@ step("back office : jobs du worker (agrégats réussis)", r.status === 200 && r.
 r = await bo.get("/api/audit?action=links.");
 step("back office : journal d'audit consultable, chaîne intègre", r.status === 200 && r.json?.intact === true && r.json?.items?.some((e) => e.action === "links.disable"), `statut ${r.status} ${r.text.slice(0, 200)}`);
 
-const sql = (q) => execFileSync("docker", ["compose", "-f", "docker-compose.yml", "-f", "docker-compose.dev.yml", "exec", "-T", "postgres", "sh", "-c", `psql -U "$POSTGRES_USER" -d backoffice -tAc "${q}"`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+const sql = (q) => process.env.E2E_AUDIT_PG==="1"
+  ? execFileSync("psql",["-tAc",q],{encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim()
+  : execFileSync("docker", ["exec",process.env.E2E_PG_CONTAINER??"beep-postgres-1", "sh", "-c", `psql -U "$POSTGRES_USER" -d backoffice -tAc "${q}"`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 try {
   const actions = sql(`select string_agg(distinct action, ',') from audit_log where actor_email = '${STAFF_EMAIL}'`).split(",");
   for (const a of ["staff.login", "staff.login_failed", "invitations.create", "users.list", "users.view", "entitlements.override", "links.search", "links.disable", "links.enable", "users.suspend", "users.reactivate", "audit.read"]) {
@@ -404,7 +406,82 @@ try {
   try { sql("update audit_log set action = 'forged'"); } catch (e) { blockedUpdate = /ajout seul/.test(String(e.stderr)); }
   step("audit : UPDATE refusé par la base (append-only)", blockedUpdate);
 } catch (e) {
-  step("audit : accès à la base", false, String(e.message).slice(0, 200));
+  step("audit : accès à la base", false, String(e.stderr??e.message).slice(0, 200));
+}
+
+
+// ===== Phase 2: public pages, sandbox billing, rules, moderation, flags and account privacy =====
+for (const prefix of ["", "/en"]) {
+  for (const path of ["/features", "/pricing", "/blog", "/blog/premier-lien", "/legal", "/legal/privacy", "/legal/terms", "/report", "/status"]) {
+    r = await visitor.get(prefix + path);
+    step(`phase 2: public page ${prefix}${path}`, r.status === 200, `status ${r.status}`);
+  }
+}
+r = await visitor.get("/v1/public/plans");
+step("phase 2: published pricing, Pro available / Elite coming soon", r.status === 200 && r.json?.items?.find(p=>p.code==="pro")?.available && !r.json?.items?.find(p=>p.code==="elite")?.available);
+await site.post("/v1/auth/login", {email,password:newPassword,totp:totp(secret)});
+if (process.env.E2E_BILLING_SANDBOX === "1") {
+  for(const method of ["mtn_momo","orange_money"]) {
+    r=await site.post("/v1/billing/checkout",{plan:"pro",cycle:"monthly",method,phone:"237670123456",country:"CM"});
+    step(`phase 2: sandbox checkout ${method}`,r.status===202,`status ${r.status} ${r.text.slice(0,200)}`);
+    if(r.json?.payment?.id) {
+      const payment=await site.get(`/v1/billing/payments/${r.json.payment.id}`);
+      step(`phase 2: sandbox settlement ${method}`,payment.status===200&&payment.json?.status==="succeeded",payment.text.slice(0,200));
+    }
+  }
+  r=await site.get("/v1/billing");
+  const invoice=r.json?.invoices?.[0];
+  step("phase 2: subscription and invoice",r.status===200&&r.json?.plan?.code==="pro"&&!!invoice);
+  if(invoice){r=await site.get(`/v1/billing/invoices/${invoice.number}/pdf`);step("phase 2: invoice PDF",r.status===200&&r.raw.subarray(0,4).toString()==="%PDF");}
+}
+const host=`phase2-${Date.now()}.example`;
+if(process.env.E2E_BILLING_SANDBOX==="1"){
+  r=await site.post("/v1/qr-codes",{kind:"static",contentType:"url",fields:{url:"https://example.com/qr-phase2"},advanced:{shape:"rounded",gradient:"#304F36",frame:"scan-fr"}});
+  step("phase 2: advanced QR creation",r.status===201,`status ${r.status} ${r.text.slice(0,160)}`);
+  if(r.json?.id){const qrId=r.json.id;for(const format of ["png","svg","pdf"]){r=await site.get(`/v1/qr-codes/${qrId}/render?format=${format}&size=1024`);step(`phase 2: advanced QR export ${format}`,r.status===200&&r.raw.length>100);}}
+}
+r=await site.post("/v1/links",{destination:`https://${host}/landing`,domain:"main",title:"Phase 2 test"});
+const phase2link=r.json;
+step("phase 2: new test link",r.status===201,`status ${r.status}`);
+if(phase2link?.id) {
+  r=await site.patch(`/v1/links/${phase2link.id}`,{rules:{deeplink:true,onelink:{ios:`https://${host}/ios`,android:`https://${host}/android`,desktop:`https://${host}/web`},utm:{source:"e2e",medium:"test",campaign:"phase2"}}});
+  step("phase 2: client link rules",r.status===200&&r.json?.rules?.utm?.source==="e2e",`status ${r.status} ${r.text.slice(0,180)}`);
+  r=await site.get("/v1/deeplinks/profiles");
+  const profile=r.json?.items?.[0];
+  if(profile){r=await site.post("/v1/deeplinks/simulate",{url:"https://www.youtube.com/watch?v=test",profile});step("phase 2: simulator",r.status===200&&r.json?.appFound===true);}
+  r=await bo.get("/api/feature-flags");
+  const flag=r.json?.items?.find(f=>f.key==="links.rules");
+  if(flag){
+    r=await bo.put("/api/feature-flags/links.rules",{enabled:false,rolloutPercent:100,version:flag.version,reason:"e2e pause",totp:totp(STAFF_TOTP_SECRET)});
+    const paused=r.json;step("phase 2: publish flag",r.status===200);
+    r=await site.patch(`/v1/links/${phase2link.id}`,{rules:{deeplink:true}});step("phase 2: disabled flag enforced",r.status===403&&r.json?.code==="feature_unavailable");
+    r=await bo.put("/api/feature-flags/links.rules",{enabled:true,rolloutPercent:100,version:flag.version,reason:"e2e stale",totp:totp(STAFF_TOTP_SECRET)});step("phase 2: stale flag rejected",r.status===409);
+    await bo.put("/api/feature-flags/links.rules",{enabled:flag.enabled,rolloutPercent:flag.rolloutPercent,version:paused.version,reason:"e2e restore",totp:totp(STAFF_TOTP_SECRET)});
+  }
+  r=await visitor.post("/v1/reports",{url:phase2link.shortUrl,category:"phishing",detail:"e2e fixture"});step("phase 2: public report",r.status===202);
+  r=await bo.get("/api/moderation/reports");const report=r.json?.items?.find(x=>x.url===`https://${host}/landing`);
+  step("phase 2: short URL resolved for moderation",!!report);
+  if(report){r=await bo.post(`/api/moderation/reports/${report.id}/resolve`,{decision:"blocked",reason:"e2e unsafe",totp:totp(STAFF_TOTP_SECRET)});step("phase 2: resolve and block",r.status===200,`status ${r.status} ${r.text.slice(0,120)}`);}
+  r=await visitor.get(`/${phase2link.slug}`);step("phase 2: blocked destination no longer redirects",r.status===410);
+  r=await site.post("/v1/links",{destination:`https://${host}/other`});step("phase 2: blocked host cannot be reused",r.status===403&&r.json?.code==="destination_blocked");
+  await bo.put(`/api/moderation/blocklist/${host}`,{blocked:false,reason:"e2e cleanup",totp:totp(STAFF_TOTP_SECRET)});
+  r=await visitor.get(`/${phase2link.slug}`);step("phase 2: reviewed host re-enabled",r.status===302);
+}
+for(const path of ["/moderation","/feature-flags","/catalog","/domains","/billing"]){r=await bo.get(path);step(`phase 2: staff page ${path}`,r.status===200);}
+r=await site.post("/v1/account/export");
+step("phase 2: portable account export excludes secrets",r.status===200&&r.json?.user?.email===email&&!/password_hash|totp_secret|token_hash|visitor_hash/.test(r.text),`status ${r.status}`);
+r=await bo.post(`/api/users/${userId}/export`,{reason:"e2e export",totp:totp(STAFF_TOTP_SECRET)});step("phase 2: staff export with step-up",r.status===200&&r.json?.user?.email===email);
+const revoked=new Client(SITE);revoked.jar=new Map(site.jar);
+r=await site.post("/v1/account/erase-request");step("phase 2: deletion challenge",r.status===202);
+const deletionMail=await lastMailFor(email,/suppression|deletion/i);
+const deletionToken=/(?:token|erase)=([A-Za-z0-9_-]{20,})/.exec(deletionMail?.Text??"")?.[1];
+step("phase 2: deletion email delivered",!!deletionToken);
+if(deletionToken){
+  r=await site.post("/v1/account/erase",{token:deletionToken,totp:"000000"});step("phase 2: deletion rejects wrong TOTP",r.status===401);
+  r=await site.post("/v1/account/erase",{token:deletionToken,totp:totp(secret)});step("phase 2: account erased",r.status===204,`status ${r.status} ${r.text.slice(0,150)}`);
+  r=await revoked.get("/v1/auth/me");step("phase 2: erasure revokes existing sessions",r.status===401);
+  if(phase2link?.slug){r=await visitor.get(`/${phase2link.slug}`);step("phase 2: erased links return 404",r.status===404);}
+  r=await bo.get(`/api/users/${userId}`);step("phase 2: erased account removed from staff view",r.status===404);
 }
 
 await bo.post("/api/auth/logout");

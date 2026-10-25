@@ -5,11 +5,11 @@ Il complète `beep-specs.md`.
 
 ## Direction d’interface — mise à jour du 24 octobre 2026
 
-La [refonte Atelier](beep-platform/docs/refonte-atelier.md) applique à Beep une direction inspirée de Vendeer : nouvelle identité, accueil argumenté autour du partage et de la destination des liens, médias locaux, parcours de compte et back office harmonisés. La [charte](beep-platform/docs/design-system.md) devient la référence des prochaines phases.
+La [refonte Signal](beep-platform/docs/refonte-atelier.md) applique à Beep une direction inspirée de Vendeer : nouvelle identité, accueil argumenté autour du partage et de la destination des liens, médias locaux, parcours de compte et back office harmonisés. La [charte](beep-platform/docs/design-system.md) devient la référence des prochaines phases.
 
 Les nouvelles interfaces sont conçues dès 320 px : formulaires prioritaires sur mobile, cibles de 44 à 52 px, CTA fixe sur l’accueil et utilisateurs en cartes. Le typage, les builds des deux fronts et les contrastes sont vérifiés ; captures et résultats navigateur sont documentés dans la recette. Les essais sur appareils physiques et les mesures Lighthouse restent ouverts.
 
-Les liens courts, QR codes, pages bio et statistiques présentés dans les aperçus restent attachés à leurs phases ci-dessous. La refonte ne vaut pas livraison de ces fonctionnalités.
+Les aperçus marketing restent illustratifs. L’état des liens, QR codes, pages bio, statistiques et évolutions suivantes est suivi dans les documents de phase ; la refonte ne modifie pas leur logique.
 
 ---
 
@@ -110,6 +110,8 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 ---
 
 ### Phase 2 — Monétisation et deeplinks (S9–S14)
+
+> **État (25 octobre 2026)** : développement des cycles 4–6 livré et recette locale validée (231 tests Java, 53 contrôles de contrat, 191 contrôles de bout en bout). Le lancement public reste soumis aux paiements réels, validations fiscales/légales, configuration des prestataires et tests sur appareils physiques — voir [`beep-platform/docs/phase-2.md`](beep-platform/docs/phase-2.md).
 
 **Cycle 4 (S9–S10) : facturation**
 - `beep` : port `PaymentGateway` + adapter **Mobile Money / cartes** (agrégateur régional, ex. Notch Pay : MTN MoMo, Orange Money), abonnements **prépayés** (mensuel / trimestriel / annuel), rappels d'échéance J−7/J−3/J−1, renouvellement en un clic, période de grâce, factures PDF ; plan **Pro**, essai **Elite** 14 jours, quotas de stock appliqués avec avertissements 80 % / 100 % (§6 des specs).

@@ -4,6 +4,12 @@ import io.beep.bo.adapter.in.http.HttpSettings;
 import io.beep.bo.adapter.out.coregateway.CoreGatewayAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresAuditAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresDatabaseStatsAdapter;
+import io.beep.bo.adapter.out.postgres.PostgresPlanDraftAdapter;
+import io.beep.bo.app.billing.BillingUseCase;
+import io.beep.bo.app.catalog.CatalogUseCase;
+import io.beep.bo.app.domains.DomainsUseCase;
+import io.beep.bo.app.plans.PlanDraftsUseCase;
+import io.beep.bo.app.port.PlanDraftRepository;
 import io.beep.bo.adapter.out.postgres.PostgresStaffAdapter;
 import io.beep.bo.adapter.out.postgres.PostgresStaffSessionAdapter;
 import io.beep.bo.adapter.out.security.AesGcmSecretCipherAdapter;
@@ -147,6 +153,31 @@ class ApplicationWiring {
   }
 
   @Bean
+  PlanDraftRepository planDraftRepository(DSLContext dsl) {
+    return new PostgresPlanDraftAdapter(dsl);
+  }
+
+  @Bean
+  BillingUseCase billing(CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new BillingUseCase(core, audit, stepUp, clock);
+  }
+
+  @Bean
+  CatalogUseCase catalogUseCase(CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new CatalogUseCase(core, audit, stepUp, clock);
+  }
+
+  @Bean
+  DomainsUseCase domainsUseCase(CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new DomainsUseCase(core, audit, stepUp, clock);
+  }
+
+  @Bean
+  PlanDraftsUseCase planDrafts(PlanDraftRepository drafts, CoreGatewayPort core, AuditPort audit, StepUp stepUp, Clock clock) {
+    return new PlanDraftsUseCase(drafts, core, audit, stepUp, clock);
+  }
+
+  @Bean
   OperationsUseCase operations(CoreGatewayPort core, DatabaseStatsPort database) {
     return new OperationsUseCase(core, database);
   }
@@ -165,4 +196,8 @@ class ApplicationWiring {
   VerifyAuditChainUseCase verifyAuditChain(AuditPort audit) {
     return new VerifyAuditChainUseCase(audit);
   }
+
+  @Bean
+  io.beep.bo.app.trust.TrustConsoleUseCase trustConsole(CoreGatewayPort core,AuditPort audit,StepUp stepUp,Clock clock) {return new io.beep.bo.app.trust.TrustConsoleUseCase(core,audit,stepUp,clock);}
+
 }

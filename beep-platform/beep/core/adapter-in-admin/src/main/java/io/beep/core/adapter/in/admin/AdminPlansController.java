@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/internal/admin/v1")
 @Profile("!worker & !migrate")
 public class AdminPlansController {
-  record PlanView(String code, String name, int version, long priceXaf, @com.fasterxml.jackson.annotation.JsonProperty("public") boolean isPublic,
+  record PlanView(String code, String name, int version, long priceXaf, long priceQuarterlyXaf, long priceAnnualXaf, @com.fasterxml.jackson.annotation.JsonProperty("public") boolean isPublic,
       Map<String, Long> entitlements) {}
 
   record PlansList(List<PlanView> items) {}
@@ -37,7 +37,7 @@ public class AdminPlansController {
   @GetMapping("/plans")
   PlansList plans() {
     return new PlansList(entitlements.plans().stream()
-        .map(p -> new PlanView(p.code(), p.name(), p.version(), p.priceXaf(), p.publicPlan(), AdminViews.sorted(p.entitlements()))).toList());
+        .map(p -> new PlanView(p.code(), p.name(), p.version(), p.priceXaf(), p.priceQuarterlyXaf(), p.priceAnnualXaf(), p.publicPlan(), AdminViews.sorted(p.entitlements()))).toList());
   }
 
   @PutMapping(value = "/workspaces/{id}/entitlements", consumes = MediaType.APPLICATION_JSON_VALUE)

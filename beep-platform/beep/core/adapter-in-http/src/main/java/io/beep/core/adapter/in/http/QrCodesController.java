@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("!worker & !migrate")
 public class QrCodesController {
   record QrRequest(String kind, UUID linkId, String contentType, Map<String, String> fields, String foreground, String background, String errorCorrection,
-      Integer margin, String title) {}
+      Integer margin, String title, io.beep.core.domain.qr.QrStyle.Decoration advanced) {}
 
   record QrPage(List<Views.QrView> items, String nextCursor) {}
 
@@ -84,7 +84,7 @@ public class QrCodesController {
     return ResponseEntity.ok().contentType(MediaType.parseMediaType(r.mediaType()))
         .header(HttpHeaders.CONTENT_DISPOSITION, (download == 1 ? "attachment" : "inline") + "; filename=\"" + r.filename() + "\"")
         .header(HttpHeaders.CACHE_CONTROL, "private, no-cache")
-        .header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
+        .header("Content-Security-Policy", "default-src 'none'; img-src data:; style-src 'unsafe-inline'; sandbox")
         .body(r.bytes());
   }
 
@@ -94,6 +94,6 @@ public class QrCodesController {
   }
 
   private static QrCodesUseCase.Command command(QrRequest r) {
-    return new QrCodesUseCase.Command(r.kind(), r.linkId(), r.contentType(), r.fields(), r.foreground(), r.background(), r.errorCorrection(), r.margin(), r.title());
+    return new QrCodesUseCase.Command(r.kind(), r.linkId(), r.contentType(), r.fields(), r.foreground(), r.background(), r.errorCorrection(), r.margin(), r.title(),r.advanced());
   }
 }

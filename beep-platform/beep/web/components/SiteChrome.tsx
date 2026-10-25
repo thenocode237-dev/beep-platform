@@ -19,7 +19,8 @@ export function SiteHeader({
       <div className="bp-container site-header__inner">
         <Logo href={href(locale)} label={dict.nav.home} />
         <nav className="site-header__sections" aria-label={c.navLabel}>
-          <a href={`${href(locale)}#possibilities`}>{c.navFeatures}</a>
+          <a href={href(locale,"/features")}>{c.navFeatures}</a>
+          <a href={href(locale,"/pricing")}>{locale==="fr"?"Tarifs":"Pricing"}</a>
           <a href={`${href(locale)}#how-it-works`}>{c.navHow}</a>
         </nav>
         <nav className="site-header__nav" aria-label={c.footerAccount}>
@@ -63,14 +64,22 @@ export function SiteFooter({ dict, locale }: { dict: Dict; locale: Locale }) {
           </div>
           <nav aria-label={c.footerExplore}>
             <p>{c.footerExplore}</p>
-            <a href={`${href(locale)}#possibilities`}>{c.navFeatures}</a>
+            <a href={href(locale,"/features")}>{c.navFeatures}</a>
+          <a href={href(locale,"/pricing")}>{locale==="fr"?"Tarifs":"Pricing"}</a>
             <a href={`${href(locale)}#how-it-works`}>{c.navHow}</a>
             <a href={`${href(locale)}#faq`}>{c.navFaq}</a>
+            <a href={href(locale,"/pricing")}>{locale==="fr"?"Tarifs":"Pricing"}</a>
+            <a href={href(locale,"/blog")}>{locale==="fr"?"Journal":"Journal"}</a>
+            <a href={href(locale,"/status")}>{locale==="fr"?"État des services":"Service status"}</a>
           </nav>
           <nav aria-label={c.footerAccount}>
             <p>{c.footerAccount}</p>
             <a href={href(locale, "/signup")}>{dict.auth.signup.title}</a>
             <a href={href(locale, "/login")}>{dict.nav.login}</a>
+            <a href={href(locale,"/legal")}>{locale==="fr"?"Mentions légales":"Publisher information"}</a>
+            <a href={href(locale,"/legal/privacy")}>{locale==="fr"?"Confidentialité":"Privacy"}</a>
+            <a href={href(locale,"/legal/terms")}>{locale==="fr"?"Conditions":"Terms"}</a>
+            <a href={href(locale,"/report")}>{locale==="fr"?"Signaler un abus":"Report abuse"}</a>
           </nav>
         </div>
         <div className="site-footer__bottom">

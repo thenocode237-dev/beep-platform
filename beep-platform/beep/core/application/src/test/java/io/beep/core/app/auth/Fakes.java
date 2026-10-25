@@ -120,6 +120,10 @@ public final class Fakes {
     public void sendMagicLink(Email to, String locale, String token) { sent.add("magic:" + to); lastToken = token; }
     public void sendInvitation(Email to, String locale) { sent.add("invite:" + to); }
     public void sendInvitationRequired(Email to, String locale) { sent.add("invite-required:" + to); }
+    public void sendReceipt(Email to, String locale, String invoiceNumber, String planName, long amountXaf, java.time.Instant validUntil, byte[] invoicePdf) { sent.add("receipt:" + to + ":" + invoiceNumber); }
+    public void sendRenewalReminder(Email to, String locale, String planName, boolean trial, int daysLeft, java.time.Instant dueAt) { sent.add("reminder:" + to + ":d" + daysLeft); }
+    public void sendGraceNotice(Email to, String locale, String planName, java.time.Instant graceEnd) { sent.add("grace:" + to); }
+    public void sendPlanExpired(Email to, String locale, String planName) { sent.add("expired:" + to); }
   }
 
   public static class Limiter implements RateLimiterPort {

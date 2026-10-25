@@ -1,6 +1,7 @@
 package io.beep.core.app.port;
 
 import io.beep.core.domain.bio.BioPage;
+import io.beep.core.domain.link.LinkRules;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,8 +18,12 @@ public interface SlugResolverPort {
 
   record PublishedBio(BioPage page, boolean workspaceSuspended) {}
 
-  record Resolution(Kind kind, UUID targetId, UUID workspaceId, String destination, boolean disabled, boolean workspaceSuspended) {
+  record Resolution(Kind kind, UUID targetId, UUID workspaceId, String destination, boolean disabled, boolean workspaceSuspended, LinkRules rules, String passwordHash) {
     public static final Resolution NONE = new Resolution(Kind.NONE, null, null, null, false, false);
+
+    public Resolution(Kind kind, UUID targetId, UUID workspaceId, String destination, boolean disabled, boolean workspaceSuspended) {
+      this(kind, targetId, workspaceId, destination, disabled, workspaceSuspended, LinkRules.NONE, null);
+    }
 
     public enum Kind {
       LINK,
@@ -31,7 +36,11 @@ public interface SlugResolverPort {
     }
   }
 
-  record QrTarget(UUID qrId, UUID workspaceId, UUID linkId, String destination, boolean linkDisabled, boolean workspaceSuspended) {
+  record QrTarget(UUID qrId, UUID workspaceId, UUID linkId, String destination, boolean linkDisabled, boolean workspaceSuspended, LinkRules rules, String passwordHash) {
+    public QrTarget(UUID qrId, UUID workspaceId, UUID linkId, String destination, boolean linkDisabled, boolean workspaceSuspended) {
+      this(qrId, workspaceId, linkId, destination, linkDisabled, workspaceSuspended, LinkRules.NONE, null);
+    }
+
     public boolean unavailable() {
       return linkDisabled || workspaceSuspended;
     }

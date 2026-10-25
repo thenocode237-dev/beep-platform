@@ -24,8 +24,8 @@ export const viewport: Viewport = {
   initialScale: 1, // jamais de zoom désactivé
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F8F7F2" },
-    { media: "(prefers-color-scheme: dark)", color: "#18231C" },
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#101D32" },
   ],
 };
 

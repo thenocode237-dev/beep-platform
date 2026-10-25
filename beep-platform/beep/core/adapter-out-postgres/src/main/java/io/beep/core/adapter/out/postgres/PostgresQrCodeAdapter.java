@@ -93,12 +93,15 @@ public class PostgresQrCodeAdapter implements QrCodeRepository {
   }
 
   private static org.jooq.JSONB style(QrStyle s) {
-    return Sql.json(Map.of("fg", s.foreground(), "bg", s.background(), "ecc", String.valueOf(s.errorCorrection()), "margin", s.margin()));
+    Map<String,Object> map=new java.util.LinkedHashMap<>(Map.of("fg",s.foreground(),"bg",s.background(),"ecc",String.valueOf(s.errorCorrection()),"margin",s.margin()));
+    if(s.advanced()!=null) {var a=s.advanced();Map<String,Object> adv=new java.util.LinkedHashMap<>();adv.put("shape",a.shape());adv.put("frame",a.frame());if(a.gradient()!=null)adv.put("gradient",a.gradient());if(a.logo()!=null)adv.put("logo",a.logo());map.put("advanced",adv);}
+    return Sql.json(map);
   }
 
   static QrCode map(Record r) {
     Map<String, Object> s = Sql.map(r.get(Q_STYLE));
     QrStyle style = new QrStyle((String) s.get("fg"), (String) s.get("bg"), ((String) s.get("ecc")).charAt(0), ((Number) s.get("margin")).intValue());
+    if(s.get("advanced") instanceof Map<?,?> a) style=style.decorated(new QrStyle.Decoration((String)a.get("shape"),(String)a.get("gradient"),(String)a.get("logo"),(String)a.get("frame")));
     String type = r.get(Q_CONTENT_TYPE);
     QrContent content = type == null ? null : new QrContent(QrContent.Type.fromDb(type), Sql.strings(r.get(Q_CONTENT)));
     return new QrCode(r.get(Q_ID), r.get(Q_WORKSPACE), QrCode.Kind.fromDb(r.get(Q_KIND)), r.get(Q_CODE), r.get(Q_LINK), content, style, r.get(Q_TITLE),

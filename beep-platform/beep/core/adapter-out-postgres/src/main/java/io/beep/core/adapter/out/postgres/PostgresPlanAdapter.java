@@ -48,7 +48,23 @@ public class PostgresPlanAdapter implements PlanRepository {
     });
   }
 
+  @Override
+  public void publish(Plan plan, String staffId, Instant at) {
+    dsl.execute("INSERT INTO plans (code, name, version, price_xaf, price_quarterly_xaf, price_annual_xaf, public, entitlements, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::timestamptz) "
+            + "ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, version = EXCLUDED.version, price_xaf = EXCLUDED.price_xaf, price_quarterly_xaf = EXCLUDED.price_quarterly_xaf, "
+            + "price_annual_xaf = EXCLUDED.price_annual_xaf, public = EXCLUDED.public, entitlements = EXCLUDED.entitlements, updated_at = EXCLUDED.updated_at",
+        plan.code(), plan.name(), plan.version(), plan.priceXaf(), plan.priceQuarterlyXaf(), plan.priceAnnualXaf(), plan.publicPlan(), Sql.json(new java.util.TreeMap<>(plan.entitlements())).data(),
+        odt(at));
+    dsl.execute("INSERT INTO plan_versions (code, version, snapshot, published_by, published_at) VALUES (?, ?, ?::jsonb, ?, ?::timestamptz)",
+        plan.code(), plan.version(), Sql.json(java.util.Map.of("name", plan.name(), "price_xaf", plan.priceXaf(), "price_quarterly_xaf", plan.priceQuarterlyXaf(), "price_annual_xaf",
+            plan.priceAnnualXaf(), "public", plan.publicPlan(), "entitlements", new java.util.TreeMap<>(plan.entitlements()))).data(), staffId, odt(at));
+  }
+
   private static Plan map(Record r) {
-    return new Plan(r.get(P_CODE), r.get(P_NAME), r.get(P_VERSION), r.get(P_PRICE), r.get(P_PUBLIC), Sql.longs(r.get(P_ENTITLEMENTS)));
+    long monthly = r.get(P_PRICE);
+    Long quarterly = r.get(P_PRICE_Q);
+    Long annual = r.get(P_PRICE_A);
+    return new Plan(r.get(P_CODE), r.get(P_NAME), r.get(P_VERSION), monthly, quarterly != null ? quarterly : io.beep.core.domain.billing.Pricing.quarterly(monthly),
+        annual != null ? annual : io.beep.core.domain.billing.Pricing.annual(monthly), r.get(P_PUBLIC), Sql.longs(r.get(P_ENTITLEMENTS)));
   }
 }

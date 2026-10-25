@@ -1,0 +1,4 @@
+FROM node:22-alpine
+RUN apk add --no-cache postgresql-client
+WORKDIR /w
+ENTRYPOINT ["node", "scripts/e2e.mjs"]

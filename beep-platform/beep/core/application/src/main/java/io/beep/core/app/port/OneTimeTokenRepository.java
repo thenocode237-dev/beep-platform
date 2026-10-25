@@ -11,6 +11,7 @@ public interface OneTimeTokenRepository {
     RESET_PASSWORD,
     MAGIC_LINK,
     /** Premier facteur prouvé (lien magique, OAuth) : le code TOTP reste à saisir. */
+    ERASE_ACCOUNT,
     MFA_PENDING
   }
 

@@ -1,4 +1,4 @@
-﻿# Ressources visuelles Beep Atelier
+# Ressources visuelles Beep Signal
 
 Les ressources utilisées par Beep sont copiées dans ce dépôt. Le projet Vendeer n’est pas nécessaire pour construire ou servir les applications.
 
