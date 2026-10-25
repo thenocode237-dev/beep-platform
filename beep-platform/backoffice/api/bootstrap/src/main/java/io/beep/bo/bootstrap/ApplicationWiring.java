@@ -49,6 +49,8 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("!migrate")
 class ApplicationWiring {
+  @org.springframework.context.annotation.Bean
+  io.beep.bo.app.developer.DeveloperConsoleUseCase developerConsole(io.beep.bo.app.port.CoreGatewayPort core,io.beep.bo.app.port.AuditPort audit,io.beep.bo.app.auth.StepUp step,java.time.Clock clock){return new io.beep.bo.app.developer.DeveloperConsoleUseCase(core,audit,step,clock);}
   @Bean
   Clock clock() {
     return Clock.systemUTC();

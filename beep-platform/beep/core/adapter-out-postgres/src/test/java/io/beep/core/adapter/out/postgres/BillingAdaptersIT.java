@@ -89,7 +89,7 @@ class BillingAdaptersIT {
     assertThat(pro.publicPlan()).isTrue();
     assertThat(pro.priceQuarterlyXaf()).isEqualTo(13_500);
     assertThat(pro.priceAnnualXaf()).isEqualTo(41_990);
-    assertThat(plans.findByCode("elite").orElseThrow().publicPlan()).isFalse();
+    assertThat(plans.findByCode("elite").orElseThrow().publicPlan()).isTrue();
   }
 
   @Test

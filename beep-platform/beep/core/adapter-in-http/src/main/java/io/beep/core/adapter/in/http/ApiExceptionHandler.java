@@ -22,6 +22,9 @@ public class ApiExceptionHandler {
   private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
   private static final Map<String, HttpStatus> STATUS = Map.ofEntries(
+      Map.entry("forbidden", HttpStatus.FORBIDDEN),
+      Map.entry("consent_required", HttpStatus.FORBIDDEN),
+      Map.entry("invalid_click_id", HttpStatus.BAD_REQUEST),
       Map.entry("invalid_email", HttpStatus.BAD_REQUEST),
       Map.entry("weak_password", HttpStatus.BAD_REQUEST),
       Map.entry("invalid_request", HttpStatus.BAD_REQUEST),

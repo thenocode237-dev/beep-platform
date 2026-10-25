@@ -9,7 +9,7 @@ ENV_FILE ?= .env
 # Maven s'exécute dans un conteneur JDK 21 : seul Docker est requis sur le poste (pas de JDK local).
 # Avec un JDK 21 local : make test-unit MVN=mvn
 MVN_IMAGE ?= maven:3.9-eclipse-temurin-21
-MVN_CORE ?= MSYS_NO_PATHCONV=1 docker run --rm -v "$(CURDIR)/beep/core:/src" -v beep-m2:/root/.m2 -w /src $(MVN_IMAGE) mvn -B -ntp
+MVN_CORE ?= MSYS_NO_PATHCONV=1 docker run --rm -v "$(CURDIR)/beep/core:/src" -v "$(CURDIR)/contracts:/contracts:ro" -v beep-m2:/root/.m2 -w /src $(MVN_IMAGE) mvn -B -ntp
 MVN_BO   ?= MSYS_NO_PATHCONV=1 docker run --rm -v "$(CURDIR)/backoffice/api:/src" -v beep-m2:/root/.m2 -w /src $(MVN_IMAGE) mvn -B -ntp
 ifdef MVN
 MVN_CORE := cd beep/core && $(MVN) -B -ntp
@@ -107,6 +107,9 @@ test-e2e: ## Bout en bout sur la stack Compose : inscription -> e-mail -> connex
 
 test-load: ## Charge k6 sur la redirection (stack démarrée + make seed) : make test-load RATE=1000 DURATION=60s
 	./scripts/load-test.sh
+
+test-load-phase3: ## Ingestion et redirection simultanées (COLLECT_KEYS requis ; comptes de recette dédiés)
+	bash ./scripts/load-phase3.sh
 
 reserved-slugs: ## Vérifie que chaque route du site (Caddy) est un slug réservé du core
 	@node scripts/reserved-slugs-check.mjs

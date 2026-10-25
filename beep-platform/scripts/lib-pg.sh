@@ -24,5 +24,5 @@ start_temp_pg() {
 mvn_in() {
   local dir="$1"; shift
   MSYS_NO_PATHCONV=1 docker run --rm --network "$NET" -e TEST_DATABASE_URL \
-    -v "$(pwd)/${dir}:/src" -v beep-m2:/root/.m2 -w /src "${MVN_IMAGE:-maven:3.9-eclipse-temurin-21}" mvn -B -ntp "$@"
+    -v "$(pwd)/${dir}:/src" -v "$(pwd)/contracts:/contracts:ro" -v beep-m2:/root/.m2 -w /src "${MVN_IMAGE:-maven:3.9-eclipse-temurin-21}" mvn -B -ntp "$@"
 }

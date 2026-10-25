@@ -2,6 +2,7 @@
 //   Phase 0 : inscription -> e-mail (Mailpit) -> confirmation -> connexion -> TOTP -> réinitialisation ; staff (TOTP), audit append-only
 //   Phase 1 : bêta sur invitation, liens (slugs, quotas), redirection, QR dynamiques, page bio, statistiques, lien magique,
 //             actions staff (désactivation, override, suspension) et leur journalisation
+import { phase3 } from "./phase3-e2e.mjs";
 import { createHmac } from "node:crypto";
 import http from "node:http";
 import { execFileSync } from "node:child_process";
@@ -34,7 +35,7 @@ class Client {
   constructor(host, ua) { this.host = host; this.ua = ua; }
   request(method, path, body, extra = {}) {
     const url = new URL(HTTP);
-    const payload = body === undefined ? undefined : JSON.stringify(body);
+    const payload = body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body);
     return new Promise((resolve, reject) => {
       const req = http.request({
         hostname: url.hostname,
@@ -418,7 +419,7 @@ for (const prefix of ["", "/en"]) {
   }
 }
 r = await visitor.get("/v1/public/plans");
-step("phase 2: published pricing, Pro available / Elite coming soon", r.status === 200 && r.json?.items?.find(p=>p.code==="pro")?.available && !r.json?.items?.find(p=>p.code==="elite")?.available);
+step("phase 3: published pricing, Pro and Elite available", r.status === 200 && r.json?.items?.find(p=>p.code==="pro")?.available && r.json?.items?.find(p=>p.code==="elite")?.available);
 await site.post("/v1/auth/login", {email,password:newPassword,totp:totp(secret)});
 if (process.env.E2E_BILLING_SANDBOX === "1") {
   for(const method of ["mtn_momo","orange_money"]) {
@@ -468,6 +469,7 @@ if(phase2link?.id) {
   r=await visitor.get(`/${phase2link.slug}`);step("phase 2: reviewed host re-enabled",r.status===302);
 }
 for(const path of ["/moderation","/feature-flags","/catalog","/domains","/billing"]){r=await bo.get(path);step(`phase 2: staff page ${path}`,r.status===200);}
+await phase3({site,bo,visitor,step,totp,staffSecret:STAFF_TOTP_SECRET,workspaceId,bio,sleep});
 r=await site.post("/v1/account/export");
 step("phase 2: portable account export excludes secrets",r.status===200&&r.json?.user?.email===email&&!/password_hash|totp_secret|token_hash|visitor_hash/.test(r.text),`status ${r.status}`);
 r=await bo.post(`/api/users/${userId}/export`,{reason:"e2e export",totp:totp(STAFF_TOTP_SECRET)});step("phase 2: staff export with step-up",r.status===200&&r.json?.user?.email===email);

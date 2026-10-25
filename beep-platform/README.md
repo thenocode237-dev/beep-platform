@@ -1,7 +1,9 @@
 # Beep — plateforme
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
-Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 2 développée et recette locale validée ; lancement public en attente des validations externes**. Détail : [`docs/phase-2.md`](docs/phase-2.md).
+Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 3 développée et recette locale validée ; critères de charge et de production encore à valider**. Détail : [`docs/phase-3.md`](docs/phase-3.md).
+
+La phase 3 ajoute conversions et attribution, `beep.js`, analytics de site et campagnes, API publique avec clés et idempotence, webhooks signés, pixels et postbacks, ainsi que leurs outils staff. Elite est disponible dans le catalogue local. Parcours : `/app/developer`, `/docs`, `/en/docs` et `dashboard.beep.localhost/developer`. La stack reste sur invitation ; les paiements de recette sont simulés.
 
 La phase 2 ajoute facturation, domaines personnalisés, règles et simulateur, QR avancés, modération, feature flags et gestion des données du compte. Pages publiques : `/features`, `/pricing`, `/blog`, `/legal`, `/report`, `/status`. La stack locale reste sur invitation et les paiements de recette sont simulés.
 

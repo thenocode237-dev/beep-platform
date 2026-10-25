@@ -18,7 +18,7 @@ class CoreCompatibilityCheck implements ApplicationRunner {
   private static final Logger log = LoggerFactory.getLogger(CoreCompatibilityCheck.class);
 
   /** Version minimale du contrat admin requise (majeure.mineure). */
-  static final String REQUIRED = "0.6";
+  static final String REQUIRED = "0.7";
 
   private final CoreGatewayPort core;
 

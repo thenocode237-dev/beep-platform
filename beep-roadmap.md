@@ -136,6 +136,8 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 
 ### Phase 3 — Conversion et API (S15–S22)
 
+> **État (25 octobre 2026)** : développement livré et recette locale validée côté `beep` et `backoffice` (contrat admin 0.7.0). Les mesures de charge à 2 000 événements/s et 5 000 redirections/s, les comptes publicitaires réels et la recette sur appareils restent ouverts — voir [`beep-platform/docs/phase-3.md`](beep-platform/docs/phase-3.md).
+
 **Cycle 7–8 (S15–S18) : suivi de conversion**
 - `beep` : `beep_cid`, script **`beep.js`** (pixel, pages vues, mode sans cookie), API/ingestion d'événements (`lead`, `sale`, `custom`), **moteur d'attribution** (dernier/premier clic, fenêtres), funnel clics → leads → ventes, revenu par lien, UTM avancé, analytics de site web.
 - `backoffice` : monitoring du pipeline d'événements (débit, rejets, retard), outils de **RGPD au niveau visiteur** (export/suppression de données pseudonymisées), contrôle des quotas d'événements.

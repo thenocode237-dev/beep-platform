@@ -4,6 +4,7 @@ export type NavItem = { href: string; label: string; icon: IconName; permission:
 
 /** Modules affichés selon les droits du rôle (le contrôle réel reste côté API). */
 export const navItems: NavItem[] = [
+  {href:"/developer",label:"Conversions & API",icon:"chart",permission:"METRICS_READ"},
   {href:"/moderation",label:"Modération",icon:"shield",permission:"LINKS_MODERATE"},
   {href:"/feature-flags",label:"Feature flags",icon:"settings",permission:"FLAGS_READ"},
   { href: "/metrics", label: "Tableau de bord", icon: "chart", permission: "METRICS_READ", mobile: true },

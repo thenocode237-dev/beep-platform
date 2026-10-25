@@ -39,6 +39,10 @@ final class PublicPages {
   }
 
   String bio(BioPage p) {
+    return bio(p,true);
+  }
+
+  String bio(BioPage p,boolean showBadge) {
     Palette c = PALETTES.get(p.theme());
     String title = p.seo().title() != null ? p.seo().title() : p.title();
     String description = p.seo().description() != null ? p.seo().description() : p.description();
@@ -62,7 +66,9 @@ final class PublicPages {
     if (p.description() != null) h.append("<p class=\"bio\">").append(esc(p.description())).append("</p>");
     h.append("</header><div class=\"blocks\">");
     for (BioBlock b : p.blocks()) h.append(block(p, b));
-    h.append("</div></main><footer><a href=\"").append(esc(site.url())).append("/\">Propulsé par <strong>beep.</strong></a></footer></body></html>");
+    h.append("</div></main>");
+    if(showBadge)h.append("<footer><a href=\"").append(esc(site.url())).append("/\">Propulsé par <strong>beep.</strong></a></footer>");
+    h.append("</body></html>");
     return h.toString();
   }
 

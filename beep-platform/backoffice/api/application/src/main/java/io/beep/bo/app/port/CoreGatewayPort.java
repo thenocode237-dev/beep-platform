@@ -10,6 +10,9 @@ import java.util.UUID;
  * Les DTO reprennent exactement les schémas du contrat.
  */
 public interface CoreGatewayPort {
+  default Map<String,Object> developerMonitor(UUID staff){throw new UnsupportedOperationException();}
+  default Map<String,Object> developerWorkspace(UUID ws,UUID staff){throw new UnsupportedOperationException();}
+  default Map<String,Object> developerAction(UUID ws,Map<String,Object> action,UUID staff){throw new UnsupportedOperationException();}
   UsersPage listUsers(int limit, String cursor, String query, UUID staffId);
 
   UserDetail getUser(UUID id, UUID staffId);

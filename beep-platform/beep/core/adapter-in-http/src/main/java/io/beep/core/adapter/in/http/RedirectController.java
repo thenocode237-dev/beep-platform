@@ -97,7 +97,7 @@ public class RedirectController {
     return switch (outcome) {
       case Outcome.Redirect r -> ResponseEntity.status(HttpStatus.FOUND).location(URI.create(r.location()))
           .cacheControl(CacheControl.noStore()).header("X-Robots-Tag", "noindex").header("Referrer-Policy", "strict-origin-when-cross-origin").build();
-      case Outcome.ShowBio b -> html(HttpStatus.OK, pages.bio(b.page()), CacheControl.maxAge(java.time.Duration.ofSeconds(30)).cachePublic());
+      case Outcome.ShowBio b -> html(HttpStatus.OK, pages.bio(b.page(),b.showBadge()), CacheControl.maxAge(java.time.Duration.ofSeconds(30)).cachePublic());
       case Outcome.Unavailable u -> html(HttpStatus.GONE, pages.unavailable(lang), CacheControl.noStore());
       case Outcome.Expired e -> html(HttpStatus.GONE, pages.expired(lang), CacheControl.noStore());
       case Outcome.PasswordRequired p -> html(p.wrong() ? HttpStatus.UNAUTHORIZED : HttpStatus.OK, pages.password(lang, p.wrong()), CacheControl.noStore());

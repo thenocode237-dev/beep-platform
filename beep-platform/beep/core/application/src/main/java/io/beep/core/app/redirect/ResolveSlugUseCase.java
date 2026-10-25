@@ -71,7 +71,7 @@ public class ResolveSlugUseCase {
         if (bio.isEmpty()) yield Outcome.NOT_FOUND;
         if (bio.get().workspaceSuspended()) yield Outcome.UNAVAILABLE;
         recorder.record(visit, new ClickRecorder.Target(r.workspaceId(), EventKind.VIEW, null, null, r.targetId(), null));
-        yield new Outcome.ShowBio(bio.get().page());
+        yield new Outcome.ShowBio(bio.get().page(),bio.get().showBadge());
       }
     };
   }

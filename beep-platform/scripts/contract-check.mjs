@@ -50,7 +50,8 @@ for (const [path, item] of Object.entries(spec.paths)) {
   }
   const r = await call("GET", path);
   check(`GET ${path} -> 200`, r.status === 200, `statut ${r.status}`);
-  const validate = validator(schemaOf(op, "200").$ref);
+  const schema = schemaOf(op, "200");
+  const validate = schema.$ref ? validator(schema.$ref) : ajv.compile(schema);
   check(`GET ${path} respecte le schéma`, validate(r.json), JSON.stringify(validate.errors));
 }
 

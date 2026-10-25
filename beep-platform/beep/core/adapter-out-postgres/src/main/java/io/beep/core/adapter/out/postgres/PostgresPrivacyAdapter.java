@@ -15,6 +15,11 @@ public class PostgresPrivacyAdapter implements PrivacyRepository {
     if(ws.isEmpty()) return out;
     UUID wid=ws.get().get("id",UUID.class);
     out.put("workspace", rows("SELECT to_jsonb(w) AS data FROM workspaces w WHERE id=?",wid));
+    out.put("apiKeys",rows("SELECT to_jsonb(k)-'token_hash' AS data FROM api_keys k WHERE workspace_id=?",wid));
+    out.put("webhooks",rows("SELECT to_jsonb(e)-'secret_cipher'-'config_cipher' AS data FROM webhook_endpoints e WHERE workspace_id=?",wid));
+    out.put("conversionSettings",rows("SELECT to_jsonb(c) AS data FROM conversion_links c WHERE workspace_id=?",wid));
+    out.put("conversions",rows("SELECT to_jsonb(e)-'visitor'-'cid' AS data FROM conversion_events e WHERE workspace_id=?",wid));
+    out.put("conversionAggregates",rows("SELECT to_jsonb(d)-'key_hash' AS data FROM conversion_daily d WHERE workspace_id=?",wid));
     out.put("links",rows("SELECT to_jsonb(l)-'password_hash' AS data FROM links l WHERE workspace_id=?",wid));
     out.put("qrCodes",rows("SELECT to_jsonb(q) AS data FROM qr_codes q WHERE workspace_id=?",wid));
     out.put("bioPages",rows("SELECT to_jsonb(p) || jsonb_build_object('blocks',(SELECT coalesce(jsonb_agg(to_jsonb(b) ORDER BY b.position),'[]'::jsonb) FROM bio_blocks b WHERE b.page_id=p.id)) AS data FROM bio_pages p WHERE workspace_id=?",wid));

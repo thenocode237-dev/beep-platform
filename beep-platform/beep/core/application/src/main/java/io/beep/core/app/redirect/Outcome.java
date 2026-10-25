@@ -10,7 +10,9 @@ public sealed interface Outcome {
   record Redirect(String location) implements Outcome {}
 
   /** Page bio à rendre. */
-  record ShowBio(BioPage page) implements Outcome {}
+  record ShowBio(BioPage page,boolean showBadge) implements Outcome {
+    public ShowBio(BioPage page){this(page,true);}
+  }
 
   /** Lien désactivé par la modération ou compte suspendu : page d'information, aucune redirection. */
   record Unavailable() implements Outcome {}

@@ -1,7 +1,8 @@
 # ---- build ----
 FROM maven:3.9-eclipse-temurin-21 AS build
-WORKDIR /src
-COPY . .
+WORKDIR /workspace/beep/core
+COPY beep/core/ .
+COPY contracts/ /workspace/contracts/
 RUN --mount=type=cache,target=/root/.m2 mvn -B -ntp -q -DskipTests package \
  && java -Djarmode=tools -jar bootstrap/target/beep-core.jar extract --layers --launcher --destination /layers
 

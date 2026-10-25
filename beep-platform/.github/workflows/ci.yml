@@ -25,6 +25,7 @@ jobs:
       - name: Contrastes WCAG des tokens (clair + sombre)
         run: npm run contrast
       - run: npm run lint
+      - run: node --test scripts/tracking-script.test.mjs
       - name: Slugs réservés = routes du site déclarées dans Caddy
         run: node scripts/reserved-slugs-check.mjs
       - run: npm run build:web

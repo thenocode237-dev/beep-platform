@@ -28,6 +28,8 @@ public class LinkRouter {
   private final GeoIpPort geoIp;
   private final AppCatalogPort catalog;
   private final DoubleSupplier random;
+  private io.beep.core.app.port.ConversionTrackerPort conversion;
+  public LinkRouter withConversion(io.beep.core.app.port.ConversionTrackerPort tracker) {this.conversion=tracker;return this;}
 
   public LinkRouter(ClickRecorder recorder, GeoIpPort geoIp, AppCatalogPort catalog, DoubleSupplier random) {
     this.recorder = recorder;
@@ -61,6 +63,7 @@ public class LinkRouter {
     }
     recorder.record(visit, target);
     String url = new Destination(chosen).withQuery(rules.query(chosen, visit.query()));
+    if(conversion!=null)url=conversion.track(target.workspaceId(),r.linkId(),url,visit);
 
     if (rules.deeplink() && !ua.bot()) {
       Optional<AppEntry> app = catalog.match(new Destination(chosen).host());

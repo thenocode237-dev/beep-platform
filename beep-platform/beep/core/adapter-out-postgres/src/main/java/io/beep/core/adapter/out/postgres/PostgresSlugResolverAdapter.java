@@ -45,7 +45,9 @@ public class PostgresSlugResolverAdapter implements SlugResolverPort {
 
   @Override
   public Optional<PublishedBio> bioPage(UUID pageId) {
-    return bioPages.findById(pageId).map(p -> new PublishedBio(p,
-        "suspended".equals(dsl.fetchValue("SELECT status FROM workspaces WHERE id = ?", p.workspaceId()))));
+    return bioPages.findById(pageId).map(p -> {
+      var r=dsl.fetchSingle("SELECT w.status,COALESCE(o.value,(p.entitlements->>'features.bio_badge_removable')::bigint,0) AS removable FROM workspaces w JOIN plans p ON p.code=w.plan_code LEFT JOIN entitlement_overrides o ON o.workspace_id=w.id AND o.key='features.bio_badge_removable' WHERE w.id=?",p.workspaceId());
+      return new PublishedBio(p,"suspended".equals(r.get("status",String.class)),r.get("removable",Long.class)!=1L);
+    });
   }
 }

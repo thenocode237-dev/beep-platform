@@ -16,6 +16,7 @@ export function AppShell({ t, locale, email, logoutLabel, children }: { t: Conso
     { path: "/app/qr", label: t.nav.qr, icon: "qr" },
     { path: "/app/bio", label: t.nav.bio, icon: "bio" },
     { path: "/app/domains", label: t.nav.domains, icon: "globe" },
+    { path: "/app/developer", label: locale === "en" ? "Conversions & API" : "Conversions & API", icon: "chart" },
     { path: "/app/billing", label: t.nav.billing, icon: "bag" },
     { path: "/app/settings", label: t.nav.settings, icon: "settings" },
   ];
@@ -29,6 +30,12 @@ export function AppShell({ t, locale, email, logoutLabel, children }: { t: Conso
       <span>{i.label}</span>
     </a>
   ));
+  const mobileNav = [...nav.slice(0, 4), (
+    <a key="more" href={href(locale, "/app/menu")} className="app-nav__item" aria-current={path.endsWith("/app/menu") || items.slice(4).some(i => current(i.path)) ? "page" : undefined}>
+      <Icon name="settings" size={21} />
+      <span>{locale === "en" ? "More" : "Plus"}</span>
+    </a>
+  )];
   return (
     <div className="app-shell">
       <aside className="app-sidebar" aria-label={t.nav.label}>
@@ -60,7 +67,7 @@ export function AppShell({ t, locale, email, logoutLabel, children }: { t: Conso
         {children}
       </main>
       <nav className="app-bottombar" aria-label={t.nav.label}>
-        {nav}
+        {mobileNav}
       </nav>
     </div>
   );

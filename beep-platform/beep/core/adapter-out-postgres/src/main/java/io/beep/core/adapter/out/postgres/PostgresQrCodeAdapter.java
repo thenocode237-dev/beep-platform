@@ -84,7 +84,7 @@ public class PostgresQrCodeAdapter implements QrCodeRepository {
 
   @Override
   public long countDynamicCreatedSince(UUID workspaceId, Instant since) {
-    return dsl.fetchCount(QR, Q_WORKSPACE.eq(workspaceId).and(Q_KIND.eq("dynamic")).and(Q_CREATED.ge(odt(since))));
+    return dsl.fetchSingle("SELECT count(*) FROM resource_creations WHERE workspace_id=? AND resource='qr' AND at>=?::timestamptz",workspaceId,odt(since)).get(0,Long.class);
   }
 
   @Override

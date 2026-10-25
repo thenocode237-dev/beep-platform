@@ -1575,3 +1575,5 @@ select.bp-input { appearance: auto; }
 .public-page input,.public-page select,.public-page textarea {max-width:100%;font:inherit;}
 .public-page p,.public-page dd,.app-page dd {overflow-wrap:anywhere;}
 .public-page .bp-btn {width:fit-content;max-width:100%;}
+/* Developer secrets and examples wrap without expanding the mobile viewport. */
+.developer-code { overflow: auto; max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; background: var(--color-bg-surface); }

@@ -16,7 +16,9 @@ public interface SlugResolverPort {
 
   Optional<PublishedBio> bioPage(UUID pageId);
 
-  record PublishedBio(BioPage page, boolean workspaceSuspended) {}
+  record PublishedBio(BioPage page, boolean workspaceSuspended,boolean showBadge) {
+    public PublishedBio(BioPage page,boolean workspaceSuspended){this(page,workspaceSuspended,true);}
+  }
 
   record Resolution(Kind kind, UUID targetId, UUID workspaceId, String destination, boolean disabled, boolean workspaceSuspended, LinkRules rules, String passwordHash) {
     public static final Resolution NONE = new Resolution(Kind.NONE, null, null, null, false, false);

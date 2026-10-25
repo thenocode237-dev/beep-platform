@@ -38,6 +38,8 @@ public class Workspaces {
   private final QrCodeRepository qrCodes;
   private final BioPageRepository bioPages;
   private final Clock clock;
+  private io.beep.core.app.port.SubscriptionRepository subscriptions;
+  public Workspaces withSubscriptions(io.beep.core.app.port.SubscriptionRepository subscriptions){this.subscriptions=subscriptions;return this;}
 
   public Workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qrCodes, BioPageRepository bioPages, Clock clock) {
     this.workspaces = workspaces;
@@ -65,7 +67,7 @@ public class Workspaces {
   }
 
   public QuotaPolicy.Usage usage(UUID workspaceId, Resource resource) {
-    Instant start = periodStart();
+    Instant start = periodStart(workspaceId);
     return switch (resource) {
       case LINKS -> new QuotaPolicy.Usage(links.count(workspaceId), links.countCreatedSince(workspaceId, start));
       case QR -> new QuotaPolicy.Usage(qrCodes.countDynamic(workspaceId), qrCodes.countDynamicCreatedSince(workspaceId, start));
@@ -80,6 +82,16 @@ public class Workspaces {
   /** Période des quotas mensuels : mois civil UTC (les cycles de facturation arrivent avec les abonnements, phase 2). */
   public Instant periodStart() {
     return LocalDate.now(clock.withZone(ZoneOffset.UTC)).withDayOfMonth(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+  }
+
+  /** Monthly anniversary anchored to the prepaid subscription, including quarterly and annual terms. */
+  public Instant periodStart(UUID workspaceId) {
+    if(subscriptions==null)return periodStart();
+    var sub=subscriptions.findByWorkspace(workspaceId).orElse(null);if(sub==null)return periodStart();
+    var anchor=sub.periodStart().atZone(ZoneOffset.UTC);var now=clock.instant().atZone(ZoneOffset.UTC);
+    if(anchor.isAfter(now))return periodStart();
+    long months=java.time.temporal.ChronoUnit.MONTHS.between(anchor.toLocalDate().withDayOfMonth(1),now.toLocalDate().withDayOfMonth(1));
+    var start=anchor.plusMonths(months);if(start.isAfter(now))start=anchor.plusMonths(Math.max(0,months-1));return start.toInstant();
   }
 
   private static String defaultName(User user) {

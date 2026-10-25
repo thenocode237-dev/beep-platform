@@ -28,6 +28,10 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource><directory>src/main/resources</directory></resource>
+      <resource><directory>../../../contracts</directory><includes><include>beep-public.openapi.yaml</include></includes></resource>
+    </resources>
     <finalName>beep-core</finalName>
     <plugins>
       <plugin>

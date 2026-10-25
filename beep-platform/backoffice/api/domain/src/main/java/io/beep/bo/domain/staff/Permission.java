@@ -2,6 +2,8 @@ package io.beep.bo.domain.staff;
 
 /** Droits fins du staff (specs §3), accordés par rôle. Chaque module de la phase 1 apporte les siens. */
 public enum Permission {
+  API_KEYS_REVOKE,
+  WEBHOOKS_REPLAY,
   USERS_READ,
   PRIVACY_EXPORT,
   PRIVACY_ERASE,

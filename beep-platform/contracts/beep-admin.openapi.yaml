@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Beep — API admin interne
-  version: 0.6.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
+  version: 0.7.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
   description: |
     Contrat entre `beep-core` (serveur) et `backoffice-api` (client). Source de vérité unique :
     on modifie ce fichier EN PREMIER, puis le core et le client.
@@ -18,12 +18,16 @@ info:
     coupons, factures, publication de plans versionnés (prix trimestriel / annuel ajoutés à `Plan`) ;
     0.4.0 (phase 2, cycle 5) domaines personnalisés : liste globale, état DNS/TLS, relance de la vérification, blocage ;
     0.5.0 (phase 2, cycle 6) catalogue d'applications (deeplinks) : lecture, publication versionnée, activation, test en direct ;
-    0.6.0 (phase 2) signalements, modération, liste noire, feature flags et export/suppression de compte.
+    0.6.0 (phase 2) signalements, modération, liste noire, feature flags et export/suppression de compte ;
+    0.7.0 (phase 3) pipeline de conversion, clés API, livraisons, limites et droits des visiteurs.
 servers:
   - url: http://core:8080/internal/admin/v1
 security:
   - serviceToken: []
 paths:
+  /developer/monitor: {"get":{"operationId":"developerMonitor","summary":"Débit, refus, volume et erreurs API, livraisons et retard","responses":{"200":{"description":"Résultat","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeveloperMonitor"}}}}}}}
+  /developer/workspaces/{workspaceId}: {"parameters":[{"name":"workspaceId","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"get":{"operationId":"developerWorkspace","summary":"Clés sans secrets, configuration et journal de livraisons","responses":{"200":{"description":"Résultat","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DeveloperWorkspace"}}}},"404":{"$ref":"#/components/responses/NotFound"}}}}
+  /developer/workspaces/{workspaceId}/actions: {"parameters":[{"name":"workspaceId","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"post":{"operationId":"developerAction","summary":"Révocation, rejeu, limites et droits du visiteur (audité)","parameters":[{"$ref":"#/components/parameters/StaffId"}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["action","reason"],"properties":{"action":{"type":"string","enum":["revoke","replay","limits","visitor.export","visitor.erase"]},"id":{"type":"string"},"reason":{"type":"string","minLength":3,"maxLength":1000},"rpm":{"type":"integer","minimum":0,"maximum":1000000},"events":{"type":"integer","minimum":0,"maximum":1000000}}}}}},"responses":{"200":{"description":"Résultat","content":{"application/json":{"schema":{"type":"object","additionalProperties":true}}}}}}}
 
   /moderation/reports:
     get:
@@ -910,6 +914,12 @@ components:
       description: Membre du staff à l'origine de l'appel.
       schema: { type: string, format: uuid }
   schemas:
+    DeveloperKey: {"type":"object","additionalProperties":false,"required":["id","name","prefix","scopes","origins","publicKey","revokedAt","createdAt"],"properties":{"id":{"type":"string","format":"uuid"},"name":{"type":"string"},"prefix":{"type":"string"},"scopes":{"type":"array","items":{"type":"string","enum":["read","write","events"]}},"origins":{"type":"array","items":{"type":"string"}},"publicKey":{"type":"boolean"},"revokedAt":{"type":["string","null"],"format":"date-time"},"createdAt":{"type":"string","format":"date-time"}}}
+    DeveloperTracking: {"type":"object","additionalProperties":false,"required":["linkId","workspaceId","enabled","model","windowDays","pixels"],"properties":{"linkId":{"type":"string","format":"uuid"},"workspaceId":{"type":"string","format":"uuid"},"enabled":{"type":"boolean"},"model":{"type":"string","enum":["first","last"]},"windowDays":{"type":"integer","minimum":1,"maximum":90},"pixels":{"type":"object","additionalProperties":{"type":"string"}}}}
+    DeveloperWebhook: {"type":"object","additionalProperties":false,"required":["id","url","events","enabled","provider"],"properties":{"id":{"type":"string","format":"uuid"},"url":{"type":"string","format":"uri"},"events":{"type":"array","items":{"type":"string"}},"enabled":{"type":"boolean"},"provider":{"type":"string","enum":["webhook","meta","google"]}}}
+    DeveloperDelivery: {"type":"object","additionalProperties":false,"required":["id","workspaceId","endpointId","event","payload","attempts","status","httpStatus","nextAt","createdAt"],"properties":{"id":{"type":"string","format":"uuid"},"workspaceId":{"type":"string","format":"uuid"},"endpointId":{"type":"string","format":"uuid"},"event":{"type":"string"},"payload":{"type":"string"},"attempts":{"type":"integer"},"status":{"type":"string","enum":["pending","sending","delivered","failed","cancelled"]},"httpStatus":{"type":["integer","null"]},"nextAt":{"type":"string","format":"date-time"},"createdAt":{"type":"string","format":"date-time"}}}
+    DeveloperMonitor: {"type":"object","additionalProperties":false,"required":["events","rejections","api","deliveries"],"properties":{"events":{"type":"integer"},"rejections":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["reason","count"],"properties":{"reason":{"type":"string"},"count":{"type":"integer"}}}},"api":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["bucket","count"],"properties":{"bucket":{"type":"string"},"count":{"type":"integer"}}}},"deliveries":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["status","count","lagSeconds"],"properties":{"status":{"type":"string"},"count":{"type":"integer"},"lagSeconds":{"type":"integer"}}}}}}
+    DeveloperWorkspace: {"type":"object","additionalProperties":false,"required":["keys","tracking","webhooks","deliveries"],"properties":{"keys":{"type":"array","items":{"$ref":"#/components/schemas/DeveloperKey"}},"tracking":{"type":"array","items":{"$ref":"#/components/schemas/DeveloperTracking"}},"webhooks":{"type":"array","items":{"$ref":"#/components/schemas/DeveloperWebhook"}},"deliveries":{"type":"array","items":{"$ref":"#/components/schemas/DeveloperDelivery"}}}}
 
     AbuseReport:
       type: object

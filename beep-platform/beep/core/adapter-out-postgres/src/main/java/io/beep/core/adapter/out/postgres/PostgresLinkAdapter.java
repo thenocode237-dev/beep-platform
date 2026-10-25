@@ -95,7 +95,7 @@ public class PostgresLinkAdapter implements LinkRepository {
 
   @Override
   public long countCreatedSince(UUID workspaceId, Instant since) {
-    return dsl.fetchCount(LINKS, L_WORKSPACE.eq(workspaceId).and(L_CREATED.ge(odt(since))));
+    return dsl.fetchSingle("SELECT count(*) FROM resource_creations WHERE workspace_id=? AND resource='links' AND at>=?::timestamptz",workspaceId,odt(since)).get(0,Long.class);
   }
 
   @Override

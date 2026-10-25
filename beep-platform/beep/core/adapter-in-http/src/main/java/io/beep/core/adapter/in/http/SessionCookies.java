@@ -31,6 +31,7 @@ public class SessionCookies {
   }
 
   public User requireUser(HttpServletRequest req) {
+    if(req.getAttribute("beep.api.user") instanceof User user)return user;
     return authenticate.execute(token(req)).orElseThrow(() -> new DomainException("unauthorized"));
   }
 

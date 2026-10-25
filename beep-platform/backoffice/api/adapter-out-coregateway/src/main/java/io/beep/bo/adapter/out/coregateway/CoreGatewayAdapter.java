@@ -25,6 +25,9 @@ import org.springframework.web.util.UriBuilder;
  * Erreurs : 4xx du core -> {@link CoreRejectedException} (code relayé) ; réseau, 5xx, réponse vide -> {@link CoreUnavailableException}.
  */
 public class CoreGatewayAdapter implements CoreGatewayPort {
+  @Override @SuppressWarnings("unchecked") public Map<String,Object> developerMonitor(UUID staff){return call(()->client.get().uri("/developer/monitor").header("X-Staff-Id",staff.toString()).retrieve().body(Map.class));}
+  @Override @SuppressWarnings("unchecked") public Map<String,Object> developerWorkspace(UUID ws,UUID staff){return call(()->client.get().uri("/developer/workspaces/{id}",ws).header("X-Staff-Id",staff.toString()).retrieve().body(Map.class));}
+  @Override @SuppressWarnings("unchecked") public Map<String,Object> developerAction(UUID ws,Map<String,Object> action,UUID staff){return call(()->client.post().uri("/developer/workspaces/{id}/actions",ws).header("X-Staff-Id",staff.toString()).contentType(MediaType.APPLICATION_JSON).body(action).retrieve().body(Map.class));}
   record MetaDto(String contract) {}
 
   record PlanDto(String code, String name, int version, long priceXaf, long priceQuarterlyXaf, long priceAnnualXaf, @JsonProperty("public") boolean isPublic,

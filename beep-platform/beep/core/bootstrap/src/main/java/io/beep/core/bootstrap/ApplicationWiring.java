@@ -419,8 +419,8 @@ class ApplicationWiring {
 
   // ---- Cas d'usage : espace client ----
   @Bean
-  Workspaces workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qr, BioPageRepository bio, Clock clock) {
-    return new Workspaces(workspaces, plans, links, qr, bio, clock);
+  Workspaces workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qr, BioPageRepository bio, Clock clock,SubscriptionRepository subscriptions) {
+    return new Workspaces(workspaces, plans, links, qr, bio, clock).withSubscriptions(subscriptions);
   }
 
   @Bean
@@ -541,8 +541,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  LinkRouter linkRouter(ClickRecorder recorder, GeoIpPort geoIp, AppCatalogPort catalog) {
-    return new LinkRouter(recorder, geoIp, catalog, () -> java.util.concurrent.ThreadLocalRandom.current().nextDouble());
+  LinkRouter linkRouter(ClickRecorder recorder, GeoIpPort geoIp, AppCatalogPort catalog, io.beep.core.app.port.ConversionTrackerPort conversion) {
+    return new LinkRouter(recorder, geoIp, catalog, () -> java.util.concurrent.ThreadLocalRandom.current().nextDouble()).withConversion(conversion);
   }
 
   @Bean
