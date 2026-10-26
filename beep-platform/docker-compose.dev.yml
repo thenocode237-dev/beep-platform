@@ -1,6 +1,7 @@
 # Surcharge de développement : HTTP simple (*.localhost), Mailpit, journaux lisibles, Flyway au démarrage.
 services:
   proxy:
+    depends_on: [backoffice-api, backoffice-web]
     environment:
       BEEP_SITE: http://${BEEP_DOMAIN}
       BO_SITE: http://dashboard.${BEEP_DOMAIN}

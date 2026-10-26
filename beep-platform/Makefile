@@ -124,7 +124,7 @@ openapi-lint: ## Valide contracts/*.yaml
 	./scripts/openapi-lint.sh
 
 # ---------- Production ----------
-.PHONY: build prod-check deploy-prod prod-up prod-down prod-logs prod-ps release
+.PHONY: build prod-check deploy-prod prod-up prod-down prod-logs prod-ps prod-vpn-check release
 prod-check: ## Vérifie la configuration de production sans afficher les secrets ni démarrer de service
 	@set -o pipefail; $(PROD) config --format json | node scripts/prod-check.mjs
 
@@ -137,12 +137,18 @@ deploy-prod: ## Vérifie, construit, migre puis déploie la production et attend
 	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT) postgres
 	$(PROD) run --rm --no-deps core-migrate
 	$(PROD) run --rm --no-deps backoffice-migrate
-	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT)
-	$(PROD) exec -T proxy caddy reload --config /etc/caddy/Caddyfile
+	@$(MAKE) --no-print-directory prod-up
 	$(PROD) ps
 
 prod-up: prod-check ## Démarre les images de production et attend les services sains
-	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT)
+	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT) core redirector web proxy worker pg-backup
+	$(PROD) exec -T proxy caddy reload --config /etc/caddy/Caddyfile
+	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT) backoffice-api backoffice-web backoffice-vpn backoffice-gateway
+	$(PROD) exec -T backoffice-gateway caddy reload --config /etc/caddy/Caddyfile
+	@$(MAKE) --no-print-directory prod-vpn-check
+
+prod-vpn-check: ## Vérifie le nom réel du nœud, sa connexion et l'absence de Funnel
+	@set -o pipefail; $(PROD) exec -T backoffice-vpn /bin/sh /etc/beep/tailscale-entrypoint.sh status | node scripts/backoffice-vpn-check.mjs
 
 prod-down: ## Arrête la production
 	$(PROD) down

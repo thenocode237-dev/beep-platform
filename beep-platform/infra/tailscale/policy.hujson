@@ -1,0 +1,21 @@
+// Remplacer l'adresse ci-dessous, puis remplacer la politique initiale du
+// réseau dédié par ce fichier (ne pas conserver la règle allow-all initiale).
+{
+  "groups": {
+    "group:beep-staff": ["owner@your-company.invalid"],
+  },
+  "tagOwners": {
+    "tag:beep-admin": ["autogroup:admin"],
+  },
+  "grants": [
+    {"src": ["group:beep-staff"], "dst": ["tag:beep-admin"], "ip": ["tcp:443"]},
+  ],
+  // Tout autre accès est refusé par défaut. Aucun nodeAttrs Funnel ni SSH.
+  "tests": [
+    {
+      "src": "owner@your-company.invalid",
+      "accept": ["tag:beep-admin:443"],
+      "deny": ["tag:beep-admin:80", "tag:beep-admin:8080", "tag:beep-admin:8081", "tag:beep-admin:2019"],
+    },
+  ],
+}

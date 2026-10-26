@@ -1,0 +1,49 @@
+{
+	auto_https off
+	admin 127.0.0.1:2019
+	persist_config off
+	servers {
+		trusted_proxies static 127.0.0.1/32 ::1/128
+		trusted_proxies_strict
+		client_ip_headers X-Forwarded-For
+	}
+}
+
+# Même espace réseau que Tailscale ; inaccessible sur les interfaces Docker.
+http://:8080 {
+	bind 127.0.0.1
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+	@internal path /actuator /actuator/* /internal /internal/*
+	handle @internal {
+		respond 404
+	}
+	handle /healthz {
+		respond "ok" 200
+	}
+	handle /api/* {
+		reverse_proxy backoffice-api:8081 {
+			# TLS termine dans Serve, dont le seul accès à cette socket est local.
+			header_up X-Forwarded-Proto https
+			header_up -Tailscale-User-Login
+			header_up -Tailscale-User-Name
+			header_up -Tailscale-User-Profile-Pic
+		}
+	}
+	handle {
+		reverse_proxy backoffice-web:3000 {
+			header_up X-Forwarded-Proto https
+			header_up -Tailscale-User-Login
+			header_up -Tailscale-User-Name
+			header_up -Tailscale-User-Profile-Pic
+		}
+	}
+}

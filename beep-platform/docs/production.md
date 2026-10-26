@@ -4,7 +4,7 @@
 
 Exécuter les commandes depuis la racine `beep-platform`, sur l’hôte qui doit héberger la production. Prérequis : Docker avec Compose v2 récent (`--wait` et `--wait-timeout`), Node ≥ 20, GNU Make et Bash. Sous Windows, utiliser Git Bash avec Node dans le `PATH`.
 
-Le domaine retenu est **`beep.click`**, avec le back office sur **`dashboard.beep.click`**. Faire pointer ces deux noms DNS vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP. Caddy gère les certificats HTTPS. Les ports 80 et 443 doivent être libres ; deux projets Compose distincts ne peuvent pas les publier simultanément sur la même adresse.
+Le domaine public est **`beep.click`**. Faire pointer ce nom DNS vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP ; Caddy gère son HTTPS. Le backoffice est privé, sur **`https://beep-admin.<réseau>.ts.net`**, avec Tailscale installé sur les appareils autorisés. Préparer le réseau et le secret selon le [guide d’accès privé](backoffice-private.md). Ne pas créer de DNS public pour le backoffice ; retirer l’ancien `dashboard.beep.click` après la recette. Les ports 80 et 443 doivent être libres ; deux projets Compose ne peuvent pas les publier simultanément sur la même adresse.
 
 ```bash
 cp .env.production.example .env.production
@@ -16,7 +16,8 @@ Renseigner dans `.env.production` :
 
 | Variables | Configuration attendue |
 |---|---|
-| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL`, `BO_PUBLIC_URL` | Déjà définis : `beep.click`, `https://beep.click` et `https://dashboard.beep.click` |
+| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL` | Déjà définis : `beep.click`, `https://beep.click` |
+| `BO_PUBLIC_URL`, `TAILSCALE_AUTHKEY_FILE` | Origine privée exacte `https://beep-admin.<réseau>.ts.net`, sans slash final ; chemin du fichier secret d’inscription (par défaut `./secrets/tailscale-authkey`) |
 | `ACME_EMAIL`, `BEEP_VERSION` | Adresse d’exploitation réelle et identifiant de release stable, par exemple `v1.0.0` ; ni `dev` ni `latest` |
 | Mots de passe PostgreSQL, `ADMIN_API_TOKEN`, clés TOTP | Secrets générés par `make init` ; conserver ceux d’une installation existante |
 | `BEEP_CONVERSION_SECRET` | Secret indépendant de 32 octets base64 ; `openssl rand -base64 32` |
@@ -42,15 +43,16 @@ make prod-check ENV_FILE=.env.production
 make deploy-prod ENV_FILE=.env.production
 ```
 
-`prod-check` examine la configuration Compose résolue en mémoire, sans afficher les valeurs des secrets et sans démarrer de service. Il échoue sur les valeurs locales, les secrets absents, les clés de chiffrement mal formées ou un décalage du domaine entre le build et le runtime.
+`prod-check` examine la configuration Compose résolue en mémoire et la configuration Serve, sans afficher les valeurs des secrets ni démarrer de service. Il échoue sur les valeurs locales, les secrets absents, les clés de chiffrement mal formées ou un décalage du domaine entre le build et le runtime. Il vérifie aussi l’origine privée, l’isolation réseau du backoffice, l’absence de ports publiés et de Funnel, ainsi que le fichier de clé Tailscale.
 
-`deploy-prod` exécute séquentiellement la vérification, le build des images, le démarrage de PostgreSQL, les deux migrations Flyway, le démarrage de la stack avec attente de santé, puis le rechargement de Caddy. Toute commande en échec arrête la suite. Les dépendances Compose conservent leur propre vérification des migrations ; une nouvelle exécution Flyway sur un schéma à jour est sans effet. Aucun volume n’est supprimé.
+`deploy-prod` exécute la vérification, le build, le démarrage de PostgreSQL et les deux migrations Flyway. Il démarre et recharge ensuite les services publics, puis démarre le backoffice/VPN avec attente de santé et recharge sa passerelle privée. Enfin, `prod-vpn-check` compare le nom réel du nœud à `BO_PUBLIC_URL` et vérifie Serve sans Funnel. Une panne du tunnel fait échouer cette dernière étape sans arrêter les services publics déjà démarrés. Toute commande en échec arrête la suite. Les migrations déjà appliquées sont sans effet ; aucun volume n’est supprimé.
 
 Le projet Compose de production s’appelle **`beep-prod`**. Les commandes de développement conservent le projet `beep`. Pour une production déjà installée sous un autre nom, fournir **le même nom historique** à toutes les commandes, par exemple `PROD_PROJECT=beep` : changer le nom crée de nouveaux volumes et ne migre pas les anciennes données.
 
 ```bash
 make prod-ps ENV_FILE=.env.production
 make prod-logs ENV_FILE=.env.production s=core
+make prod-vpn-check ENV_FILE=.env.production
 # Si le serveur démarre lentement :
 make deploy-prod ENV_FILE=.env.production DEPLOY_TIMEOUT=300
 ```

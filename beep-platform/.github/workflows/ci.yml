@@ -26,7 +26,7 @@ jobs:
         run: npm run contrast
       - run: npm run lint
       - run: node --test scripts/tracking-script.test.mjs scripts/chrome-extension.test.mjs scripts/mobile-sdk.test.mjs
-      - run: node --test scripts/prod-check.test.mjs
+      - run: node --test scripts/prod-check.test.mjs scripts/backoffice-vpn-check.test.mjs
       - name: Slugs réservés = routes du site déclarées dans Caddy
         run: node scripts/reserved-slugs-check.mjs
       - run: npm run build:web
@@ -62,6 +62,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - name: Isolation réseau du backoffice (sans compte Tailscale)
+        run: node --test scripts/backoffice-network.test.mjs
       - run: make up
       - name: Attendre les services
         run: |

@@ -51,38 +51,20 @@
 	}
 }
 
-# --- Back office ----------------------------------------------------------
-{$BO_SITE} {
-	encode zstd gzip
-	header {
-		Strict-Transport-Security "max-age=31536000; includeSubDomains"
-		X-Frame-Options "DENY"
-		X-Content-Type-Options "nosniff"
-		Referrer-Policy "same-origin"
-		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
-		X-Robots-Tag "noindex, nofollow"
-		-Server
-	}
-
-	# Optionnel : restreindre à une IP/VPN d'entreprise
-	# @blocked not remote_ip {$BO_ALLOWED_IPS}
-	# respond @blocked 403
-
-	handle /actuator/* {
-		respond 404
-	}
-	handle /api/* {
-		reverse_proxy backoffice-api:8081
-	}
-	handle {
-		reverse_proxy backoffice-web:3000
-	}
+# --- Ancienne adresse d'administration : aucune redirection vers le VPN ---
+http://dashboard.{$BEEP_SITE} {
+	respond 404
 }
 
 # --- Domaines personnalisés des clients (TLS à la demande) ----------------
 https:// {
 	tls {
 		on_demand
+	}
+	# S'applique aussi à un ancien certificat en cache ou à un Host forgé.
+	@retired_dashboard host dashboard.{$BEEP_SITE}
+	handle @retired_dashboard {
+		respond 404
 	}
 
 	handle /internal/* {

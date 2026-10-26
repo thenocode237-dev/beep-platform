@@ -13,7 +13,6 @@ services:
     ports: ["80:80", "443:443", "443:443/udp"]
     environment:
       BEEP_SITE: ${BEEP_DOMAIN}
-      BO_SITE: dashboard.${BEEP_DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL}
       REDIRECT_UPSTREAMS: ${REDIRECT_UPSTREAMS:-redirector:8080}
     volumes:
@@ -21,7 +20,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     networks: [edge]
-    depends_on: [core, redirector, web, backoffice-api, backoffice-web]
+    depends_on: [core, redirector, web]
 
   # ---------- PostgreSQL (deux bases : beep, backoffice) ----------
   postgres:

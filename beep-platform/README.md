@@ -2,7 +2,7 @@
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
 
-Domaine de production : **`beep.click`** ; back office : **`dashboard.beep.click`**. Le modèle [`.env.production.example`](.env.production.example) configure ces adresses. Les illustrations et exemples de liens utilisent `beep.click`.
+Domaine de production : **`beep.click`** ; back office privé : **`https://beep-admin.<réseau>.ts.net`**, accessible aux appareils autorisés sur Tailscale, avec mot de passe et TOTP. Préparation : [accès privé](docs/backoffice-private.md) et [modèle de production](.env.production.example). Les illustrations et exemples de liens utilisent `beep.click`.
 Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 5 implémentée et recette locale validée ; validations externes documentées**. Détail : [`docs/phase-5.md`](docs/phase-5.md).
 
 La phase 4 ajoute les workspaces d’équipe (Pro : 3 membres, Elite : 15), rôles et invitations, dossiers/tags, import CSV, intégrations, Radar, rapports, insights, blocs bio avancés, extension Chrome et affiliation. Le back-office supervise ces fonctions, les vues en lecture seule, le contenu publié et les accès staff. Parcours : `/app/team`, `/app/integrations`, `/app/radar`, et `dashboard.beep.localhost/ecosystem`. Installation de l’extension : [`extensions/chrome/README.md`](extensions/chrome/README.md).

@@ -1,5 +1,63 @@
 # Surcharge de production : PostgreSQL + WAL-G (archivage WAL continu, RPO <= 1 min) et sauvegarde de base quotidienne.
 services:
+  backoffice-api:
+    networks: !override [admin, backend, db]
+
+  backoffice-web:
+    networks: !override [admin]
+
+  backoffice-vpn:
+    image: tailscale/tailscale:v1.104.2
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/etc/beep/tailscale-entrypoint.sh"]
+    environment:
+      BO_PUBLIC_URL: ${BO_PUBLIC_URL}
+      TS_HOSTNAME: beep-admin
+      TS_USERSPACE: "true"
+      TS_AUTH_ONCE: "true"
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /etc/tailscale/serve/serve.json
+      TS_EXTRA_ARGS: --advertise-tags=tag:beep-admin --accept-routes=false --ssh=false
+      TS_ROUTES: ""
+      TS_ENABLE_HEALTH_CHECK: "true"
+      TS_LOCAL_ADDR_PORT: 127.0.0.1:9002
+    secrets: [tailscale_authkey]
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+      - ./infra/tailscale/serve:/etc/tailscale/serve:ro
+      - ./infra/tailscale/entrypoint.sh:/etc/beep/tailscale-entrypoint.sh:ro
+    networks: [admin, admin-egress]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9002/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 20s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+  backoffice-gateway:
+    image: caddy:2
+    restart: unless-stopped
+    network_mode: service:backoffice-vpn
+    environment:
+      BO_PUBLIC_URL: ${BO_PUBLIC_URL}
+    volumes:
+      - ./infra/caddy/Caddyfile.backoffice:/etc/caddy/Caddyfile:ro
+    depends_on:
+      backoffice-vpn: { condition: service_started, restart: true }
+      backoffice-api: { condition: service_healthy }
+      backoffice-web: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
   postgres:
     image: beep/postgres:${BEEP_VERSION:-dev}
     networks: [db, backup-egress]       # WAL-G doit pouvoir joindre le stockage S3
@@ -44,4 +102,14 @@ services:
       postgres: { condition: service_healthy }
 
 networks:
+  admin:
+    internal: true
+  admin-egress:                      # Tailscale : contrôle et relais sortants, aucun port publié
   backup-egress:                     # sortie pour S3 ; aucun port publié sur l’hôte
+
+volumes:
+  tailscale_state:
+
+secrets:
+  tailscale_authkey:
+    file: ${TAILSCALE_AUTHKEY_FILE:-./secrets/tailscale-authkey}
