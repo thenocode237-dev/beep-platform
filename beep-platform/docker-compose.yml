@@ -104,7 +104,7 @@ services:
       BILLING_SELLER_NAME: ${BILLING_SELLER_NAME:-Beep}
       BILLING_SELLER_ADDRESS: ${BILLING_SELLER_ADDRESS:-}
       BILLING_SELLER_TAX_ID: ${BILLING_SELLER_TAX_ID:-}
-      DOMAINS_CNAME_TARGET: ${DOMAINS_CNAME_TARGET:-beep.localhost}
+      DOMAINS_CNAME_TARGET: ${DOMAINS_CNAME_TARGET:-${BEEP_DOMAIN:-beep.click}}
       DOMAINS_ALLOWED_IPS: ${DOMAINS_ALLOWED_IPS:-}
       DOMAINS_DNS_RESOLVER: ${DOMAINS_DNS_RESOLVER:-}
       WEB_RISK_API_KEY: ${WEB_RISK_API_KEY:-}
@@ -155,7 +155,7 @@ services:
       context: .
       dockerfile: beep/web/Dockerfile
       args:
-        BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL:-http://beep.localhost}
+        BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL:-https://beep.click}
     environment:
       CORE_INTERNAL_URL: http://core:8080/v1                 # rendu serveur (SSR)
       BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL}

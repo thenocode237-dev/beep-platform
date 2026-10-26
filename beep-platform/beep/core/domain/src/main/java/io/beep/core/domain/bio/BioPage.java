@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-/** Page « link in bio » publiée sur `beep.example/{slug}` (même espace de noms que les liens courts). */
+/** Page « link in bio » publiée sur `beep.click/{slug}` (même espace de noms que les liens courts). */
 public record BioPage(
     UUID id,
     UUID workspaceId,

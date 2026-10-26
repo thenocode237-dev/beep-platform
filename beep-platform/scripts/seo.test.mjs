@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const origin = new URL(process.env.BEEP_PUBLIC_URL || "http://beep.localhost").origin;
+const origin = new URL(process.env.BEEP_PUBLIC_URL || "https://beep.click").origin;
 let core, server, base;
 let logs = "";
 const listen = (server) => new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));

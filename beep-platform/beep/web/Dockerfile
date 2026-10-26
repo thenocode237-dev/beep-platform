@@ -7,7 +7,7 @@ COPY beep/web/package.json beep/web/
 COPY backoffice/web/package.json backoffice/web/
 RUN npm ci --no-audit --no-fund --workspace beep-web --include-workspace-root
 COPY beep/web beep/web
-ARG BEEP_PUBLIC_URL=http://beep.localhost
+ARG BEEP_PUBLIC_URL=https://beep.click
 ENV BEEP_PUBLIC_URL=$BEEP_PUBLIC_URL
 RUN npm run tokens && npm run build -w beep-web
 

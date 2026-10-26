@@ -60,7 +60,7 @@ Le signe Beep est un **point émetteur entouré de deux paires d’ondes**, acco
 
 Une seule famille d’icônes SVG à trait cohérent, dans [Icon.tsx](../packages/ui/src/Icon.tsx). Les icônes décoratives sont masquées aux lecteurs d’écran. Les commandes qui n’affichent qu’une icône ont un nom accessible.
 
-La scène d’accueil assemble une page bio fictive « Atelier Naya », une adresse `beep.example`, des destinations mobile/web, des orbites et un soleil. C’est une illustration HTML/CSS/SVG statique, sans données ni contrôles factices. Le QR est explicitement non scannable. L’histogramme ne porte aucune valeur de performance réelle.
+La scène d’accueil assemble une page bio fictive « Atelier Naya », une adresse `beep.click`, des destinations mobile/web, des orbites et un soleil. C’est une illustration HTML/CSS/SVG statique, sans données ni contrôles factices. Le QR est explicitement non scannable. L’histogramme ne porte aucune valeur de performance réelle.
 
 Deux images locales WebP : [provenance et dimensions](assets.md). Ne pas ajouter de dépendance à une URL d’image distante. Utiliser `next/image`, dimensions explicites et `sizes`. Image de l’aperçu prioritaire sur l’accueil ; photo de section et illustration d’authentification chargées de façon différée. Le panneau illustré d’authentification est masqué sous 1024 px.
 

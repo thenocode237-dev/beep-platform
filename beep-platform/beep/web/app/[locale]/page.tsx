@@ -120,12 +120,12 @@ export default async function Home({
                       <div className="mini-short">
                         <small>{c.shortFrom}</small>
                         <span className="mini-short__long">
-                          votre-boutique.example/collections/nouvelle-saison
+                          boutique.beep.click/collections/nouvelle-saison
                         </span>
                         <Icon name="arrow-right" size={18} />
                         <strong>
                           <Icon name="link" size={18} />
-                          beep.example/vous
+                          beep.click/vous
                         </strong>
                       </div>
                     )}

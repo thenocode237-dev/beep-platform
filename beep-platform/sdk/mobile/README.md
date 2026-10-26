@@ -24,6 +24,8 @@ L’App Store ne transmet pas ce jeton d’installation : ce parcours iOS est un
 
 Importer `resolveDeferred` depuis `typescript/index.mjs` et fournir `baseUrl` (origine HTTPS), `appId`, `token`, `platform` et `scheme`. Le runtime doit fournir fetch, URL et AbortSignal.timeout, ou fournir un `fetchImpl` compatible. La résolution envoie un POST JSON sans cookies, refuse les redirections et retourne uniquement une destination du schéma attendu.
 
+Pour Beep en production, utiliser `baseUrl: 'https://beep.click'`.
+
 Ne pas réessayer automatiquement un token après une erreur de transport : le serveur peut l’avoir consommé avant la perte de réponse. Proposer une navigation d’accueil ou un nouveau parcours d’installation.
 
 ## Distribution et vérification

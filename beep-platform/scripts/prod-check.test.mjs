@@ -6,19 +6,19 @@ function production() {
   const key = Buffer.alloc(32, 7).toString("base64");
   return { services: {
     core: { image: "beep/core:v1.0.0", environment: {
-      BEEP_PUBLIC_URL: "https://beep.example.com", ADMIN_API_TOKEN: "service-secret",
+      BEEP_PUBLIC_URL: "https://beep.click", ADMIN_API_TOKEN: "service-secret",
       TOTP_ENCRYPTION_KEY: key, BEEP_CONVERSION_SECRET: key,
       PAYMENT_PROVIDER: "notchpay", NOTCHPAY_PUBLIC_KEY: "provider-key", NOTCHPAY_HASH_KEY: "provider-secret",
       BILLING_SELLER_ADDRESS: "Address", BILLING_SELLER_TAX_ID: "Registration",
       URL_SAFETY_PROVIDER: "web_risk", WEB_RISK_API_KEY: "safety-key",
-      SMTP_HOST: "smtp.example.com", MAIL_FROM: "Beep <hello@beep.example.com>",
+      SMTP_HOST: "smtp.example.com", MAIL_FROM: "Beep <hello@beep.click>",
     } },
-    web: { build: { args: { BEEP_PUBLIC_URL: "https://beep.example.com" } }, environment: {
-      BEEP_PUBLIC_URL: "https://beep.example.com", LEGAL_PUBLISHER: "Beep", LEGAL_ADDRESS: "Address",
-      LEGAL_REGISTRATION: "Registration", LEGAL_CONTACT: "hello@beep.example.com", LEGAL_HOST: "Host",
+    web: { build: { args: { BEEP_PUBLIC_URL: "https://beep.click" } }, environment: {
+      BEEP_PUBLIC_URL: "https://beep.click", LEGAL_PUBLISHER: "Beep", LEGAL_ADDRESS: "Address",
+      LEGAL_REGISTRATION: "Registration", LEGAL_CONTACT: "hello@beep.click", LEGAL_HOST: "Host",
     } },
-    "backoffice-api": { environment: { BO_PUBLIC_URL: "https://dashboard.beep.example.com", BO_ENCRYPTION_KEY: key } },
-    proxy: { environment: { BEEP_SITE: "beep.example.com", BO_SITE: "dashboard.beep.example.com", ACME_EMAIL: "ops@beep.example.com" } },
+    "backoffice-api": { environment: { BO_PUBLIC_URL: "https://dashboard.beep.click", BO_ENCRYPTION_KEY: key } },
+    proxy: { environment: { BEEP_SITE: "beep.click", BO_SITE: "dashboard.beep.click", ACME_EMAIL: "ops@beep.click" } },
     postgres: { environment: { POSTGRES_USER: "postgres", POSTGRES_PASSWORD: "pg-secret", BEEP_DB_PASSWORD: "db-secret", BO_DB_PASSWORD: "bo-secret", WALG_S3_PREFIX: "s3://backups/pg" } },
     "pg-backup": { environment: { WALG_S3_PREFIX: "s3://backups/pg", AWS_ACCESS_KEY_ID: "backup-id", AWS_SECRET_ACCESS_KEY: "backup-secret" } },
   } };

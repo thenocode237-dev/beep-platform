@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import { Icon } from "@beep/ui";
 import { experience } from "@/lib/experience";
 import type { Locale } from "@/lib/i18n";
@@ -29,7 +29,7 @@ export function ProductPreview({
       <div className="preview-phone">
         <div className="preview-phone__bar" aria-hidden="true">
           <span />
-          beep / naya
+          beep.click/naya
           <Icon name="globe" size={12} />
         </div>
         <div className="preview-phone__photo">
@@ -69,7 +69,7 @@ export function ProductPreview({
         </span>
         <span>
           <small>{c.linkLabel}</small>
-          <strong>beep.example/naya</strong>
+          <strong>beep.click/naya</strong>
         </span>
         <Icon name="arrow-right" size={20} />
       </div>

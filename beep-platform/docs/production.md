@@ -4,10 +4,10 @@
 
 Exécuter les commandes depuis la racine `beep-platform`, sur l’hôte qui doit héberger la production. Prérequis : Docker avec Compose v2 récent (`--wait` et `--wait-timeout`), Node ≥ 20, GNU Make et Bash. Sous Windows, utiliser Git Bash avec Node dans le `PATH`.
 
-Configurer les enregistrements DNS de `BEEP_DOMAIN` et `dashboard.BEEP_DOMAIN` vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP. Caddy gère les certificats HTTPS. Les ports 80 et 443 doivent être libres ; deux projets Compose distincts ne peuvent pas les publier simultanément sur la même adresse.
+Le domaine retenu est **`beep.click`**, avec le back office sur **`dashboard.beep.click`**. Faire pointer ces deux noms DNS vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP. Caddy gère les certificats HTTPS. Les ports 80 et 443 doivent être libres ; deux projets Compose distincts ne peuvent pas les publier simultanément sur la même adresse.
 
 ```bash
-cp .env.example .env.production
+cp .env.production.example .env.production
 make init ENV_FILE=.env.production
 chmod 600 .env.production
 ```
@@ -16,7 +16,7 @@ Renseigner dans `.env.production` :
 
 | Variables | Configuration attendue |
 |---|---|
-| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL`, `BO_PUBLIC_URL` | Domaine sans schéma, puis `https://<domaine>` et `https://dashboard.<domaine>` sans sous-chemin |
+| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL`, `BO_PUBLIC_URL` | Déjà définis : `beep.click`, `https://beep.click` et `https://dashboard.beep.click` |
 | `ACME_EMAIL`, `BEEP_VERSION` | Adresse d’exploitation réelle et identifiant de release stable, par exemple `v1.0.0` ; ni `dev` ni `latest` |
 | Mots de passe PostgreSQL, `ADMIN_API_TOKEN`, clés TOTP | Secrets générés par `make init` ; conserver ceux d’une installation existante |
 | `BEEP_CONVERSION_SECRET` | Secret indépendant de 32 octets base64 ; `openssl rand -base64 32` |
@@ -28,6 +28,8 @@ Renseigner dans `.env.production` :
 | `BACKUP_S3_PREFIX`, `BACKUP_ACCESS_KEY`, `BACKUP_SECRET_KEY` | Dépôt `s3://bucket/chemin` et accès WAL-G ; paramètres endpoint/région si nécessaire |
 
 Adapter aussi `SIGNUP_MODE`, les contacts de support, les fournisseurs OAuth et `DOMAINS_CNAME_TARGET` aux fonctions utilisées. Les vérifications locales ne valident pas les accès aux fournisseurs : effectuer leurs recettes avec les comptes réels.
+
+Le modèle définit `DOMAINS_CNAME_TARGET=beep.click` pour les domaines personnalisés. Les callbacks OAuth sont `https://beep.click/v1/auth/oauth/google/callback` et `https://beep.click/v1/auth/oauth/github/callback`. Le développement local utilise toujours `.env.example` et `beep.localhost`.
 
 Le fichier de secrets est ignoré par Git et exclu du contexte Docker. L’URL publique, non secrète, est transmise au build du site pour que les pages pré-générées utilisent le même domaine que le rendu serveur.
 
@@ -62,10 +64,10 @@ Les pages publiques FR/EN ont des titres et descriptions localisés, une canoniq
 `/sitemap.xml` liste les pages publiques et les articles FR/EN publiés. Les articles sont chargés à la requête : si l’API éditoriale est indisponible, les pages fixes restent listées. Les dates de publication réelles sont utilisées, sans date de modification artificielle. `/robots.txt` annonce ce sitemap. Les routes de compte, de connexion et de signalement renvoient `X-Robots-Tag: noindex, nofollow` ; l’espace client et le back-office ont aussi une métadonnée `noindex`. Les pages bio clientes conservent leurs réglages SEO existants.
 
 ```bash
-curl -fsS https://<domaine>/robots.txt
-curl -fsS https://<domaine>/sitemap.xml
-curl -fsS https://<domaine>/en/features
-curl -sSI https://<domaine>/login
+curl -fsS https://beep.click/robots.txt
+curl -fsS https://beep.click/sitemap.xml
+curl -fsS https://beep.click/en/features
+curl -sSI https://beep.click/login
 ```
 
 Vérifier que les canoniques, les `hreflang`, les URL du sitemap et les aperçus de partage utilisent le domaine HTTPS final. Soumettre ensuite le sitemap dans Google Search Console et Bing Webmaster Tools. Un changement de domaine nécessite de reconstruire l’image du site.

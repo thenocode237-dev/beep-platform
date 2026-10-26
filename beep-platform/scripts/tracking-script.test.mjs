@@ -16,7 +16,7 @@ function browser({ cookieless = false, gpc = false } = {}) {
     cookies = new Map();
   const document = {
     currentScript: {
-      src: "https://beep.example/beep.js",
+      src: "https://beep.click/beep.js",
       getAttribute(n) {
         return n === "data-key"
           ? "pk_public"

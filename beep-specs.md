@@ -3,7 +3,7 @@
 Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, QR codes, link in bio, suivi de conversion, analytics, API/webhooks**, avec un **back office** (staff) exposé en sous-domaine.
 
 > Statut : v1.1 du document (PostgreSQL + Java) · Périmètre : `beep` (plateforme) + `backoffice` (administration)
-> Domaine de référence dans ce document : `beep.example` (en local : `beep.localhost`).
+> Domaine de référence dans ce document : `beep.click` (en local : `beep.localhost`).
 
 > Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de Beep. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
 
@@ -15,7 +15,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 |---|---|---|
 | H1 | Base de données | **PostgreSQL 16 livré dans le Compose** (un serveur, deux bases `beep` et `backoffice`, deux rôles sans droits croisés). Choix retenu pour la croissance : concurrence d'écriture, réplication, PITR, partitionnement des événements. Les accès restent derrière des *ports* (le domaine ignore la base). |
 | H2 | Deux projets | `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff). Chacun a **sa propre base** et son propre code en Clean Architecture. |
-| H3 | Même domaine | `beep.example` = site + espace client + API + redirections. `dashboard.beep.example` = back office. |
+| H3 | Même domaine | `beep.click` = site + espace client + API + redirections. `dashboard.beep.click` = back office. |
 | H4 | Stack | Backend **Java 21 + Spring Boot 3** (Maven multi-modules, jOOQ, Flyway), front **Next.js** (site, espace client **et** back office), reverse proxy **Caddy**, **Docker Compose**. Le domaine et les cas d'usage restent en Java pur, sans dépendance au framework. |
 | H5 | « Radar » | Le module « Radar » de Taap.it n'est pas documenté publiquement. Dans Beep, **Radar = flux d'activité temps réel + alertes** (pic de trafic, lien cassé, domaine en erreur). À confirmer. |
 | H6 | Tarifs | Offres **Starter (gratuit)**, **Pro 4 999 FCFA/mois** et **Elite 14 999 FCFA/mois**, fixées par le porteur du projet. Quotas inspirés de la grille publique de Taap.it (5 liens/QR/1 page en gratuit, 50 au total en entrée de gamme, 500 créations par mois en haut de gamme, 10 domaines, 15 membres). Prix supposés **TTC** ; à valider par une étude de coûts (infrastructure, frais de l'agrégateur de paiement). |
@@ -52,7 +52,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Export CSV/JSON et suppression des données (RGPD).
 
 ### 2.2 Liens courts (Short links)
-- Création en un champ : URL de destination → lien `beep.example/{slug}`.
+- Création en un champ : URL de destination → lien `beep.click/{slug}`.
 - Slug personnalisé, génération automatique (base62, 7 caractères), liste de slugs réservés (§8.4).
 - Titre, notes, tags, dossier.
 - Règles avancées : expiration (date / nombre de clics), mot de passe, rotation A/B de destinations (répartition pondérée), routage par pays, par langue, par OS/appareil.
@@ -88,7 +88,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Génération en masse depuis un CSV (Elite). Modèles de style enregistrables.
 
 ### 2.7 Link in bio
-- Page publique `beep.example/{slug}` (ou domaine perso) : hub entièrement personnalisable.
+- Page publique `beep.click/{slug}` (ou domaine perso) : hub entièrement personnalisable.
 - Blocs : lien, bouton, titre, texte, image, galerie, vidéo (YouTube, Vimeo, TikTok), audio (Spotify, SoundCloud), réseaux sociaux (icônes), capture d'e-mail, formulaire de contact, carte, compte à rebours, FAQ, séparateur, produit.
 - Blocs **programmables** : affichage entre deux dates, par pays, par appareil.
 - Thèmes (clair/sombre, polices, couleurs, arrière-plans image/dégradé/vidéo), CSS personnalisé (Elite).
@@ -146,7 +146,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 
 ## 3. Périmètre fonctionnel — back office `backoffice`
 
-Accessible uniquement sur `dashboard.beep.example`, réservé au personnel.
+Accessible uniquement sur `dashboard.beep.click`, réservé au personnel.
 
 | Module | Fonctions |
 |---|---|
@@ -176,7 +176,7 @@ Accessible uniquement sur `dashboard.beep.example`, réservé au personnel.
                     ┌─────▼─────┐   TLS auto + on-demand TLS (domaines clients)
                     │   Caddy   │
                     └─┬───┬───┬─┘
-   beep.example       │   │   │      dashboard.beep.example
+   beep.click       │   │   │      dashboard.beep.click
         ┌─────────────┘   │   └─────►┌──────────────────────────┐
         ▼                 │          │ backoffice-web (Next.js) │
  ┌────────────┐   /v1/*, /{slug}     │ backoffice-api (Java)    │
@@ -267,13 +267,13 @@ Le contrat `beep-admin.openapi.yaml` est **la source de vérité** : l'interface
 
 | Hôte + chemin | Destination |
 |---|---|
-| `beep.example/`, `/pricing`, `/blog`, `/features/*`, `/docs`, `/roadmap`, `/changelog`, `/affiliates`, `/report`, `/login`, `/signup`, `/app/*`, `/legal/*`, `/_next/*` | `beep-web` (Next.js) |
-| `beep.example/v1/*`, `/healthz`, `/beep.js`, `/_b/*` | `beep-core` (API publique, script de suivi, collecte d'événements) |
-| `beep.example/{slug}` (tout le reste) | `beep-core` (redirection ou page bio) |
-| `beep.example/internal/*`, `/actuator/*` | **404** (jamais exposé) |
+| `beep.click/`, `/pricing`, `/blog`, `/features/*`, `/docs`, `/roadmap`, `/changelog`, `/affiliates`, `/report`, `/login`, `/signup`, `/app/*`, `/legal/*`, `/_next/*` | `beep-web` (Next.js) |
+| `beep.click/v1/*`, `/healthz`, `/beep.js`, `/_b/*` | `beep-core` (API publique, script de suivi, collecte d'événements) |
+| `beep.click/{slug}` (tout le reste) | `beep-core` (redirection ou page bio) |
+| `beep.click/internal/*`, `/actuator/*` | **404** (jamais exposé) |
 | `{domaine client}/*` (TLS à la demande) | `beep-core` |
-| `dashboard.beep.example/api/*` | `backoffice-api` (Java) |
-| `dashboard.beep.example/*` | `backoffice-web` (Next.js) |
+| `dashboard.beep.click/api/*` | `backoffice-api` (Java) |
+| `dashboard.beep.click/*` | `backoffice-web` (Next.js) |
 
 Les cookies de session sont **host-only** (pas d'attribut `Domain`) : une session du site ne donne aucun accès au back office, et inversement. `/healthz` est un simple contrôle de vivacité exposé sur le port applicatif (8080). Les endpoints Actuator (santé détaillée, métriques) tournent sur un **port de gestion séparé** (8090 pour `core` et `worker`, 8091 pour `backoffice-api`), jamais routé par Caddy.
 
@@ -846,7 +846,7 @@ release: lint test build ## Pipeline de release locale
 ```dotenv
 # Domaine (dev : beep.localhost ; le back office est sur dashboard.<domaine>)
 BEEP_DOMAIN=beep.localhost
-ACME_EMAIL=ops@beep.example
+ACME_EMAIL=ops@beep.click
 BEEP_VERSION=dev
 
 # PostgreSQL

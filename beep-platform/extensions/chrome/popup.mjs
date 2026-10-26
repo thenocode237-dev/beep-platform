@@ -11,7 +11,7 @@ let idempotency = crypto.randomUUID(),
 if (!config.key) settings.open = true;
 const local = await chrome.storage.local.get("origin");
 connect.elements.origin.value =
-  config.origin || local.origin || "http://beep.localhost";
+  config.origin || local.origin || "https://beep.click";
 try {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   form.elements.url.value = destination(tab?.url || "");

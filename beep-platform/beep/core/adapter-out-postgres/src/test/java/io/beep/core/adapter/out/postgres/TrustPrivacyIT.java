@@ -63,8 +63,8 @@ class TrustPrivacyIT {
   }
   @Test void shortLinkReportsResolveToTheDestinationAndScansGuardConcurrentEdits() {
     var l=link("reported","https://unsafe.example/path");
-    assertThat(trust.destinationOf("https://beep.example/reported","beep.example")).contains("https://unsafe.example/path");
-    assertThat(trust.destinationOf("https://attacker.example/reported","beep.example")).isEmpty();
+    assertThat(trust.destinationOf("https://beep.click/reported","beep.click")).contains("https://unsafe.example/path");
+    assertThat(trust.destinationOf("https://attacker.example/reported","beep.click")).isEmpty();
     var target=trust.scanTargets(50).getFirst();
     links.update(l.edit(l.slug(),Destination.parse("https://changed.example"),null,NOW.plusSeconds(1)));
     assertThat(trust.scanned(target.id(),target.url(),target.updatedAt(),NOW.plusSeconds(2))).isFalse();

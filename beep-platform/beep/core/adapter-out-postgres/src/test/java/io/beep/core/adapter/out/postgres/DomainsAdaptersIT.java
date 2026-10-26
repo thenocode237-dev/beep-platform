@@ -154,9 +154,9 @@ class DomainsAdaptersIT {
 
   @Test
   void routerClassifiesHostsAndReflectsBlockingAndSuspension() {
-    var router = new PostgresDomainRouterAdapter(dsl, Set.of("beep.example", "localhost"));
+    var router = new PostgresDomainRouterAdapter(dsl, Set.of("beep.click", "localhost"));
     CustomDomain a = domain("go.acme.co");
-    assertThat(router.route("beep.example")).isEqualTo(DomainRouterPort.Route.MAIN);
+    assertThat(router.route("beep.click")).isEqualTo(DomainRouterPort.Route.MAIN);
     assertThat(router.route("LOCALHOST")).isEqualTo(DomainRouterPort.Route.MAIN);
     assertThat(router.route("nope.example").kind()).isEqualTo(DomainRouterPort.Route.Kind.UNKNOWN);
 

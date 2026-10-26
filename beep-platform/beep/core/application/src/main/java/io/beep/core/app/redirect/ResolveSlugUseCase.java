@@ -12,7 +12,7 @@ import io.beep.core.domain.link.Slug;
 import java.util.Optional;
 
 /**
- * Chemin critique `beep.example/{slug}` : résolution (cache mémoire), contrôles, événement asynchrone, réponse.
+ * Chemin critique `beep.click/{slug}` : résolution (cache mémoire), contrôles, événement asynchrone, réponse.
  * Aucun appel réseau externe ; sur un succès de cache, aucun accès base. Les quotas n'interviennent jamais ici.
  */
 public class ResolveSlugUseCase {

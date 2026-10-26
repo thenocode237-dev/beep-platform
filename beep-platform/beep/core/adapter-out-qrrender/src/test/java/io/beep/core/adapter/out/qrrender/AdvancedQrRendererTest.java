@@ -14,7 +14,7 @@ class AdvancedQrRendererTest {
   @Test void everyModuleShapeAndFrameRemainsReadableWithAGradientAndLogo() throws Exception {
     var logo=new BufferedImage(32,32,BufferedImage.TYPE_INT_RGB);var graphics=logo.createGraphics();graphics.setColor(java.awt.Color.BLUE);graphics.fillRect(0,0,32,32);graphics.dispose();
     var out=new ByteArrayOutputStream();ImageIO.write(logo,"png",out);String data="data:image/png;base64,"+Base64.getEncoder().encodeToString(out.toByteArray());
-    String content="https://beep.example/q/AbCdEf12";
+    String content="https://beep.click/q/AbCdEf12";
     for(String shape:List.of("square","rounded","dots"))for(String frame:List.of("none","scan","scan-fr")) {
       var style=QrStyle.DEFAULT.decorated(new QrStyle.Decoration(shape,"#304F36",data,frame));
       var png=renderer.render(content,style,QrFormat.PNG,1024);var image=ImageIO.read(new ByteArrayInputStream(png));int w=image.getWidth(),h=image.getHeight();

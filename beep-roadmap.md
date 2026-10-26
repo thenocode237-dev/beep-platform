@@ -1,6 +1,6 @@
 # Beep — Roadmap de développement (plateforme + back office)
 
-Ce document planifie l'évolution **simultanée** de `beep` et de `backoffice`, en Clean Architecture, sur Docker Compose, avec les deux projets sous le même domaine (`beep.example` et `dashboard.beep.example`).
+Ce document planifie l'évolution **simultanée** de `beep` et de `backoffice`, en Clean Architecture, sur Docker Compose, avec les deux projets sous le même domaine (`beep.click` et `dashboard.beep.click`).
 Il complète `beep-specs.md`.
 
 ## Direction d’interface — mise à jour du 24 octobre 2026

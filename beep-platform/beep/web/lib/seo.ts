@@ -3,7 +3,7 @@ import { getDictionary, href, isLocale, type Locale } from "@/lib/i18n";
 
 // Keep the same origin at build time (prerendered pages) and at runtime (SSR).
 export function siteUrl() {
-  return new URL(process.env.BEEP_PUBLIC_URL || "http://beep.localhost");
+  return new URL(process.env.BEEP_PUBLIC_URL || "https://beep.click");
 }
 
 export const publicPages = {
