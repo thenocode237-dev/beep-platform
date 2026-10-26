@@ -3,11 +3,13 @@ export const generateMetadata = publicMetadata("/");
 import Image from "next/image";
 import { SiteStructuredData } from "@/components/SiteStructuredData";
 import { notFound } from "next/navigation";
-import { Badge, Icon, type IconName } from "@beep/ui";
+import { Icon, type IconName } from "@beep/ui";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ProductPreview } from "@/components/ProductPreview";
+import { LandingEnhancements } from "@/components/LandingEnhancements";
 import { experience } from "@/lib/experience";
 import { getDictionary, href, isLocale } from "@/lib/i18n";
+import "./landing.css";
 
 export default async function Home({
   params,
@@ -20,20 +22,20 @@ export default async function Home({
   const h = dict.home;
   const c = experience(locale);
   return (
-    <>
+    <div className="landing-page">
       <SiteStructuredData locale={locale} />
       <SiteHeader dict={dict} locale={locale} />
       <main id="main">
         <section className="hero">
           <div className="bp-container hero__inner">
-            <div className="hero__copy">
+            <div className="hero__copy" data-reveal="">
               <h1>
                 {c.title}
                 <br />
                 <span>{c.titleAccent}</span>
               </h1>
               <p className="hero__sub">{c.intro}</p>
-              <div className="hero__actions">
+              <div className="hero__actions" data-hero-cta="">
                 <a className="bp-btn" href={href(locale, "/signup")}>
                   {h.ctaPrimary}
                   <Icon name="arrow-right" size={18} />
@@ -51,10 +53,12 @@ export default async function Home({
             <ProductPreview locale={locale} />
           </div>
           <div className="bp-container">
-            <p className="release-note">
-              <Icon name="info" size={17} />
-              {c.release}
-            </p>
+            <div className="hero__platform">
+              <span><Icon name="check" size={17} />{c.release}</span>
+              <a className="text-link" href={href(locale, "/pricing")}>
+                {c.pricingLink}<Icon name="arrow-right" size={16} />
+              </a>
+            </div>
           </div>
         </section>
 
@@ -82,7 +86,7 @@ export default async function Home({
           <div className="bp-container">
             <ul className="benefit-grid">
               {c.benefits.map((b) => (
-                <li key={b.title}>
+                <li key={b.title} data-reveal="">
                   <Icon name={b.icon as IconName} size={25} />
                   <h2>{b.title}</h2>
                   <p>{b.text}</p>
@@ -94,7 +98,7 @@ export default async function Home({
 
         <section id="possibilities" className="section features-section">
           <div className="bp-container">
-            <div className="section-heading">
+            <div className="section-heading" data-reveal="">
               <h2>
                 {c.featureTitle}
                 <br />
@@ -104,10 +108,10 @@ export default async function Home({
             </div>
             <ul className="feature-grid">
               {h.features.map((f, i) => (
-                <li key={f.title} className={`feature feature--${i}`}>
+                <li key={f.title} className={`feature feature--${i}`} data-reveal="">
                   <div className="feature__top">
                     <Icon name={f.icon as IconName} size={24} />
-                    <Badge soon>{dict.common.soon}</Badge>
+                    <span className="feature__number" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                   </div>
                   <h3>{f.title}</h3>
                   <p className="muted">{f.text}</p>
@@ -196,9 +200,37 @@ export default async function Home({
           </div>
         </section>
 
+        <section className="growth-section" aria-labelledby="growth-title">
+          <div className="bp-container">
+            <div className="growth-section__heading" data-reveal="">
+              <p className="section-kicker">{c.growth.eyebrow}</p>
+              <h2 id="growth-title">{c.growth.title}</h2>
+              <p>{c.growth.intro}</p>
+            </div>
+            <ul className="growth-grid">
+              {c.growth.cards.map((card) => (
+                <li key={card.title} data-reveal="">
+                  <Icon name={card.icon as IconName} size={26} />
+                  <h3>{card.title}</h3>
+                  <p>{card.text}</p>
+                </li>
+              ))}
+            </ul>
+            <div className="growth-section__actions">
+              <a className="bp-btn" href={href(locale, "/pricing")}>
+                {c.pricingLink}<Icon name="arrow-right" size={18} />
+              </a>
+              <a className="text-link" href={href(locale, "/docs")}>
+                {c.growth.docs}<Icon name="arrow-right" size={18} />
+              </a>
+            </div>
+            <p className="growth-section__note">{c.growth.note}</p>
+          </div>
+        </section>
+
         <section id="how-it-works" className="section story-section">
           <div className="bp-container story-grid">
-            <div className="story-photo">
+            <div className="story-photo" data-reveal="">
               <Image
                 src="/assets/workspace.webp"
                 alt={c.photoAlt}
@@ -215,7 +247,7 @@ export default async function Home({
                 </span>
               </div>
             </div>
-            <div className="story-copy">
+            <div className="story-copy" data-reveal="">
               <h2>
                 {c.storyTitle}
                 <br />
@@ -240,7 +272,13 @@ export default async function Home({
 
         <section id="faq" className="section faq-section">
           <div className="bp-container faq-grid">
-            <h2>{c.faqTitle}</h2>
+            <div data-reveal="">
+              <h2>{c.faqTitle}</h2>
+              <p>{c.faqIntro}</p>
+              <a className="text-link" href={href(locale, "/pricing")}>
+                {c.pricingLink}<Icon name="arrow-right" size={16} />
+              </a>
+            </div>
             <div>
               {c.faqs.map((f) => (
                 <details className="faq" key={f.q}>
@@ -256,7 +294,7 @@ export default async function Home({
         </section>
 
         <section className="final-cta">
-          <div className="bp-container final-cta__inner">
+          <div className="bp-container final-cta__inner" data-reveal="">
             <div>
               <h2>
                 {c.finalTitle}
@@ -265,7 +303,7 @@ export default async function Home({
               </h2>
               <p>{c.finalText}</p>
             </div>
-            <a className="bp-btn" href={href(locale, "/signup")}>
+            <a className="bp-btn" href={href(locale, "/signup")} data-final-cta="">
               {h.ctaPrimary}
               <Icon name="arrow-right" size={19} />
             </a>
@@ -289,12 +327,7 @@ export default async function Home({
         </section>
       </main>
       <SiteFooter dict={dict} locale={locale} />
-      <div className="sticky-cta">
-        <a className="bp-btn bp-btn--block" href={href(locale, "/signup")}>
-          {h.ctaPrimary}
-          <Icon name="arrow-right" size={18} />
-        </a>
-      </div>
-    </>
+      <LandingEnhancements href={href(locale, "/signup")} label={h.ctaPrimary} />
+    </div>
   );
 }

@@ -5,13 +5,15 @@
 export function Logo({
   href = "/",
   label = "Beep",
+  variant = "full",
 }: {
   href?: string;
   label?: string;
+  variant?: "full" | "wordmark";
 }) {
   return (
     <a className="bp-logo" href={href} aria-label={label}>
-      <svg
+      {variant === "full" && <svg
         className="bp-logo__mark"
         width="34"
         height="34"
@@ -26,9 +28,9 @@ export function Logo({
           strokeLinecap="round"
         />
         <circle cx="50" cy="50" r="7.3" fill="var(--color-brand-signature)" />
-      </svg>
+      </svg>}
       <span aria-hidden="true">
-        beep<span className="bp-logo__dot">.</span>
+        beep{variant === "full" && <span className="bp-logo__dot">.</span>}
       </span>
     </a>
   );

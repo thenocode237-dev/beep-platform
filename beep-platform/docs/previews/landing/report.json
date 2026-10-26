@@ -1,0 +1,95 @@
+{
+  "checks": 165,
+  "results": [
+    {
+      "locale": "fr",
+      "width": 320,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "fr",
+      "width": 375,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "fr",
+      "width": 390,
+      "mode": "standard",
+      "checks": 16
+    },
+    {
+      "locale": "fr",
+      "width": 768,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "fr",
+      "width": 1024,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "fr",
+      "width": 1440,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "en",
+      "width": 320,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "en",
+      "width": 375,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "mode": "standard",
+      "checks": 16
+    },
+    {
+      "locale": "en",
+      "width": 768,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "en",
+      "width": 1024,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "en",
+      "width": 1440,
+      "mode": "standard",
+      "checks": 12
+    },
+    {
+      "locale": "fr",
+      "width": 390,
+      "mode": "reduced-motion",
+      "checks": 5
+    },
+    {
+      "locale": "fr",
+      "width": 390,
+      "mode": "no-javascript",
+      "checks": 5
+    },
+    {
+      "locale": "fr",
+      "width": 390,
+      "mode": "dark",
+      "checks": 3
+    }
+  ]
+}

@@ -16,6 +16,7 @@ export function ProductPreview({
     <figure
       className={`product-scene${compact ? " product-scene--compact" : ""}`}
       aria-label={c.preview}
+      data-reveal={compact ? undefined : ""}
     >
       <div className="scene-orbit scene-orbit--one" aria-hidden="true" />
       <div className="scene-orbit scene-orbit--two" aria-hidden="true" />
