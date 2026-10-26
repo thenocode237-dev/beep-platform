@@ -1,4 +1,7 @@
-﻿import Image from "next/image";
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/");
+import Image from "next/image";
+import { SiteStructuredData } from "@/components/SiteStructuredData";
 import { notFound } from "next/navigation";
 import { Badge, Icon, type IconName } from "@beep/ui";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
@@ -18,6 +21,7 @@ export default async function Home({
   const c = experience(locale);
   return (
     <>
+      <SiteStructuredData locale={locale} />
       <SiteHeader dict={dict} locale={locale} />
       <main id="main">
         <section className="hero">

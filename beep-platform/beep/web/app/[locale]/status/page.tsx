@@ -1,8 +1,9 @@
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/status");
 import {notFound} from "next/navigation";
 import {PublicPage} from "@/components/PublicPage";
 import {isLocale} from "@/lib/i18n";
 export const dynamic="force-dynamic";
-export const metadata={title:"État des services · Beep"};
 async function check(url:string){try{const r=await fetch(url,{cache:"no-store",signal:AbortSignal.timeout(3000)});return r.ok;}catch{return false;}}
 export default async function Page({params}:{params:Promise<{locale:string}>}){
  const {locale}=await params;if(!isLocale(locale))notFound();const en=locale==="en";

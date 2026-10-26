@@ -1,3 +1,5 @@
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/blog");
 import { notFound } from "next/navigation";
 import { PublicPage } from "@/components/PublicPage";
 import { editorial, editorialLanguage } from "@/lib/editorial";

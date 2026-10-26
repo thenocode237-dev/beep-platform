@@ -150,7 +150,12 @@ services:
 
   web:
     <<: *common
-    build: { context: ., dockerfile: beep/web/Dockerfile }
+    image: beep/web:${BEEP_VERSION:-dev}
+    build:
+      context: .
+      dockerfile: beep/web/Dockerfile
+      args:
+        BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL:-http://beep.localhost}
     environment:
       CORE_INTERNAL_URL: http://core:8080/v1                 # rendu serveur (SSR)
       BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL}
@@ -211,6 +216,7 @@ services:
 
   backoffice-web:
     <<: *common
+    image: beep/backoffice-web:${BEEP_VERSION:-dev}
     build: { context: ., dockerfile: backoffice/web/Dockerfile }
     environment:
       BO_API_INTERNAL_URL: http://backoffice-api:8081/api    # rendu serveur (SSR)

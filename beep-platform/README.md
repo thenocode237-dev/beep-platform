@@ -27,6 +27,17 @@ make seed            # (optionnel) démo : demo@beep.localhost, lien /demo, page
 
 `make help` liste toutes les commandes.
 
+## SEO et production
+
+Les pages publiques disposent de métadonnées FR/EN, de canoniques, de liens de langue et d’un sitemap dynamique. Pour préparer le serveur, les DNS et les variables de production, suivre le [guide de déploiement](docs/production.md).
+
+```bash
+make prod-check ENV_FILE=.env.production
+make deploy-prod ENV_FILE=.env.production
+```
+
+Le déploiement vérifie la configuration, construit les images, exécute les migrations puis attend les services sains. Le projet Compose `beep-prod` sépare les volumes de production du développement.
+
 ## Ce que livre la phase 1
 
 | Domaine | Livré |

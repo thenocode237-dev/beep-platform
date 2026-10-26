@@ -4,5 +4,7 @@
 **/dist
 .git
 .env
+.env.*
+!.env.example
 backups
 *.log

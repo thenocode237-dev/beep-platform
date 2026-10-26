@@ -1,8 +1,9 @@
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/pricing");
 import { notFound } from "next/navigation";
 import { PublicPage } from "@/components/PublicPage";
 import { href, isLocale } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Offres · Beep" };
 type Plan = {
   code: string;
   name: string;

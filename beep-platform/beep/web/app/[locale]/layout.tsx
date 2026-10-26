@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import "@beep/ui/styles.css";
 import "../site.css";
 import { getDictionary, isLocale, locales } from "@/lib/i18n";
+import { defaultMetadata } from "@/lib/seo";
 
 const body = localFont({
   src: "../../../../packages/design-tokens/assets/fonts/dm-sans-latin.woff2",
@@ -40,21 +41,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const dict = getDictionary(locale);
-  return {
-    metadataBase: new URL(
-      process.env.BEEP_PUBLIC_URL ?? "http://beep.localhost",
-    ),
-    title: dict.meta.title,
-    description: dict.meta.description,
-    alternates: { languages: { fr: "/", en: "/en" } },
-    openGraph: {
-      title: dict.meta.title,
-      description: dict.meta.description,
-      locale: locale === "fr" ? "fr_FR" : "en_US",
-      type: "website",
-    },
-  };
+  return defaultMetadata(locale);
 }
 
 export default async function RootLayout({

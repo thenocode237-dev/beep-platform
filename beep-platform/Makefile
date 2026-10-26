@@ -2,9 +2,11 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
 COMPOSE  ?= docker compose
-DEV      := $(COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml
-PROD     := $(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --profile prod
 ENV_FILE ?= .env
+PROD_PROJECT ?= beep-prod
+DEPLOY_TIMEOUT ?= 180
+DEV      := $(COMPOSE) --env-file "$(ENV_FILE)" -f docker-compose.yml -f docker-compose.dev.yml
+PROD     := $(COMPOSE) --project-name "$(PROD_PROJECT)" --env-file "$(ENV_FILE)" -f docker-compose.yml -f docker-compose.prod.yml --profile prod
 
 # Maven s'exécute dans un conteneur JDK 21 : seul Docker est requis sur le poste (pas de JDK local).
 # Avec un JDK 21 local : make test-unit MVN=mvn
@@ -122,15 +124,34 @@ openapi-lint: ## Valide contracts/*.yaml
 	./scripts/openapi-lint.sh
 
 # ---------- Production ----------
-.PHONY: build prod-up prod-down release
+.PHONY: build prod-check deploy-prod prod-up prod-down prod-logs prod-ps release
+prod-check: ## Vérifie la configuration de production sans afficher les secrets ni démarrer de service
+	@set -o pipefail; $(PROD) config --format json | node scripts/prod-check.mjs
+
 build: ## Construit les images de production
 	$(PROD) build
 
-prod-up: ## Démarre la production (avec archivage WAL-G)
-	$(PROD) up -d
+deploy-prod: ## Vérifie, construit, migre puis déploie la production et attend les services sains
+	@$(MAKE) --no-print-directory prod-check
+	@$(MAKE) --no-print-directory build
+	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT) postgres
+	$(PROD) run --rm --no-deps core-migrate
+	$(PROD) run --rm --no-deps backoffice-migrate
+	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT)
+	$(PROD) exec -T proxy caddy reload --config /etc/caddy/Caddyfile
+	$(PROD) ps
+
+prod-up: prod-check ## Démarre les images de production et attend les services sains
+	$(PROD) up -d --wait --wait-timeout $(DEPLOY_TIMEOUT)
 
 prod-down: ## Arrête la production
 	$(PROD) down
+
+prod-logs: ## Suit les logs de production (make prod-logs s=core)
+	$(PROD) logs -f $(s)
+
+prod-ps: ## État des services de production
+	$(PROD) ps
 
 release: lint test build ## Pipeline de release locale
 	@echo "Images prêtes."

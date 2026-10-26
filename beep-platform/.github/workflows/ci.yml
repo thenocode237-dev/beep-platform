@@ -26,9 +26,11 @@ jobs:
         run: npm run contrast
       - run: npm run lint
       - run: node --test scripts/tracking-script.test.mjs scripts/chrome-extension.test.mjs scripts/mobile-sdk.test.mjs
+      - run: node --test scripts/prod-check.test.mjs
       - name: Slugs réservés = routes du site déclarées dans Caddy
         run: node scripts/reserved-slugs-check.mjs
       - run: npm run build:web
+      - run: node --test scripts/seo.test.mjs
       - run: npm run build:bo
 
   java:

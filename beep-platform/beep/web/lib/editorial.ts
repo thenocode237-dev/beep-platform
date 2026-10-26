@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import type { Locale } from "@/lib/i18n";
 export type Article = {
   kind: string;
@@ -9,7 +10,7 @@ export type Article = {
   version: number;
   published_at: string;
 };
-export async function editorial(
+export const editorial = cache(async function editorial(
   kind: "blog" | "roadmap" | "announcement",
   locale: Locale | "es" | "pt",
   slug?: string,
@@ -29,6 +30,6 @@ export async function editorial(
   } catch {
     return { items: [], available: false };
   }
-}
+});
 
 export const editorialLanguage=(raw:string|undefined,fallback:Locale):Locale|"es"|"pt"=>raw==="es"||raw==="pt"||raw==="fr"||raw==="en"?raw:fallback;

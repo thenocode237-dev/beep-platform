@@ -1,3 +1,5 @@
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/roadmap");
 import { notFound } from "next/navigation";
 import { PublicPage } from "@/components/PublicPage";
 import { EditorialBlocks } from "@/components/EditorialBlocks";

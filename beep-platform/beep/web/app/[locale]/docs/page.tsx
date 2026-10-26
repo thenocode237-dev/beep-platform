@@ -1,3 +1,5 @@
+import { publicMetadata } from "@/lib/seo";
+export const generateMetadata = publicMetadata("/docs");
 import { notFound } from "next/navigation";
 import { PublicPage } from "@/components/PublicPage";
 import { isLocale, href } from "@/lib/i18n";

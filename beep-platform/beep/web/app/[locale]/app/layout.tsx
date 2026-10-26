@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { privateRobots } from "@/lib/seo";
 import { notFound, redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import type { Me } from "@/lib/api";
@@ -6,6 +7,7 @@ import { coreGet } from "@/lib/core";
 import { getConsole, getDictionary, href, isLocale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: privateRobots };
 
 export default async function AppLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -12,15 +12,24 @@ make restore from=backups/20260101T100000Z    # arrête core/worker/backoffice-a
 **Principe.** PostgreSQL archive chaque segment WAL vers le stockage S3-compatible (`archive_timeout=60` : **RPO ≤ 1 minute**).
 Le service `pg-backup` pousse une sauvegarde de base par jour (03:00 UTC) et conserve les `BACKUP_RETAIN_FULL` dernières.
 
-**Variables** (`.env`) : `BACKUP_S3_PREFIX`, `BACKUP_ACCESS_KEY`, `BACKUP_SECRET_KEY`, et pour un stockage non-AWS `BACKUP_S3_ENDPOINT` + `BACKUP_S3_PATH_STYLE=true`.
+**Variables** (`.env.production`) : `BACKUP_S3_PREFIX`, `BACKUP_ACCESS_KEY`, `BACKUP_SECRET_KEY`, et pour un stockage non-AWS `BACKUP_S3_ENDPOINT` + `BACKUP_S3_PATH_STYLE=true`.
 
-**Démarrage** : `make prod-up` (ou `docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile prod up -d`).
+**Démarrage** : `make deploy-prod ENV_FILE=.env.production` pour construire, migrer et démarrer ; `make prod-up ENV_FILE=.env.production` pour démarrer les images existantes. Le projet Compose est `beep-prod` (pour une installation historique, conserver son nom avec `PROD_PROJECT`). Voir le [guide de production](production.md).
 
-**Contrôles** : `docker compose exec postgres wal-g backup-list` · `docker compose exec postgres wal-g wal-verify integrity`.
+Pour les commandes manuelles, définir cette fonction Bash depuis la racine du projet (adapter `PROD_PROJECT` au nom de l’installation existante) :
+
+```bash
+prod() {
+  docker compose --project-name "${PROD_PROJECT:-beep-prod}" --env-file .env.production \
+    -f docker-compose.yml -f docker-compose.prod.yml --profile prod "$@"
+}
+```
+
+**Contrôles** : `prod exec postgres wal-g backup-list` · `prod exec postgres wal-g wal-verify integrity`.
 
 ### Restaurer à un instant précis (PITR)
 
-1. Arrêter les applications : `docker compose stop core worker backoffice-api web backoffice-web`.
+1. Arrêter les applications : `prod stop core redirector worker backoffice-api web backoffice-web`.
 2. Arrêter PostgreSQL et **conserver** l'ancien volume (le renommer, ne rien supprimer avant validation).
 3. Créer un volume vide, y récupérer la dernière sauvegarde de base :
    `wal-g backup-fetch $PGDATA LATEST`
