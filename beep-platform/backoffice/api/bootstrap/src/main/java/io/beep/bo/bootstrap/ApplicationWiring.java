@@ -49,6 +49,9 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("!migrate")
 class ApplicationWiring {
+  @Bean io.beep.bo.app.ecosystem.ConsoleMaintenanceUseCase consoleMaintenance(CoreGatewayPort core,io.beep.bo.app.port.ConsoleRepository data,AuditPort audit,Clock clock){return new io.beep.bo.app.ecosystem.ConsoleMaintenanceUseCase(data,core,audit,clock);}
+  @Bean io.beep.bo.app.port.ConsoleRepository consoleRepository(org.jooq.DSLContext db){return new io.beep.bo.adapter.out.postgres.PostgresConsoleAdapter(db);}
+  @Bean io.beep.bo.app.ecosystem.EcosystemConsoleUseCase ecosystemConsole(CoreGatewayPort core,io.beep.bo.app.port.ConsoleRepository data,AuditPort audit,StepUp step,TokenPort tokens,Clock clock){return new io.beep.bo.app.ecosystem.EcosystemConsoleUseCase(core,data,audit,step,tokens,clock);}
   @org.springframework.context.annotation.Bean
   io.beep.bo.app.developer.DeveloperConsoleUseCase developerConsole(io.beep.bo.app.port.CoreGatewayPort core,io.beep.bo.app.port.AuditPort audit,io.beep.bo.app.auth.StepUp step,java.time.Clock clock){return new io.beep.bo.app.developer.DeveloperConsoleUseCase(core,audit,step,clock);}
   @Bean
@@ -202,4 +205,6 @@ class ApplicationWiring {
   @Bean
   io.beep.bo.app.trust.TrustConsoleUseCase trustConsole(CoreGatewayPort core,AuditPort audit,StepUp stepUp,Clock clock) {return new io.beep.bo.app.trust.TrustConsoleUseCase(core,audit,stepUp,clock);}
 
+  @Bean io.beep.bo.app.port.EnterpriseConsoleRepository enterpriseConsoleRepository(DSLContext db){return new io.beep.bo.adapter.out.postgres.PostgresEnterpriseConsoleAdapter(db);}
+  @Bean io.beep.bo.app.enterprise.EnterpriseConsoleUseCase enterpriseConsole(CoreGatewayPort core,io.beep.bo.app.port.EnterpriseConsoleRepository data,AuditPort audit,StepUp step,Clock clock){return new io.beep.bo.app.enterprise.EnterpriseConsoleUseCase(core,data,audit,step,clock);}
 }

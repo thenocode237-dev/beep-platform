@@ -8,7 +8,6 @@ import io.beep.core.app.port.SlugResolverPort;
 import io.beep.core.app.port.SlugResolverPort.PublishedBio;
 import io.beep.core.app.port.SlugResolverPort.Resolution;
 import io.beep.core.domain.analytics.EventKind;
-import io.beep.core.domain.link.Destination;
 import io.beep.core.domain.link.Slug;
 import java.util.Optional;
 

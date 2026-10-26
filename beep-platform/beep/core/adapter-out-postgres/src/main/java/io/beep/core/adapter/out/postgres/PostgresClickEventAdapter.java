@@ -29,8 +29,15 @@ public class PostgresClickEventAdapter implements ClickEventRepository {
       f("browser", SQLDataType.CLOB), f("lang", SQLDataType.CLOB), f("referrer", SQLDataType.CLOB), f("is_bot", SQLDataType.BOOLEAN)};
 
   private final DSLContext dsl;
+  private final Table<Record> target;
 
   public PostgresClickEventAdapter(DSLContext dsl) {
+    this(dsl,"click_events");
+  }
+
+  public PostgresClickEventAdapter(DSLContext dsl,String table){
+    if(!java.util.Set.of("click_events","click_events_timescale").contains(table))throw new IllegalArgumentException("event table");
+    this.target=DSL.table(DSL.name(table));
     this.dsl = dsl;
   }
 
@@ -51,7 +58,7 @@ public class PostgresClickEventAdapter implements ClickEventRepository {
   }
 
   private void insert(List<ClickEvent> events) {
-    InsertValuesStepN<Record> insert = dsl.insertInto(EVENTS, COLUMNS);
+    InsertValuesStepN<Record> insert = dsl.insertInto(target, COLUMNS);
     for (ClickEvent e : events) {
       insert = insert.values(e.id(), Schema.odt(e.ts()), e.workspaceId(), e.kind().db(), e.linkId(), e.qrId(), e.bioPageId(), e.bioBlockId(),
           e.visitorHash(), e.country(), e.device().db(), e.os(), e.browser(), e.lang(), e.referrer(), e.bot());

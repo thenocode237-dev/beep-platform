@@ -10,7 +10,6 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /** Configuration cache and bounded, non-blocking redirect event sink. Failures never prevent navigation. */

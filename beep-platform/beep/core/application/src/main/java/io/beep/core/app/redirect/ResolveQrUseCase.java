@@ -6,7 +6,6 @@ import io.beep.core.app.port.PasswordHasherPort;
 import io.beep.core.app.port.RateLimiterPort;
 import io.beep.core.app.port.SlugResolverPort;
 import io.beep.core.domain.analytics.EventKind;
-import io.beep.core.domain.link.Destination;
 
 /** Scan d'un QR dynamique (`/q/{code}`) : suit le lien cible, compté comme scan pour le QR et pour le lien. */
 public class ResolveQrUseCase {

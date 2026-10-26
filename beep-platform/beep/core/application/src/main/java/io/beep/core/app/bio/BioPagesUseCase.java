@@ -99,6 +99,7 @@ public class BioPagesUseCase {
       blocks.add(BioBlock.of(blockId, BioBlock.Type.fromDb(in.type()), in.config() == null ? Map.of() : in.config()));
     }
     BioPage updated = page.withBlocks(blocks, clock.instant());
+    if(blocks.stream().anyMatch(b->java.util.Set.of(BioBlock.Type.VIDEO,BioBlock.Type.AUDIO,BioBlock.Type.EMAIL,BioBlock.Type.FORM).contains(b.type()))&&!ctx.entitlements().enabled("features.bio_advanced"))throw new DomainException("feature_unavailable");
     tx.run(() -> pages.replaceBlocks(page.id(), updated.blocks(), updated.updatedAt()));
     return updated;
   }

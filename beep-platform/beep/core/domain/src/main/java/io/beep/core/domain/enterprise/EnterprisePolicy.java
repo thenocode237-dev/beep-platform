@@ -1,0 +1,15 @@
+package io.beep.core.domain.enterprise;
+import io.beep.core.domain.DomainException;
+import java.net.URI;
+import java.time.Instant;
+import java.util.*;
+public final class EnterprisePolicy {
+ private EnterprisePolicy(){}
+ public static String text(Map<String,Object> b,String key,int min,int max){String s=Objects.toString(b.get(key),"").strip();if(s.length()<min||s.length()>max)throw new DomainException("invalid_request");return s;}
+ public static int number(Map<String,Object> b,String key,int min,int max){Object v=b.get(key);if(!(v instanceof Number n)||!Double.isFinite(n.doubleValue())||n.doubleValue()!=n.intValue()||n.intValue()<min||n.intValue()>max)throw new DomainException("invalid_request");return n.intValue();}
+ public static Instant instant(Map<String,Object> b,String key){try{return Instant.parse(text(b,key,1,40));}catch(Exception e){throw new DomainException("invalid_request");}}
+ public static void https(String url){try{var u=URI.create(url);if(!"https".equals(u.getScheme())||u.getHost()==null||u.getUserInfo()!=null||u.getFragment()!=null||u.getPort()!=-1&&u.getPort()!=443||url.length()>2048)throw new IllegalArgumentException();}catch(Exception e){throw new DomainException("invalid_request");}}
+ public static Map<String,Object> contract(Map<String,Object> b){var c=new LinkedHashMap<String,Object>();c.put("version",number(b,"version",1,Integer.MAX_VALUE));c.put("reference",text(b,"reference",3,200));String status=text(b,"status",1,20);if(!Set.of("active","suspended","expired").contains(status))throw new DomainException("invalid_request");c.put("status",status);Instant start=instant(b,"startsAt"),end=instant(b,"endsAt");if(!end.isAfter(start))throw new DomainException("invalid_request");c.put("startsAt",start.toString());c.put("endsAt",end.toString());c.put("slaBp",number(b,"slaBp",9000,10000));c.put("retentionDays",number(b,"retentionDays",1,3650));c.put("dpaReference",text(b,"dpaReference",3,200));String hash=text(b,"dpaSha256",64,64);if(!hash.matches("[a-f0-9]{64}"))throw new DomainException("invalid_request");c.put("dpaSha256",hash);Object raw=b.get("ipAllowlist");if(!(raw instanceof List<?> ips)||ips.size()>100)throw new DomainException("invalid_request");var cidrs=new ArrayList<String>();for(Object ip:ips){String s=Objects.toString(ip);IpNetwork.parse(s);cidrs.add(s);}c.put("ipAllowlist",cidrs);String brand=text(b,"brandName",1,80),color=text(b,"brandColor",7,7);if(!color.matches("#[a-fA-F0-9]{6}"))throw new DomainException("invalid_request");c.put("brandName",brand);c.put("brandColor",color);return c;}
+ public static boolean active(Map<String,Object> c,Instant now){try{return "active".equals(c.get("status"))&&!now.isBefore(Instant.parse(c.get("startsAt").toString()))&&now.isBefore(Instant.parse(c.get("endsAt").toString()));}catch(Exception e){return false;}}
+ public static void allowed(Map<String,Object> c,String ip){Object raw=c.get("ipAllowlist");if(raw instanceof List<?> ips&&!ips.isEmpty()&&ips.stream().noneMatch(x->IpNetwork.parse(x.toString()).contains(ip)))throw new DomainException("ip_not_allowed");}
+}

@@ -36,7 +36,7 @@ public class PostgresRollupAdapter implements RollupRepository {
   /** Rétention effective par workspace : override, sinon valeur du plan (-1 = illimitée). */
   private static final String RETENTION = """
       WITH ws AS (
-        SELECT w.id, COALESCE(o.value, (p.entitlements ->> 'analytics.retention_days')::bigint, 30) AS days
+        SELECT w.id, COALESCE((SELECT retention_days FROM enterprise_contracts c WHERE c.workspace_id=w.id AND c.status='active' AND c.starts_at<=now() AND c.ends_at>now()), o.value, (p.entitlements ->> 'analytics.retention_days')::bigint, 30) AS days
         FROM workspaces w
         JOIN plans p ON p.code = w.plan_code
         LEFT JOIN entitlement_overrides o ON o.workspace_id = w.id AND o.key = 'analytics.retention_days'
@@ -80,6 +80,8 @@ public class PostgresRollupAdapter implements RollupRepository {
 
   @Override
   public List<String> dropPartitionsBefore(YearMonth keepFrom) {
+    var oldest=dsl.fetchSingle("SELECT min((now()-make_interval(days=>retention_days))::date) FROM enterprise_contracts WHERE status='active' AND starts_at<=now() AND ends_at>now()").get(0,java.time.LocalDate.class);
+    if(oldest!=null&&YearMonth.from(oldest).isBefore(keepFrom))keepFrom=YearMonth.from(oldest);
     List<String> dropped = new ArrayList<>();
     var names = dsl.fetch("SELECT c.relname FROM pg_inherits i JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_class p ON p.oid = i.inhparent "
         + "WHERE p.relname = 'click_events' ORDER BY 1").map(r -> r.get(0, String.class));

@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -293,7 +292,5 @@ class Phase1AdaptersIT {
     assertThat(metrics.activation(Instant.parse("2025-12-01T00:00:00Z"), Duration.ofMinutes(10))).isEqualTo(new io.beep.core.app.port.PlatformMetricsRepository.Activation(1, 1));
     assertThat(metrics.signupsPerDay(LocalDate.parse("2026-01-01"), LocalDate.parse("2026-01-02"))).extracting(c -> c.count()).containsExactly(1L, 0L);
     assertThat(metrics.databaseBytes()).isPositive();
-    List<Object> unused = new ArrayList<>();
-    assertThat(unused).isEmpty();
   }
 }

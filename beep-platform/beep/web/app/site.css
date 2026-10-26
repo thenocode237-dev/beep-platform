@@ -1577,3 +1577,6 @@ select.bp-input { appearance: auto; }
 .public-page .bp-btn {width:fit-content;max-width:100%;}
 /* Developer secrets and examples wrap without expanding the mobile viewport. */
 .developer-code { overflow: auto; max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; background: var(--color-bg-surface); }
+
+/* Phase 4 workspace screens */
+.eco-records{display:grid;gap:1rem}.eco-inline{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}.eco-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:1rem;margin:0}.eco-dl dt{color:var(--color-text-muted);font-size:.875rem}.eco-dl dd{margin:0;overflow-wrap:anywhere}.eco-tags{border:1px solid var(--color-border-default);border-radius:.5rem;display:flex;flex-wrap:wrap;gap:.75rem;padding:1rem}.eco-tags label,.eco-check{display:flex;align-items:center;gap:.5rem;min-height:44px}.eco-prewrap{white-space:pre-wrap;overflow-wrap:anywhere}.eco-picker{max-width:100%;min-width:0}.app-topbar .eco-picker{max-width:min(52vw,14rem)}.app-sidebar .app-nav{overflow-y:auto;min-height:0}.app-sidebar{overflow-y:auto}.eco-records .bp-card{min-width:0}@media(min-width:800px){.eco-records{grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))}}

@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 public class JobRunner {
   private final JobRunRepository runs;
   private final Clock clock;
+  private io.beep.core.app.port.JobLockPort lock=(name,work)->work.get();
+  public JobRunner withLock(io.beep.core.app.port.JobLockPort lock){this.lock=lock;return this;}
 
   public JobRunner(JobRunRepository runs, Clock clock) {
     this.runs = runs;
@@ -16,6 +18,10 @@ public class JobRunner {
 
   /** Retourne le détail de l'exécution ; une erreur est consignée puis relancée (journalisée par l'ordonnanceur). */
   public String run(String job, Supplier<String> work) {
+    return lock.run(job,()->execute(job,work));
+  }
+
+  private String execute(String job,Supplier<String> work){
     long id = runs.start(job, clock.instant());
     try {
       String detail = work.get();

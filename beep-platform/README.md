@@ -1,7 +1,9 @@
 # Beep — plateforme
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
-Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 3 développée et recette locale validée ; critères de charge et de production encore à valider**. Détail : [`docs/phase-3.md`](docs/phase-3.md).
+Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 5 implémentée et recette locale validée ; validations externes documentées**. Détail : [`docs/phase-5.md`](docs/phase-5.md).
+
+La phase 4 ajoute les workspaces d’équipe (Pro : 3 membres, Elite : 15), rôles et invitations, dossiers/tags, import CSV, intégrations, Radar, rapports, insights, blocs bio avancés, extension Chrome et affiliation. Le back-office supervise ces fonctions, les vues en lecture seule, le contenu publié et les accès staff. Parcours : `/app/team`, `/app/integrations`, `/app/radar`, et `dashboard.beep.localhost/ecosystem`. Installation de l’extension : [`extensions/chrome/README.md`](extensions/chrome/README.md).
 
 La phase 3 ajoute conversions et attribution, `beep.js`, analytics de site et campagnes, API publique avec clés et idempotence, webhooks signés, pixels et postbacks, ainsi que leurs outils staff. Elite est disponible dans le catalogue local. Parcours : `/app/developer`, `/docs`, `/en/docs` et `dashboard.beep.localhost/developer`. La stack reste sur invitation ; les paiements de recette sont simulés.
 
@@ -36,7 +38,7 @@ make seed            # (optionnel) démo : demo@beep.localhost, lien /demo, page
 | **Pages bio** | Blocs lien, bouton, titre, texte, image, réseaux sociaux ; 4 thèmes ; SEO (titre, description, image OG, `noindex`) ; rendu serveur sans script, CSS en ligne, quelques Ko ; clics de blocs mesurés |
 | **Plans & quotas** | Domaine `Plan` + `Entitlements` ; Starter (5 liens, 5 QR dynamiques, 1 page, 30 j d'analytics), Pro/Elite publiés « bientôt » ; quotas de stock/mensuels sous verrou, avertissement 80 %, blocage 100 % ; les redirections ne dépendent jamais d'un quota |
 | **Comptes** | Bêta sur invitation (`SIGNUP_MODE`), lien magique, OAuth Google/GitHub (PKCE), TOTP toujours exigé s'il est actif, workspace personnel |
-| **Back office** | Recherche/désactivation de liens, slugs réservés, fiche utilisateur (usage vs quotas, droits effectifs), overrides et suspension avec ré-authentification TOTP, plans, métriques (inscriptions, activation, clics/jour, tailles des bases, retard du worker, file d'événements), jobs, journal d'audit (filtres, intégrité de la chaîne), invitations ; contrat admin **0.2.0** |
+| **Back office** | Recherche/désactivation de liens, slugs réservés, fiche utilisateur (usage vs quotas, droits effectifs), overrides et suspension avec ré-authentification TOTP, plans, métriques (inscriptions, activation, clics/jour, tailles des bases, retard du worker, file d'événements), jobs, journal d'audit (filtres, intégrité de la chaîne), invitations ; contrat admin **0.9.0** |
 
 Ce qui reste ouvert pour clore la phase 1 (bêta de 100 personnes, mesure à 1 000 req/s en préproduction) : voir [`docs/phase-1.md`](docs/phase-1.md#reste-à-faire).
 
@@ -76,7 +78,7 @@ make lint            # TypeScript strict + contrastes des tokens + slugs réserv
 ## Structure
 
 ```
-beep/core        Java — API, (redirection en phase 1), worker
+beep/core        Java — API, redirector et worker (rôles de processus séparés)
 beep/web         Next.js — site et espace client
 backoffice/api   Java — API du back office, passerelle vers le core
 backoffice/web   Next.js — interface staff
@@ -94,7 +96,7 @@ docs             charte graphique, runbook de sauvegarde
 - **Client `coregateway` écrit à la main** (contrat 0.2, quinze opérations). DTO identiques aux schémas ; le test de contrat vérifie le core réel. Passage à un client généré (openapi-generator) dès que le contrat se stabilise (phase 2).
 - **Sessions staff en base (jeton opaque)** plutôt que `BO_SESSION_SECRET` : révocation immédiate, rien à signer. Le secret de session de la spécification n'existe donc pas ; `BO_ENCRYPTION_KEY` chiffre les secrets TOTP.
 - **`en` est un slug réservé** : le français est servi sans préfixe, l'anglais sous `/en`, et Caddy route `/en*` vers le site.
-- **Limiteur de débit en mémoire** (une instance d'API en phase 0). À remplacer par un adapter partagé à la phase 5.
+- **Limiteur de débit partagé PostgreSQL** depuis la phase 5 : les instances comptent les mêmes tentatives.
 - **Hot reload** (DevTools, `next dev`) non fourni dans le Compose de dev : reconstruire un service avec `make up`.
 
 ## Reste à faire pour clore la phase 0
@@ -102,3 +104,7 @@ docs             charte graphique, runbook de sauvegarde
 - **PITR démontré en staging** (critère de sortie) : outillage livré, démonstration à faire et à consigner dans [`docs/runbook-backup.md`](docs/runbook-backup.md).
 - **Réserver le nom `Beep`** (marque, domaine) et valider les hypothèses H1–H7 des spécifications.
 - Revue visuelle sur appareils réels (iOS Safari, Android Chrome entrée de gamme) et audit Lighthouse mobile.
+
+## Phase 5 — Industrialisation
+
+Les services API, redirector et worker sont séparés. La console `/enterprise` gère les contrats, preuves et versions SDK ; `/app/enterprise` présente le contrat et les applications mobiles. Voir [la livraison phase 5](docs/phase-5.md), [le runbook](docs/runbook-industrialisation.md) et [les SDK](sdk/mobile/README.md). PgBouncer est fourni par `docker-compose.scale.yml` ; réplica et TimescaleDB sont optionnels et explicitement configurés.

@@ -27,9 +27,10 @@ public class DeveloperController {
   @GetMapping("/v1/conversions/analytics") Map<String,Object> analytics(@RequestParam(defaultValue="30") int days,HttpServletRequest req){return developer.analytics(cookies.requireUser(req),days);}
   @GetMapping(value="/v1/conversions/stream",produces="text/event-stream") ResponseEntity<org.springframework.web.servlet.mvc.method.annotation.SseEmitter> stream(@RequestParam(defaultValue="1970-01-01T00:00:00Z") Instant after,HttpServletRequest req){
     developer.recent(cookies.requireUser(req),after,null);
+    UUID streamWorkspace=developer.workspace(cookies.requireUser(req)).id();
     var emitter=new org.springframework.web.servlet.mvc.method.annotation.SseEmitter(30000L);var active=new java.util.concurrent.atomic.AtomicBoolean(true);emitter.onCompletion(()->active.set(false));emitter.onTimeout(()->active.set(false));
     Thread.ofVirtual().start(()->{Instant cursor=after;UUID last=null;
-      try{String header=req.getHeader("Last-Event-ID");if(header!=null){String[] p=header.split("\\|",-1);cursor=Instant.parse(p[0]);last=UUID.fromString(p[1]);}
+      try(var scope=io.beep.core.app.workspace.WorkspaceScope.open(streamWorkspace)){String header=req.getHeader("Last-Event-ID");if(header!=null){String[] p=header.split("\\|",-1);cursor=Instant.parse(p[0]);last=UUID.fromString(p[1]);}
         long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(25);
         while(active.get()&&System.nanoTime()<deadline){var events=developer.recent(cookies.requireUser(req),cursor,last);for(var e:events){emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().id(e.at()+"|"+e.id()).name("conversion").data(e));cursor=e.at();last=e.id();}emitter.send(org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event().comment("heartbeat"));Thread.sleep(1000);}emitter.complete();
       }catch(Exception e){emitter.complete();}

@@ -15,12 +15,13 @@ services:
       BEEP_SITE: ${BEEP_DOMAIN}
       BO_SITE: dashboard.${BEEP_DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL}
+      REDIRECT_UPSTREAMS: ${REDIRECT_UPSTREAMS:-redirector:8080}
     volumes:
       - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks: [edge]
-    depends_on: [core, web, backoffice-api, backoffice-web]
+    depends_on: [core, redirector, web, backoffice-api, backoffice-web]
 
   # ---------- PostgreSQL (deux bases : beep, backoffice) ----------
   postgres:
@@ -48,7 +49,7 @@ services:
     restart: "no"
     environment:
       SPRING_PROFILES_ACTIVE: migrate
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/beep
+      SPRING_DATASOURCE_URL: ${BEEP_DATABASE_DIRECT_URL:-jdbc:postgresql://postgres:5432/beep}
       SPRING_DATASOURCE_USERNAME: beep_app
       SPRING_DATASOURCE_PASSWORD: ${BEEP_DB_PASSWORD}
     networks: [db]
@@ -61,7 +62,15 @@ services:
     build: { context: ., dockerfile: beep/core/Dockerfile }
     environment: &core-env
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/beep
+      BEEP_SERVICE_ROLE: api
+      BEEP_DATABASE_DIRECT_URL: ${BEEP_DATABASE_DIRECT_URL:-jdbc:postgresql://postgres:5432/beep}
+      BEEP_READ_REPLICA_URL: ${BEEP_READ_REPLICA_URL:-}
+      BEEP_READ_REPLICA_USER: ${BEEP_READ_REPLICA_USER:-}
+      BEEP_READ_REPLICA_PASSWORD: ${BEEP_READ_REPLICA_PASSWORD:-}
+      BEEP_SSO_ALLOWED_HOSTS: ${BEEP_SSO_ALLOWED_HOSTS:-}
+      BEEP_REGION: ${BEEP_REGION:-local}
+      BEEP_EVENT_STORE: ${BEEP_EVENT_STORE:-postgres}
+      SPRING_DATASOURCE_URL: ${BEEP_DATABASE_URL:-jdbc:postgresql://postgres:5432/beep}
       SPRING_DATASOURCE_USERNAME: beep_app
       SPRING_DATASOURCE_PASSWORD: ${BEEP_DB_PASSWORD}
       MANAGEMENT_SERVER_PORT: "8090"
@@ -111,12 +120,30 @@ services:
       retries: 6
       start_period: 40s
 
+
+  redirector:
+    <<: *common
+    image: beep/core:${BEEP_VERSION:-dev}
+    environment:
+      <<: *core-env
+      BEEP_SERVICE_ROLE: redirector
+    networks: [edge, db]
+    depends_on:
+      core-migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8090/actuator/health/readiness"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 40s
+
   worker:                               # même image, rôle « tâches de fond »
     <<: *common
     image: beep/core:${BEEP_VERSION:-dev}
     environment:
       <<: *core-env
       SPRING_PROFILES_ACTIVE: prod,worker
+      BEEP_SERVICE_ROLE: worker
     networks: [edge, db]                # edge : accès sortant (e-mails, webhooks, paiements)
     depends_on:
       core: { condition: service_healthy }

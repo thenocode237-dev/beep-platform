@@ -12,7 +12,7 @@ import java.util.Map;
  */
 final class PublicPages {
   /** Aucun script, aucun cadre ; images https des pages bio autorisées. */
-  static final String CSP = "default-src 'none'; img-src https: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
+  static final String CSP = "default-src 'none'; img-src https: data:; media-src https:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 
   private record Palette(String bg, String text, String muted, String card, String border, String buttonBg, String buttonText, String scheme) {}
 
@@ -84,6 +84,8 @@ final class PublicPages {
         String img = "<img class=\"image\" src=\"" + esc(c.get("url")) + "\" alt=\"" + esc(c.getOrDefault("alt", "")) + "\" loading=\"lazy\">";
         yield c.containsKey("href") ? "<a href=\"" + esc(track) + "\" rel=\"noopener\">" + img + "</a>" : img;
       }
+      case VIDEO, AUDIO -> "<figure><figcaption>"+esc(c.get("label"))+"</figcaption><"+b.type().db()+" controls preload=\"none\" style=\"max-width:100%;width:100%\" src=\""+esc(c.get("url"))+"\">"+esc(c.get("label"))+"</"+b.type().db()+"></figure>";
+      case EMAIL, FORM -> "<form method=\"post\" action=\"/_b/forms/"+p.id()+"/"+b.id()+"\" style=\"display:grid;gap:.75rem\"><h2>"+esc(c.get("label"))+"</h2><p>"+esc(c.getOrDefault("description",""))+"</p><label for=\"email-"+b.id()+"\">E-mail</label><input id=\"email-"+b.id()+"\" name=\"email\" type=\"email\" autocomplete=\"email\" maxlength=\"254\" required style=\"font:inherit;min-height:48px\">"+(b.type()==BioBlock.Type.FORM?"<label for=\"message-"+b.id()+"\">Message</label><textarea id=\"message-"+b.id()+"\" name=\"message\" maxlength=\"2000\" rows=\"4\" required style=\"font:inherit\"></textarea>":"")+"<div hidden><label>Website<input name=\"website\" tabindex=\"-1\" autocomplete=\"off\"></label></div><label><input type=\"checkbox\" name=\"consent\" value=\"true\" required> "+esc(c.get("consentText"))+"</label><a href=\""+esc(c.get("privacyUrl"))+"\" rel=\"noopener noreferrer\">Confidentialité</a><button type=\"submit\" style=\"font:inherit;min-height:48px;cursor:pointer\">Envoyer</button></form>";
       case SOCIAL -> {
         StringBuilder s = new StringBuilder("<ul class=\"social\">");
         for (String network : BioBlock.SOCIAL_NETWORKS) {

@@ -1,0 +1,30 @@
+# Optional transaction pool. Migrations, LISTEN and job locks stay on the direct endpoint.
+services:
+  pgbouncer:
+    build: ./infra/pgbouncer
+    restart: unless-stopped
+    environment:
+      BEEP_DB_PASSWORD: ${BEEP_DB_PASSWORD}
+    networks: [db]
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 6432 -U beep_app -d beep"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  core:
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pgbouncer:6432/beep?prepareThreshold=0
+    depends_on:
+      pgbouncer: { condition: service_healthy }
+  redirector:
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pgbouncer:6432/beep?prepareThreshold=0
+    depends_on:
+      pgbouncer: { condition: service_healthy }
+  worker:
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pgbouncer:6432/beep?prepareThreshold=0
+    depends_on:
+      pgbouncer: { condition: service_healthy }

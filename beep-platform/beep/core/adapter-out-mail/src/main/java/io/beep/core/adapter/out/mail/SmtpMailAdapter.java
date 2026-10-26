@@ -10,6 +10,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 /** E-mails transactionnels via SMTP (Mailpit en dev, fournisseur transactionnel en production). */
 public class SmtpMailAdapter implements MailPort {
+  @Override public void sendWorkspaceMessage(Email to,String locale,String subject,String message,String path){
+    send(to,subject,subject,message,"en".equals(locale)?"Open Beep":"Ouvrir Beep",publicUrl+("en".equals(locale)?"/en":"")+path,"Beep · Workspace");
+  }
   private final JavaMailSender sender;
   private final String from;
   private final String publicUrl;

@@ -2,6 +2,8 @@
 //   Phase 0 : inscription -> e-mail (Mailpit) -> confirmation -> connexion -> TOTP -> réinitialisation ; staff (TOTP), audit append-only
 //   Phase 1 : bêta sur invitation, liens (slugs, quotas), redirection, QR dynamiques, page bio, statistiques, lien magique,
 //             actions staff (désactivation, override, suspension) et leur journalisation
+import { phase5 } from "./phase5-e2e.mjs";
+import { phase4 } from "./phase4-e2e.mjs";
 import { phase3 } from "./phase3-e2e.mjs";
 import { createHmac } from "node:crypto";
 import http from "node:http";
@@ -470,6 +472,8 @@ if(phase2link?.id) {
 }
 for(const path of ["/moderation","/feature-flags","/catalog","/domains","/billing"]){r=await bo.get(path);step(`phase 2: staff page ${path}`,r.status===200);}
 await phase3({site,bo,visitor,step,totp,staffSecret:STAFF_TOTP_SECRET,workspaceId,bio,sleep});
+await phase4({site,bo,visitor,step,totp,staffSecret:STAFF_TOTP_SECRET,workspaceId,bio,sleep,Client,SITE,BROWSER,lastMailFor,lastMailTokenFor});
+await phase5({site,bo,visitor,step,totp,staffSecret:STAFF_TOTP_SECRET,workspaceId,sleep});
 r=await site.post("/v1/account/export");
 step("phase 2: portable account export excludes secrets",r.status===200&&r.json?.user?.email===email&&!/password_hash|totp_secret|token_hash|visitor_hash/.test(r.text),`status ${r.status}`);
 r=await bo.post(`/api/users/${userId}/export`,{reason:"e2e export",totp:totp(STAFF_TOTP_SECRET)});step("phase 2: staff export with step-up",r.status===200&&r.json?.user?.email===email);

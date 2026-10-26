@@ -25,13 +25,13 @@ public class PostgresWorkspaceAdapter implements WorkspaceRepository {
 
   @Override
   public Optional<Workspace> findByOwner(UUID ownerId) {
-    return dsl.selectFrom(WORKSPACES).where(W_OWNER.eq(ownerId)).fetchOptional(PostgresWorkspaceAdapter::map);
+    return dsl.selectFrom(WORKSPACES).where(W_OWNER.eq(ownerId).and(org.jooq.impl.DSL.field("personal",Boolean.class).eq(true))).fetchOptional(PostgresWorkspaceAdapter::map);
   }
 
   /** ON CONFLICT DO NOTHING : deux premières requêtes simultanées d'un même utilisateur ne créent qu'un workspace. */
   @Override
   public Workspace ensure(Workspace w) {
-    dsl.execute("INSERT INTO workspaces (id, owner_id, name, plan_code, status, created_at) VALUES (?, ?, ?, ?, ?, ?::timestamptz) ON CONFLICT (owner_id) DO NOTHING",
+    dsl.execute("INSERT INTO workspaces (id, owner_id, name, plan_code, status, created_at) VALUES (?, ?, ?, ?, ?, ?::timestamptz) ON CONFLICT (owner_id) WHERE personal DO NOTHING",
         w.id(), w.ownerId(), w.name(), w.planCode(), w.status().db(), odt(w.createdAt()));
     return findByOwner(w.ownerId()).orElseThrow();
   }

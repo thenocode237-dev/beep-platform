@@ -43,8 +43,6 @@ import io.beep.core.domain.bio.BioPage;
 import io.beep.core.domain.link.Link;
 import io.beep.core.domain.plan.Plan;
 import io.beep.core.domain.qr.QrCode;
-import io.beep.core.domain.qr.QrFormat;
-import io.beep.core.domain.qr.QrStyle;
 import io.beep.core.domain.user.Email;
 import io.beep.core.domain.user.User;
 import io.beep.core.domain.workspace.Workspace;

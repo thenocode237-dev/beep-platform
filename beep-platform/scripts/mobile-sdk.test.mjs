@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {resolveDeferred,tokenFromInstallReferrer} from '../sdk/mobile/typescript/index.mjs';
+const options={baseUrl:'https://beep.example',appId:'12345678-1234-1234-1234-123456789abc',token:'A'.repeat(43),platform:'android',scheme:'myapp'};
+test('token travels in JSON and destination is validated',async()=>{const value=await resolveDeferred({...options,fetchImpl:async(url,init)=>{assert.equal(String(url),'https://beep.example/v1/mobile/resolve');assert.equal(init.redirect,'error');assert.equal(JSON.parse(init.body).token,options.token);assert.equal(init.credentials,'omit');return {ok:true,json:async()=>({destination:'myapp://product/42'})};}});assert.equal(value,'myapp://product/42');});
+test('referrer uses an explicit token',()=>{assert.equal(tokenFromInstallReferrer('beep_token='+options.token),options.token);assert.equal(tokenFromInstallReferrer('beep_token=bad'),null);});
+test('insecure or credentialed origins are rejected before network',async()=>{for(const baseUrl of ['http://beep.example','https://user:pass@beep.example','https://beep.example/path','https://beep.example/?token=secret'])await assert.rejects(resolveDeferred({...options,baseUrl,fetchImpl:()=>{throw Error('must not call');}}),/invalid_configuration/);});
+test('failed resolution is not retried',async()=>{let calls=0;await assert.rejects(resolveDeferred({...options,fetchImpl:async()=>{calls++;return {ok:false,status:400};}}),/invalid_or_consumed_token/);assert.equal(calls,1);});
+test('foreign and executable destinations are never returned',async()=>{for(const destination of ['https://evil.example','javascript:alert(1)'])await assert.rejects(resolveDeferred({...options,fetchImpl:async()=>({ok:true,json:async()=>({destination})})}),/invalid_destination/);});

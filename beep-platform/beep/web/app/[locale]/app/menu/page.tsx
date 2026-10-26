@@ -9,6 +9,29 @@ export default async function Page({
   if (!isLocale(locale)) notFound();
   const t = getConsole(locale);
   const items = [
+    {path:"enterprise",label:locale==="en"?"Enterprise":"Entreprise"},
+    { path: "team", label: locale === "en" ? "Team" : "Équipe" },
+    {
+      path: "organization",
+      label: locale === "en" ? "Organization" : "Organisation",
+    },
+    {
+      path: "integrations",
+      label: locale === "en" ? "Integrations" : "Intégrations",
+    },
+    { path: "radar", label: locale === "en" ? "Radar" : "Radar" },
+    {
+      path: "insights",
+      label: locale === "en" ? "Customer insights" : "Customer insights",
+    },
+    {
+      path: "affiliates",
+      label: locale === "en" ? "Affiliates" : "Affiliation",
+    },
+    {
+      path: "bio-submissions",
+      label: locale === "en" ? "Bio responses" : "Réponses bio",
+    },
     { path: "domains", label: t.nav.domains },
     { path: "developer", label: "Conversions & API" },
     { path: "billing", label: t.nav.billing },

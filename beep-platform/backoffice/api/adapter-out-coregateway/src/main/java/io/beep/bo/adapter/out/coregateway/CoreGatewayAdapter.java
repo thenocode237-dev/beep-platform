@@ -25,6 +25,7 @@ import org.springframework.web.util.UriBuilder;
  * Erreurs : 4xx du core -> {@link CoreRejectedException} (code relayé) ; réseau, 5xx, réponse vide -> {@link CoreUnavailableException}.
  */
 public class CoreGatewayAdapter implements CoreGatewayPort {
+  @Override public Map<String,Object> ecosystem(String method,String path,Map<String,Object> body,UUID staff){return call(()->{var request=client.method(org.springframework.http.HttpMethod.valueOf(method)).uri(path).header("X-Staff-Id",staff.toString());if(!method.equals("GET"))request.contentType(MediaType.APPLICATION_JSON).body(body);return request.retrieve().body(new org.springframework.core.ParameterizedTypeReference<Map<String,Object>>(){});});}
   @Override @SuppressWarnings("unchecked") public Map<String,Object> developerMonitor(UUID staff){return call(()->client.get().uri("/developer/monitor").header("X-Staff-Id",staff.toString()).retrieve().body(Map.class));}
   @Override @SuppressWarnings("unchecked") public Map<String,Object> developerWorkspace(UUID ws,UUID staff){return call(()->client.get().uri("/developer/workspaces/{id}",ws).header("X-Staff-Id",staff.toString()).retrieve().body(Map.class));}
   @Override @SuppressWarnings("unchecked") public Map<String,Object> developerAction(UUID ws,Map<String,Object> action,UUID staff){return call(()->client.post().uri("/developer/workspaces/{id}/actions",ws).header("X-Staff-Id",staff.toString()).contentType(MediaType.APPLICATION_JSON).body(action).retrieve().body(Map.class));}

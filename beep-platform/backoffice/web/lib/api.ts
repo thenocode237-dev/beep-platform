@@ -122,3 +122,5 @@ export type FeatureFlag={key:string;enabled:boolean;rolloutPercent:number;versio
 export const getReports=(status="open",offset=0)=>get<Reports>(`/moderation/reports${qs({status,offset,limit:50})}`);
 export const getBlocks=()=>get<{items:BlockedHost[]}>("/moderation/blocklist");
 export const getFlags=()=>get<{items:FeatureFlag[]}>("/feature-flags");
+
+export const getEnterprise=()=>get<Record<string,unknown>>("/enterprise/overview");

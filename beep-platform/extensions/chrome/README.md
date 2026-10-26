@@ -1,0 +1,11 @@
+# Ajouter à Beep — Manifest V3
+
+Dans Chrome, ouvrir `chrome://extensions`, activer le mode développeur, puis **Charger l’extension non empaquetée** et sélectionner ce dossier. Le paquet n’est pas publié sur le Chrome Web Store.
+
+Créer une clé secrète `sk_` avec la portée `write` dans `/app/developer` (Pro ou Elite). Dans l’extension, saisir l’origine de Beep et cette clé, puis accorder l’accès à cette origine. Le workspace est celui de la clé. L’origine doit utiliser HTTPS ; `http://beep.localhost` est accepté pour la recette locale.
+
+L’extension lit uniquement l’adresse et le titre de l’onglet actif lorsqu’on ouvre son panneau. Aucun script n’est injecté et aucun historique n’est demandé. La destination est envoyée uniquement lors du clic « Ajouter à Beep ». La clé est dans `chrome.storage.session`, jamais dans `sync` ni dans le contenu d’une page. Elle disparaît à la fermeture du navigateur. L’origine seule est mémorisée localement. Déconnecter efface la clé ; révoquer la clé dans Beep coupe immédiatement son accès.
+
+Les tentatives après un délai réseau réutilisent `Idempotency-Key`. Vérifier dans un navigateur réel l’installation, les permissions optionnelles, la copie et l’ouverture des deeplinks avant publication sur le Store.
+
+Références : [activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab), [storage.session](https://developer.chrome.com/docs/extensions/reference/api/storage).

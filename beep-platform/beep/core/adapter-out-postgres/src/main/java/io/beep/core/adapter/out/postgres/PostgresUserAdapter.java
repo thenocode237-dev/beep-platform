@@ -3,14 +3,10 @@ package io.beep.core.adapter.out.postgres;
 import static io.beep.core.adapter.out.postgres.Schema.*;
 
 import io.beep.core.app.port.UserRepository;
-import io.beep.core.domain.DomainException;
 import io.beep.core.domain.user.Email;
 import io.beep.core.domain.user.User;
 import io.beep.core.domain.user.UserStatus;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

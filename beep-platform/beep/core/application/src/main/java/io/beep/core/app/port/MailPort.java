@@ -3,6 +3,7 @@ package io.beep.core.app.port;
 import io.beep.core.domain.user.Email;
 
 public interface MailPort {
+  default void sendWorkspaceMessage(Email to,String locale,String subject,String message,String path){throw new UnsupportedOperationException("workspace mail");}
   default void sendQuotaNotice(Email to,String locale,long links,java.time.Instant expiredAt) { throw new UnsupportedOperationException("quota notice"); }
 
   default void sendAccountDeletion(Email to, String locale, String token) { throw new UnsupportedOperationException("account deletion mail"); }

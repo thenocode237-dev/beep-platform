@@ -24,7 +24,9 @@ public record BioBlock(String id, Type type, Map<String, String> config) {
     HEADING(Set.of("text")),
     TEXT(Set.of("text")),
     IMAGE(Set.of("url", "alt", "href")),
-    SOCIAL(Set.copyOf(SOCIAL_NETWORKS));
+    SOCIAL(Set.copyOf(SOCIAL_NETWORKS)),
+    VIDEO(Set.of("url","label")), AUDIO(Set.of("url","label")),
+    EMAIL(Set.of("label","description","privacyUrl","consentText")), FORM(Set.of("label","description","privacyUrl","consentText"));
 
     final Set<String> allowed;
 
@@ -71,6 +73,8 @@ public record BioBlock(String id, Type type, Map<String, String> config) {
         text(c, "alt", 200, false);
         if (c.containsKey("href")) c.put("href", Destination.parse(c.get("href")).url());
       }
+      case VIDEO, AUDIO -> {c.put("url",httpsUrl(required(c,"url")));text(c,"label",120,true);}
+      case EMAIL, FORM -> {text(c,"label",120,true);text(c,"description",500,false);text(c,"consentText",500,true);c.put("privacyUrl",httpsUrl(required(c,"privacyUrl")));}
       case SOCIAL -> {
         if (c.isEmpty()) throw new DomainException("invalid_block");
         for (String network : List.copyOf(c.keySet())) {

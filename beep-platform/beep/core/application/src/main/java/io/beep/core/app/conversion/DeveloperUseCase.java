@@ -18,7 +18,11 @@ public class DeveloperUseCase {
   public record EventCommand(UUID eventId,String name,String visitor,String cid,BigDecimal value,String currency,String page,boolean consent,Map<String,String> utm) {
     public EventCommand(UUID eventId,String name,String visitor,String cid,BigDecimal value,String currency,String page,boolean consent){this(eventId,name,visitor,cid,value,currency,page,consent,Map.of());}
   }
-  private static final Set<String> WEBHOOK_EVENTS=Set.of("click","lead","sale","signup","subscription","link.created","domain.status_changed");
+  private static final Set<String> WEBHOOK_EVENTS=Set.of("radar.alert","click","lead","sale","signup","subscription","link.created","domain.status_changed");
+  private io.beep.core.app.port.EcosystemRepository ecosystem;
+  public DeveloperUseCase withEcosystem(io.beep.core.app.port.EcosystemRepository data){this.ecosystem=data;return this;}
+  public void integrationDelivery(UUID endpoint,Integer status){if(ecosystem!=null)ecosystem.integrationDelivery(endpoint,status,clock.instant());}
+  public boolean endpointAllowed(DeveloperRepository.Endpoint e){if(webhooksAllowed(e.workspaceId()))return true;var w=workspaceRepository.findById(e.workspaceId()).orElse(null);return w!=null&&w.status().db().equals("active")&&ecosystem!=null&&workspaces.entitlements(w).enabled("features.integrations")&&ecosystem.integrations(w.id()).stream().anyMatch(i->e.id().equals(i.endpoint())&&!i.status().equals("disabled")&&Set.of("zapier","make").contains(i.provider()));}
   private final DeveloperRepository data;
   private final Workspaces workspaces;
   private final WorkspaceRepository workspaceRepository;
@@ -69,13 +73,16 @@ public class DeveloperUseCase {
     if(p.size()>3||!Set.of("meta","google","tiktok").containsAll(p.keySet())||p.values().stream().anyMatch(s->!s.matches("[A-Za-z0-9_-]{3,64}")))throw new DomainException("invalid_request");
     data.tracking(new Tracking(id,ws.id(),enabled,model,windowDays,p));
   }
-  public boolean collect(UUID workspace,EventCommand cmd){
+  public String pseudonym(UUID workspace,String visitor){return visitor==null?null:ids.sign("visitor:"+workspace+":"+visitor);}
+  public boolean collectPseudonymous(UUID workspace,EventCommand cmd){return collect(workspace,cmd,true);}
+  public boolean collect(UUID workspace,EventCommand cmd){return collect(workspace,cmd,false);}
+  private boolean collect(UUID workspace,EventCommand cmd,boolean pseudonymous){
     var ws=workspace(workspace);require(ws,"features.conversion");Instant now=clock.instant();
     if(cmd.eventId()==null||cmd.name()==null||!cmd.name().matches("pageview|lead|sale|signup|subscription|custom:[a-zA-Z0-9_.-]{1,64}")||cmd.visitor()!=null&&cmd.visitor().length()>128)throw new DomainException("invalid_request");
     if(!cmd.consent()&&!cmd.name().equals("pageview"))throw new DomainException("consent_required");
     var value=cmd.value()==null?BigDecimal.ZERO:cmd.value();
     if(value.signum()<0||value.precision()-value.scale()>14||value.scale()>4||cmd.currency()!=null&&!cmd.currency().matches("[A-Z]{3}")||"sale".equals(cmd.name())&&cmd.currency()==null)throw new DomainException("invalid_request");
-    String page=page(cmd.page());String visitor=cmd.consent()&&cmd.visitor()!=null?ids.sign("visitor:"+workspace+":"+cmd.visitor()):null;
+    String page=page(cmd.page());String visitor=cmd.consent()&&cmd.visitor()!=null?(pseudonymous?cmd.visitor():pseudonym(workspace,cmd.visitor())):null;
     var utm=cmd.utm()==null?Map.<String,String>of():cmd.utm();if(utm.size()>5||!Set.of("source","medium","campaign","term","content").containsAll(utm.keySet())||utm.values().stream().anyMatch(v->v==null||v.length()>128))throw new DomainException("invalid_utm");
     var receipt=cmd.consent()?ids.read(cmd.cid(),workspace,now):Optional.<ClickIds.Click>empty();
     if(cmd.consent()&&cmd.cid()!=null&&receipt.isEmpty())throw new DomainException("invalid_click_id");

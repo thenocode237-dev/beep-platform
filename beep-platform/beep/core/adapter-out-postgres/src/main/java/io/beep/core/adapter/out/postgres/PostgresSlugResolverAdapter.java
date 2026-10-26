@@ -46,8 +46,9 @@ public class PostgresSlugResolverAdapter implements SlugResolverPort {
   @Override
   public Optional<PublishedBio> bioPage(UUID pageId) {
     return bioPages.findById(pageId).map(p -> {
-      var r=dsl.fetchSingle("SELECT w.status,COALESCE(o.value,(p.entitlements->>'features.bio_badge_removable')::bigint,0) AS removable FROM workspaces w JOIN plans p ON p.code=w.plan_code LEFT JOIN entitlement_overrides o ON o.workspace_id=w.id AND o.key='features.bio_badge_removable' WHERE w.id=?",p.workspaceId());
-      return new PublishedBio(p,"suspended".equals(r.get("status",String.class)),r.get("removable",Long.class)!=1L);
+      var r=dsl.fetchSingle("SELECT beep_effective_right(w.id,'features.bio_advanced') AS advanced,w.status,beep_effective_right(w.id,'features.bio_badge_removable') AS removable FROM workspaces w JOIN plans p ON p.code=w.plan_code LEFT JOIN entitlement_overrides o ON o.workspace_id=w.id AND o.key='features.bio_badge_removable' WHERE w.id=?",p.workspaceId());
+      var published=r.get("advanced",Long.class)==1L?p:p.withBlocks(p.blocks().stream().filter(b->!java.util.Set.of(io.beep.core.domain.bio.BioBlock.Type.VIDEO,io.beep.core.domain.bio.BioBlock.Type.AUDIO,io.beep.core.domain.bio.BioBlock.Type.EMAIL,io.beep.core.domain.bio.BioBlock.Type.FORM).contains(b.type())).toList(),p.updatedAt());
+      return new PublishedBio(published,"suspended".equals(r.get("status",String.class)),r.get("removable",Long.class)!=1L);
     });
   }
 }

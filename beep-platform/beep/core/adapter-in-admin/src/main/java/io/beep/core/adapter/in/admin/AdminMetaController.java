@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("!worker & !migrate")
 public class AdminMetaController {
   /** Doit rester alignée sur `info.version` de contracts/beep-admin.openapi.yaml. */
-  public static final String CONTRACT_VERSION = "0.7.0";
+  public static final String CONTRACT_VERSION = "0.9.0";
 
   record Meta(String contract) {}
 

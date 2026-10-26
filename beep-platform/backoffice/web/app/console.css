@@ -565,3 +565,5 @@ select.bp-input { appearance: auto; }
   .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+.eco-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:1rem;margin:0}.eco-dl dt{font-size:.875rem;color:var(--color-text-muted)}.eco-dl dd{margin:0;overflow-wrap:anywhere}.eco-check{display:flex;align-items:center;gap:.5rem;min-height:44px}

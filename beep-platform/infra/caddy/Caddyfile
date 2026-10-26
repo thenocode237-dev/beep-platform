@@ -40,7 +40,14 @@
 
 	# tout le reste : slug de lien court ou de page bio (phase 1)
 	handle {
-		reverse_proxy core:8080
+		reverse_proxy {$REDIRECT_UPSTREAMS:redirector:8080} {
+			health_uri /healthz
+			health_interval 10s
+			health_timeout 2s
+			lb_try_duration 2s
+			fail_duration 30s
+			max_fails 2
+		}
 	}
 }
 
@@ -82,6 +89,13 @@ https:// {
 		respond 404
 	}
 	handle {
-		reverse_proxy core:8080
+		reverse_proxy {$REDIRECT_UPSTREAMS:redirector:8080} {
+			health_uri /healthz
+			health_interval 10s
+			health_timeout 2s
+			lb_try_duration 2s
+			fail_duration 30s
+			max_fails 2
+		}
 	}
 }

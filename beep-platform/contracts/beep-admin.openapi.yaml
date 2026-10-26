@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Beep — API admin interne
-  version: 0.7.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
+  version: 0.9.0   # SemVer. Additif = mineure ; cassant = nouvelle base /internal/admin/v2 + un cycle de coexistence.
   description: |
     Contrat entre `beep-core` (serveur) et `backoffice-api` (client). Source de vérité unique :
     on modifie ce fichier EN PREMIER, puis le core et le client.
@@ -888,6 +888,534 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
+  /ecosystem/monitor:
+    get:
+      operationId: ecosystemMonitor
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EcosystemMonitor"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      summary: Superviser les équipes, intégrations, notifications et cohortes
+  /ecosystem/workspaces/{id}:
+    get:
+      operationId: ecosystemWorkspace
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EcosystemWorkspace"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      summary: Consulter une équipe et ses ressources sans secrets
+  /ecosystem/workspaces/{id}/actions:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: ecosystemAction
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      summary: Déconnecter, rejouer ou ouvrir une vue staff en lecture seule
+  /ecosystem/affiliates:
+    get:
+      operationId: ecosystemAffiliates
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AffiliateConsole"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      summary: Lister les affiliés et leurs commissions
+  /ecosystem/affiliates/actions:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: ecosystemAffiliateAction
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      summary: Consigner un versement de commissions approuvées
+  /content:
+    get:
+      operationId: publishedContent
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EditorialContent"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      summary: Consulter les copies éditoriales publiées
+  /content/publications:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: publishContent
+      tags:
+        - Ecosystem
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      summary: Publier ou retirer une copie éditoriale versionnée
+
+  /enterprise/overview:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    get:
+      operationId: enterpriseOverview
+      summary: Consulter les nœuds et la capacité
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnterpriseOverview"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /enterprise/workspaces/{id}:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    put:
+      operationId: enterpriseSaveContract
+      summary: Publier une version de contrat entreprise
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnterpriseWorkspace"
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnterpriseContractWrite"
+    get:
+      operationId: enterpriseWorkspace
+      summary: Consulter un contrat entreprise
+      tags:
+        - Enterprise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnterpriseWorkspace"
+        "404":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /enterprise/sdk-releases:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: enterprisePublishSdk
+      summary: Référencer une version de SDK
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema: &a1
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: *a1
+
+  /enterprise/evidence:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: enterpriseAddEvidence
+      summary: Enregistrer une preuve de conformité
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema: &a1
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: *a1
+
+  /enterprise/access-reviews:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: enterpriseReviewAccess
+      summary: Consigner une revue des accès
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema: &a1
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: *a1
+
+  /enterprise/failovers:
+    parameters:
+      - $ref: "#/components/parameters/StaffId"
+    post:
+      operationId: enterpriseRequestFailover
+      summary: Consigner une bascule assistée
+      tags:
+        - Enterprise
+      responses:
+        "200":
+          description: Résultat
+          content:
+            application/json:
+              schema: &a1
+                type: object
+                additionalProperties: true
+        "400":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Erreur
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Résultat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: *a1
+
 components:
   securitySchemes:
     serviceToken:
@@ -914,6 +1442,177 @@ components:
       description: Membre du staff à l'origine de l'appel.
       schema: { type: string, format: uuid }
   schemas:
+    EnterpriseContract:
+      type: object
+      required:
+        - version
+        - reference
+        - status
+        - startsAt
+        - endsAt
+        - slaBp
+        - dpaReference
+        - dpaSha256
+        - retentionDays
+        - ipAllowlist
+        - brandName
+        - brandColor
+        - sso
+      properties:
+        workspaceId: &a4
+          type: string
+          format: uuid
+        version: &a5
+          type: integer
+          minimum: 1
+        reference: &a6
+          type: string
+          minLength: 3
+          maxLength: 200
+        status: &a7
+          enum:
+            - active
+            - suspended
+            - expired
+        startsAt: &a1
+          type: string
+          format: date-time
+        endsAt: *a1
+        slaBp: &a8
+          type: integer
+          minimum: 9000
+          maximum: 10000
+        dpaReference: &a9
+          type: string
+          minLength: 3
+          maxLength: 200
+        dpaSha256: &a10
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        retentionDays: &a11
+          type: integer
+          minimum: 1
+          maximum: 3650
+        ipAllowlist: &a12
+          type: array
+          maxItems: 100
+          items: &a2
+            type: string
+        brandName: &a13
+          type: string
+          minLength: 1
+          maxLength: 80
+        brandColor: &a14
+          type: string
+          pattern: ^#[a-fA-F0-9]{6}$
+        sso: &a15
+          type: object
+          properties:
+            issuer: &a3
+              type: string
+              format: uri
+            clientId: *a2
+            authorizationUrl: *a3
+            tokenUrl: *a3
+            jwksUrl: *a3
+            required:
+              type: boolean
+          additionalProperties: false
+        updatedAt: *a1
+      additionalProperties: false
+    EnterpriseContractWrite:
+      type: object
+      required:
+        - version
+        - reference
+        - status
+        - startsAt
+        - endsAt
+        - slaBp
+        - dpaReference
+        - dpaSha256
+        - retentionDays
+        - ipAllowlist
+        - brandName
+        - brandColor
+        - reason
+      properties:
+        workspaceId: *a4
+        version: *a5
+        reference: *a6
+        status: *a7
+        startsAt: *a1
+        endsAt: *a1
+        slaBp: *a8
+        dpaReference: *a9
+        dpaSha256: *a10
+        retentionDays: *a11
+        ipAllowlist: *a12
+        brandName: *a13
+        brandColor: *a14
+        sso: *a15
+        updatedAt: *a1
+        ssoSecret:
+          type: string
+          maxLength: 4096
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 1000
+      additionalProperties: false
+    EnterpriseWorkspace:
+      type: object
+      required:
+        - contract
+        - apps
+      properties:
+        contract:
+          anyOf:
+            - $ref: "#/components/schemas/EnterpriseContract"
+            - type: object
+              maxProperties: 0
+        apps:
+          type: array
+          items: &a16
+            type: object
+            additionalProperties: true
+      additionalProperties: false
+    EnterpriseOverview:
+      type: object
+      required:
+        - nodes
+        - database
+        - replication
+        - contracts
+        - sdk
+        - evidence
+        - reviews
+        - failovers
+      properties:
+        nodes:
+          type: array
+          items: *a16
+        database:
+          type: array
+          items: *a16
+        replication:
+          type: array
+          items: *a16
+        contracts:
+          type: array
+          items: *a16
+        sdk:
+          type: array
+          items: *a16
+        evidence:
+          type: array
+          items: *a16
+        reviews:
+          type: array
+          items: *a16
+        failovers:
+          type: array
+          items: *a16
     DeveloperKey: {"type":"object","additionalProperties":false,"required":["id","name","prefix","scopes","origins","publicKey","revokedAt","createdAt"],"properties":{"id":{"type":"string","format":"uuid"},"name":{"type":"string"},"prefix":{"type":"string"},"scopes":{"type":"array","items":{"type":"string","enum":["read","write","events"]}},"origins":{"type":"array","items":{"type":"string"}},"publicKey":{"type":"boolean"},"revokedAt":{"type":["string","null"],"format":"date-time"},"createdAt":{"type":"string","format":"date-time"}}}
     DeveloperTracking: {"type":"object","additionalProperties":false,"required":["linkId","workspaceId","enabled","model","windowDays","pixels"],"properties":{"linkId":{"type":"string","format":"uuid"},"workspaceId":{"type":"string","format":"uuid"},"enabled":{"type":"boolean"},"model":{"type":"string","enum":["first","last"]},"windowDays":{"type":"integer","minimum":1,"maximum":90},"pixels":{"type":"object","additionalProperties":{"type":"string"}}}}
     DeveloperWebhook: {"type":"object","additionalProperties":false,"required":["id","url","events","enabled","provider"],"properties":{"id":{"type":"string","format":"uuid"},"url":{"type":"string","format":"uri"},"events":{"type":"array","items":{"type":"string"}},"enabled":{"type":"boolean"},"provider":{"type":"string","enum":["webhook","meta","google"]}}}
@@ -1528,6 +2227,440 @@ components:
         title: { type: string }
         status: { type: integer }
         code: { type: string, description: "Code stable (ex. unauthorized, invalid_request, not_found)." }
+    EcosystemMonitor:
+      type: object
+      required:
+        - teams
+        - integrations
+        - events
+        - tasks
+        - cohorts
+      properties:
+        teams:
+          type: integer
+          minimum: 0
+        integrations:
+          type: array
+          items:
+            type: object
+            required:
+              - provider
+              - status
+              - count
+            properties:
+              provider:
+                type: string
+              status:
+                type: string
+              count:
+                type: integer
+                minimum: 0
+            additionalProperties: true
+        events:
+          type: array
+          items:
+            type: object
+            required:
+              - status
+              - count
+            properties:
+              status:
+                type: string
+              count:
+                type: integer
+                minimum: 0
+            additionalProperties: true
+        tasks:
+          type: array
+          items:
+            type: object
+            required:
+              - status
+              - count
+            properties:
+              status:
+                type: string
+              count:
+                type: integer
+                minimum: 0
+            additionalProperties: true
+        cohorts:
+          type: array
+          items:
+            type: object
+            required:
+              - cohort
+              - workspaces
+              - active30d
+              - retained90d
+              - mature90d
+            properties:
+              cohort:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+              workspaces:
+                type: integer
+                minimum: 0
+              active30d:
+                type: integer
+                minimum: 0
+              retained90d:
+                type: integer
+                minimum: 0
+              mature90d:
+                type: integer
+                minimum: 0
+            additionalProperties: true
+      additionalProperties: true
+    EcosystemWorkspace:
+      type: object
+      required:
+        - team
+        - integrations
+        - events
+        - radar
+        - audit
+        - links
+        - bioPages
+      properties:
+        team:
+          type: object
+          required:
+            - members
+            - invitations
+            - seats
+            - activeSeats
+          properties:
+            members:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - email
+                  - role
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                    format: email
+                  role:
+                    type: string
+                    enum:
+                      - owner
+                      - admin
+                      - editor
+                      - viewer
+                additionalProperties: true
+            invitations:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - email
+                  - role
+                  - expires_at
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                  role:
+                    type: string
+                  expires_at:
+                    type:
+                      - string
+                      - "null"
+                    format: date-time
+                additionalProperties: true
+            seats:
+              type: integer
+              minimum: 0
+            activeSeats:
+              type: integer
+              minimum: 0
+          additionalProperties: true
+        integrations:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - provider
+              - name
+              - status
+              - last_error
+              - last_at
+            properties:
+              id:
+                type: string
+                format: uuid
+              provider:
+                type: string
+              name:
+                type: string
+              status:
+                type: string
+              last_error:
+                type:
+                  - string
+                  - "null"
+              last_at:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+            additionalProperties: true
+        events:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - integration_id
+              - event
+              - status
+              - attempts
+              - last_error
+              - created_at
+            properties:
+              id:
+                type: string
+                format: uuid
+              integration_id:
+                type: string
+                format: uuid
+              event:
+                type: string
+              status:
+                type: string
+              attempts:
+                type: integer
+                minimum: 0
+              last_error:
+                type:
+                  - string
+                  - "null"
+              created_at:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+            additionalProperties: true
+        radar:
+          type: object
+          required:
+            - rules
+            - alerts
+            - health
+            - reports
+          properties:
+            rules:
+              type: array
+            alerts:
+              type: array
+            health:
+              type: array
+            reports:
+              type: array
+          additionalProperties: true
+        audit:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - actor_id
+              - action
+              - target
+              - at
+            properties:
+              id:
+                type: integer
+                minimum: 0
+              actor_id:
+                type:
+                  - string
+                  - "null"
+                format: uuid
+              action:
+                type: string
+              target:
+                type: string
+              at:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+            additionalProperties: true
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - slug
+              - destination
+              - title
+              - folder_id
+              - tags
+            properties:
+              id:
+                type: string
+                format: uuid
+              slug:
+                type: string
+              destination:
+                type: string
+              title:
+                type:
+                  - string
+                  - "null"
+              folder_id:
+                type:
+                  - string
+                  - "null"
+                format: uuid
+              tags:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+            additionalProperties: true
+        bioPages:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - slug
+              - title
+              - description
+            properties:
+              id:
+                type: string
+                format: uuid
+              slug:
+                type: string
+              title:
+                type: string
+              description:
+                type:
+                  - string
+                  - "null"
+            additionalProperties: true
+      additionalProperties: true
+    AffiliateConsole:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - user_id
+              - email
+              - code
+              - id
+              - amount_xaf
+              - status
+              - available_at
+              - reference
+            properties:
+              user_id:
+                type: string
+                format: uuid
+              email:
+                type: string
+              code:
+                type: string
+              id:
+                type:
+                  - string
+                  - "null"
+                format: uuid
+              amount_xaf:
+                type:
+                  - integer
+                  - "null"
+                minimum: 0
+              status:
+                type:
+                  - string
+                  - "null"
+              available_at:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+              reference:
+                type:
+                  - string
+                  - "null"
+            additionalProperties: true
+      additionalProperties: true
+    EditorialContent:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - kind
+              - slug
+              - locale
+              - title
+              - body
+              - status
+              - version
+              - published_at
+            properties:
+              kind:
+                type: string
+                enum:
+                  - blog
+                  - roadmap
+                  - announcement
+              slug:
+                type: string
+              locale:
+                type: string
+                enum:
+                  - fr
+                  - en
+                  - es
+                  - pt
+              title:
+                type: string
+              body:
+                type: string
+              status:
+                type: string
+                enum:
+                  - published
+                  - withdrawn
+              version:
+                type: integer
+                minimum: 1
+              published_at:
+                type:
+                  - string
+                  - "null"
+                format: date-time
+            additionalProperties: true
+      additionalProperties: true
+
   responses:
     Unauthorized:
       description: Jeton de service absent ou invalide

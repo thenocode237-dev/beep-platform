@@ -64,7 +64,6 @@ import io.beep.core.adapter.out.postgres.SpringTransactionAdapter;
 import io.beep.core.adapter.out.qrrender.ZxingQrRendererAdapter;
 import io.beep.core.adapter.out.security.AesGcmSecretCipherAdapter;
 import io.beep.core.adapter.out.security.Argon2PasswordHasherAdapter;
-import io.beep.core.adapter.out.security.InMemoryRateLimiterAdapter;
 import io.beep.core.adapter.out.security.SecureTokenAdapter;
 import io.beep.core.app.admin.AdminEntitlementsUseCase;
 import io.beep.core.app.admin.AdminInvitationsUseCase;
@@ -237,8 +236,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  AnalyticsRepository analyticsRepository(DSLContext dsl) {
-    return new PostgresAnalyticsAdapter(dsl);
+  AnalyticsRepository analyticsRepository(DSLContext dsl, @Value("${BEEP_READ_REPLICA_URL:}") String url, @Value("${BEEP_READ_REPLICA_USER:}") String user, @Value("${BEEP_READ_REPLICA_PASSWORD:}") String password) {
+    return url.isBlank()?new PostgresAnalyticsAdapter(dsl):new io.beep.core.adapter.out.postgres.ReplicaAnalyticsAdapter(dsl,url,user,password);
   }
 
   @Bean
@@ -262,8 +261,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  ClickEventRepository clickEventRepository(DSLContext dsl) {
-    return new PostgresClickEventAdapter(dsl);
+  ClickEventRepository clickEventRepository(DSLContext dsl,@Value("${BEEP_EVENT_STORE:postgres}") String store) {
+    return switch(store){case "postgres"->new PostgresClickEventAdapter(dsl);case "timescale"->new io.beep.core.adapter.out.postgres.TimescaleClickEventAdapter(dsl);default->throw new IllegalArgumentException("BEEP_EVENT_STORE");};
   }
 
   // ---- Chemin de redirection : file d'événements bornée, cache des slugs invalidé par LISTEN/NOTIFY ----
@@ -287,7 +286,7 @@ class ApplicationWiring {
   /** Instances API uniquement (le worker ne sert pas de redirections). Connexion dédiée, directe. */
   @Bean(destroyMethod = "close")
   @Profile("!worker")
-  CacheInvalidationListener cacheInvalidationListener(CachingSlugResolverAdapter cache, CachingDomainRouterAdapter domainRouter, PostgresAppCatalogAdapter catalog, @Value("${spring.datasource.url}") String url,
+  CacheInvalidationListener cacheInvalidationListener(CachingSlugResolverAdapter cache, CachingDomainRouterAdapter domainRouter, PostgresAppCatalogAdapter catalog, @Value("${BEEP_DATABASE_DIRECT_URL:${spring.datasource.url}}") String url,
       @Value("${spring.datasource.username}") String user, @Value("${spring.datasource.password}") String password) {
     return new CacheInvalidationListener(url, user, password, payload -> {
       cache.invalidate(payload);
@@ -319,8 +318,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  RateLimiterPort rateLimiter(Clock clock) {
-    return new InMemoryRateLimiterAdapter(clock);
+  RateLimiterPort rateLimiter(DSLContext db) {
+    return new io.beep.core.adapter.out.postgres.PostgresRateLimiterAdapter(db);
   }
 
   @Bean
@@ -419,8 +418,8 @@ class ApplicationWiring {
 
   // ---- Cas d'usage : espace client ----
   @Bean
-  Workspaces workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qr, BioPageRepository bio, Clock clock,SubscriptionRepository subscriptions) {
-    return new Workspaces(workspaces, plans, links, qr, bio, clock).withSubscriptions(subscriptions);
+  Workspaces workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qr, BioPageRepository bio, Clock clock,SubscriptionRepository subscriptions,io.beep.core.app.port.EcosystemRepository memberships,io.beep.core.app.port.EnterpriseRepository enterprise) {
+    return new Workspaces(workspaces, plans, links, qr, bio, clock).withSubscriptions(subscriptions).withMemberships(memberships).withEnterprise(enterprise);
   }
 
   @Bean
@@ -525,8 +524,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  JobRunner jobRunner(JobRunRepository runs, Clock clock) {
-    return new JobRunner(runs, clock);
+  JobRunner jobRunner(JobRunRepository runs, Clock clock, io.beep.core.app.port.JobLockPort jobLock) {
+    return new JobRunner(runs, clock).withLock(jobLock);
   }
 
   @Bean

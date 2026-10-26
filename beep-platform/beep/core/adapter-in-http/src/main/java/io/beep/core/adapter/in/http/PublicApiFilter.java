@@ -13,6 +13,7 @@ import java.io.*;
 import java.time.*;
 import java.util.*;
 
+@org.springframework.core.annotation.Order(-20)
 @Component @Profile("!worker & !migrate")
 public class PublicApiFilter extends OncePerRequestFilter {
   private final DeveloperUseCase developer;private final DeveloperRepository data;private final TokenPort tokens;private final TransactionPort tx;private final Clock clock;

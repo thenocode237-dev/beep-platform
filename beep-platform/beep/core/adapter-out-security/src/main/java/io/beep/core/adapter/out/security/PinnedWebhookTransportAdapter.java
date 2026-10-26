@@ -11,7 +11,8 @@ public class PinnedWebhookTransportAdapter implements WebhookTransportPort {
   public record Postback(String url,String body) {}
   /** Meta server events and Google GA4 server events. No IP, e-mail or user agent is forwarded. */
   public static Postback postbackPayload(String provider,String config,String payload)throws Exception{
-    var json=new com.fasterxml.jackson.databind.ObjectMapper();var event=json.readTree(payload);var data=event.path("data");String[] c=config.split("\n",-1);String visitor=data.path("visitor").asText("");if(visitor.isBlank()||visitor.equals("null"))throw new IOException("consenting visitor required");
+    var json=new com.fasterxml.jackson.databind.ObjectMapper();if(provider.equals("slack")){var e=json.readTree(payload);return new Postback(config,json.writeValueAsString(Map.of("text","Beep · "+e.path("type").asText()+" · "+e.path("id").asText())));}
+    var event=json.readTree(payload);var data=event.path("data");String[] c=config.split("\n",-1);String visitor=data.path("visitor").asText("");if(visitor.isBlank()||visitor.equals("null"))throw new IOException("consenting visitor required");
     String id=event.path("id").asText(),name=data.path("name").asText();long seconds=java.time.Instant.parse(data.path("at").asText()).getEpochSecond();String url;Object body;
     if(provider.equals("meta")){
       url="https://graph.facebook.com/"+c[2]+"/"+c[0]+"/events?access_token="+URLEncoder.encode(c[1],StandardCharsets.UTF_8);

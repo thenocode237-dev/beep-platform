@@ -30,7 +30,7 @@ public class PostgresPlatformMetricsAdapter implements PlatformMetricsRepository
 
   @Override
   public Activation activation(Instant since, Duration window) {
-    var r = dsl.fetchOne("SELECT count(*), count(*) FILTER (WHERE w.first_link_at IS NOT NULL AND w.first_link_at <= u.created_at + make_interval(secs => ?)) "
+    var r = dsl.fetchOne("SELECT count(DISTINCT u.id), count(DISTINCT u.id) FILTER (WHERE w.first_link_at IS NOT NULL AND w.first_link_at <= u.created_at + make_interval(secs => ?)) "
         + "FROM users u LEFT JOIN workspaces w ON w.owner_id = u.id WHERE u.created_at >= ?::timestamptz", window.toSeconds(), Schema.odt(since));
     return new Activation(r.get(0, Long.class), r.get(1, Long.class));
   }

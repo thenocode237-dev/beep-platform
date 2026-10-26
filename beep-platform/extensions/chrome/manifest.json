@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Ajouter à Beep",
+  "version": "1.0.0",
+  "description": "Créez un lien Beep depuis l’onglet actif, après votre confirmation.",
+  "minimum_chrome_version": "102",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["http://beep.localhost/*"],
+  "optional_host_permissions": ["https://*/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Ajouter à Beep"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"
+  }
+}

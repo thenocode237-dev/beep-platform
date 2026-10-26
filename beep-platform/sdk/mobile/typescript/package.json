@@ -1,0 +1,16 @@
+{
+  "name": "@beep/mobile",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs"
+    }
+  },
+  "files": [
+    "index.mjs",
+    "index.d.ts"
+  ],
+  "license": "UNLICENSED"
+}

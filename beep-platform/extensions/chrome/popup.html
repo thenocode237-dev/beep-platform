@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ajouter à Beep</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <h1>beep<span>.</span></h1>
+      <p>Transformez la page ouverte en un lien prêt à partager.</p>
+      <details id="settings">
+        <summary>Connexion au workspace</summary>
+        <form id="connect">
+          <label
+            >Adresse de Beep<input
+              name="origin"
+              type="url"
+              value="http://beep.localhost"
+              required /></label
+          ><label
+            >Clé API · portée write<input
+              name="key"
+              type="password"
+              autocomplete="off"
+              required
+          /></label>
+          <p class="small">
+            Créez une clé dans Conversions & API. Elle reste dans la mémoire de
+            la session du navigateur et s’efface à sa fermeture.
+          </p>
+          <button>Connecter ce workspace</button>
+        </form>
+        <button id="disconnect" type="button">Déconnecter</button>
+      </details>
+      <form id="create">
+        <label
+          >Destination<input
+            name="url"
+            type="url"
+            maxlength="2048"
+            required /></label
+        ><label>Titre<input name="title" maxlength="200" /></label
+        ><label class="check"
+          ><input name="deeplink" type="checkbox" />Ouvrir dans l’application si
+          disponible</label
+        ><button id="save">Ajouter à Beep</button>
+      </form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <div id="result" hidden>
+        <a id="short" target="_blank" rel="noopener noreferrer"></a
+        ><button id="copy" type="button">Copier le lien</button>
+      </div>
+    </main>
+    <script type="module" src="popup.mjs"></script>
+  </body>
+</html>

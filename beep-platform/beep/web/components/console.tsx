@@ -432,6 +432,7 @@ const BLOCK_FIELDS: Record<string, string[]> = {
   heading: ["text"],
   text: ["text"],
   image: ["url", "alt", "href"],
+  video: ["url", "label"], audio: ["url", "label"], email: ["label", "description", "privacyUrl", "consentText"], form: ["label", "description", "privacyUrl", "consentText"],
 };
 const NETWORKS = ["instagram", "tiktok", "facebook", "x", "youtube", "linkedin", "whatsapp", "telegram", "github", "website", "email"];
 const NETWORK_LABELS: Record<string, string> = {

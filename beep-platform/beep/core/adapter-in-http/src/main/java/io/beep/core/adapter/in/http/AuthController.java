@@ -71,10 +71,12 @@ public class AuthController {
   private final OAuthUseCase oauth;
   private final SessionCookies cookies;
   private final HttpSettings settings;
+  private final io.beep.core.app.enterprise.EnterpriseUseCase enterprise;
 
   public AuthController(SignUpUseCase signUp, VerifyEmailUseCase verifyEmail, LoginUseCase login, LogoutUseCase logout, RequestPasswordResetUseCase requestReset,
       ResetPasswordUseCase reset, SetupTotpUseCase setupTotp, EnableTotpUseCase enableTotp, MagicLinkUseCase magicLink, CompleteMfaUseCase completeMfa,
-      OAuthUseCase oauth, SessionCookies cookies, HttpSettings settings) {
+      OAuthUseCase oauth, SessionCookies cookies, HttpSettings settings, io.beep.core.app.enterprise.EnterpriseUseCase enterprise) {
+    this.enterprise=enterprise;
     this.signUp = signUp;
     this.verifyEmail = verifyEmail;
     this.login = login;
@@ -159,6 +161,7 @@ public class AuthController {
   @PostMapping(value = "/mfa", consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<Map<String, Object>> mfa(@RequestBody MfaRequest r) {
     LoginUseCase.Result result = completeMfa.execute(r.token(), r.code());
+    enterprise.completeMfa(r.token(),result.sessionToken());
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookies.session(result.sessionToken(), settings.sessionTtl()).toString()).body(Map.of("status", "ok"));
   }
 

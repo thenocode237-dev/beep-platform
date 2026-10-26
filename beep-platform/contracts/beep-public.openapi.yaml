@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Beep public API",
-    "version": "1.0.0",
-    "description": "Clés sk_ par workspace. read pour GET, write pour mutations, events pour POST /events. Pro 60 req/min, Elite 600 req/min. Sessions également acceptées pour les parcours client."
+    "version": "0.9.0",
+    "description": "Clés sk_ par workspace. read pour GET, write pour mutations, events pour POST /events. Pro 60 req/min, Elite 600 req/min. Sessions également acceptées pour les parcours client. Phase 4: team administration, native integrations and Radar are session-authenticated in the workspace UI. Chrome uses an existing write-scoped API key, bound to its workspace."
   },
   "servers": [
     {
@@ -1113,6 +1113,585 @@
           }
         }
       }
+    },
+    "/enterprise": {
+      "get": {
+        "operationId": "enterpriseSettings",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnterpriseSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Consulter le contrat et les applications du workspace"
+      }
+    },
+    "/enterprise/mobile-apps": {
+      "post": {
+        "operationId": "registerMobileApp",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "scheme",
+                  "androidStore",
+                  "iosStore"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "scheme": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9+.-]{1,39}$"
+                  },
+                  "androidStore": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "iosStore": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "summary": "Déclarer une application mobile"
+      }
+    },
+    "/enterprise/mobile-apps/{id}": {
+      "delete": {
+        "operationId": "disableMobileApp",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "summary": "Désactiver une application mobile"
+      }
+    },
+    "/mobile/deferred/{id}": {
+      "post": {
+        "operationId": "issueDeferredToken",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "storeUrl",
+                    "expiresAt",
+                    "handoff"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "storeUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "handoff": {
+                      "enum": [
+                        "install_referrer",
+                        "explicit_token"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "platform",
+                  "destination",
+                  "consent"
+                ],
+                "properties": {
+                  "platform": {
+                    "enum": [
+                      "android",
+                      "ios"
+                    ]
+                  },
+                  "destination": {
+                    "type": "string",
+                    "maxLength": 2048
+                  },
+                  "consent": {
+                    "const": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "summary": "Créer un transfert différé consenti"
+      }
+    },
+    "/mobile/resolve": {
+      "post": {
+        "operationId": "resolveDeferredToken",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "destination"
+                  ],
+                  "properties": {
+                    "destination": {
+                      "type": "string",
+                      "maxLength": 2048
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Résultat",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "appId",
+                  "token",
+                  "platform"
+                ],
+                "properties": {
+                  "appId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "token": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 128
+                  },
+                  "platform": {
+                    "enum": [
+                      "android",
+                      "ios"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "summary": "Consommer un jeton de transfert différé"
+      }
+    },
+    "/auth/sso/{id}/start": {
+      "get": {
+        "operationId": "startEnterpriseSso",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "302": {
+            "description": "Navigation SSO ou retour connexion"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "summary": "Démarrer une connexion OIDC"
+      }
+    },
+    "/auth/sso/{id}/callback": {
+      "get": {
+        "operationId": "completeEnterpriseSso",
+        "tags": [
+          "Enterprise"
+        ],
+        "responses": {
+          "302": {
+            "description": "Navigation SSO ou retour connexion"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Terminer une connexion OIDC"
+      }
     }
   },
   "components": {
@@ -1340,6 +1919,181 @@
               "null"
             ],
             "format": "uri"
+          }
+        }
+      },
+      "EnterpriseContract": {
+        "type": "object",
+        "required": [
+          "version",
+          "reference",
+          "status",
+          "startsAt",
+          "endsAt",
+          "slaBp",
+          "dpaReference",
+          "dpaSha256",
+          "retentionDays",
+          "ipAllowlist",
+          "brandName",
+          "brandColor",
+          "sso"
+        ],
+        "properties": {
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "status": {
+            "enum": [
+              "active",
+              "suspended",
+              "expired"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "slaBp": {
+            "type": "integer",
+            "minimum": 9000,
+            "maximum": 10000
+          },
+          "dpaReference": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "dpaSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "retentionDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3650
+          },
+          "ipAllowlist": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string"
+            }
+          },
+          "brandName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "brandColor": {
+            "type": "string",
+            "pattern": "^#[a-fA-F0-9]{6}$"
+          },
+          "sso": {
+            "type": "object",
+            "properties": {
+              "issuer": {
+                "type": "string",
+                "format": "uri"
+              },
+              "clientId": {
+                "type": "string"
+              },
+              "authorizationUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "tokenUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "jwksUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnterpriseSettings": {
+        "type": "object",
+        "required": [
+          "workspaceId",
+          "contract",
+          "apps",
+          "manages"
+        ],
+        "properties": {
+          "contract": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnterpriseContract"
+              },
+              {
+                "type": "object",
+                "maxProperties": 0
+              }
+            ]
+          },
+          "apps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "manages": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Problem": {
+        "type": "object",
+        "required": [
+          "status",
+          "code"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code stable (ex. unauthorized, invalid_request, not_found)."
           }
         }
       }

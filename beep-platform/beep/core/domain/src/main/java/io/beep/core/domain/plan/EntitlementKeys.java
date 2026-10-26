@@ -33,7 +33,7 @@ public final class EntitlementKeys {
 
   public static final Set<String> ALL = Set.of(LINKS_STOCK_MAX, LINKS_MONTHLY_CREATIONS, QR_STOCK_MAX, QR_MONTHLY_CREATIONS, BIO_MAX, DOMAINS_MAX,
       MEMBERS_MAX, API_RPM, ANALYTICS_RETENTION_DAYS, FEATURE_ANALYTICS_ADVANCED, FEATURE_BIO_BADGE_REMOVABLE, FEATURE_EXPORT_CSV, FEATURE_LINK_RULES, FEATURE_LINK_ROUTING, FEATURE_UTM, FEATURE_QR_ADVANCED,
-      "features.conversion", "features.webhooks", "features.retargeting", "events.monthly_max", "collect.rpm");
+      "features.teams", "features.integrations", "features.radar", "features.insights", "features.reports", "features.bio_advanced", "features.workspace_audit", "features.conversion", "features.webhooks", "features.retargeting", "events.monthly_max", "collect.rpm");
 
   public static boolean isFeature(String key) {
     return key.startsWith("features.");

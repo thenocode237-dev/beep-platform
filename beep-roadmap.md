@@ -156,6 +156,8 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 
 ### Phase 4 — Équipes et écosystème (S23–S30)
 
+> **État (25 octobre 2026)** : développement des cycles 11–14 livré côté `beep` et `backoffice` (contrat admin 0.8.0), avec recette locale et extension chargeable en mode développeur. Les comptes fournisseurs réels, la publication Chrome Web Store, la recette interactive, la charge et les critères produit (NPS, rétention, cinq clients Elite) restent à valider — voir [`beep-platform/docs/phase-4.md`](beep-platform/docs/phase-4.md).
+
 **Cycle 11–12 (S23–S26) : équipes et intégrations**
 - `beep` : rôles `owner/admin/editor/viewer`, invitations, dossiers/tags, journal d'audit du workspace ; intégrations **Stripe, Shopify, WooCommerce, Zapier, Make, Slack, GA4** ; création en masse (CSV) et import/export.
 - `backoffice` : rôles staff granulaires (`support`, `finance`, `trust_safety`, `content`), **impersonation lecture seule**, supervision des intégrations, gestion des erreurs d'intégration.
@@ -171,6 +173,8 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 ---
 
 ### Phase 5 — Industrialisation (S31+)
+
+> **État (26 octobre 2026)** : capacités logicielles implémentées côté `beep` et `backoffice` (contrat 0.9.0), avec recette locale, PgBouncer et adapter TimescaleDB vérifiés. SSO OIDC, contrats versionnés, politiques IP/rétention, SDK de transfert différé, traductions éditoriales et registres de conformité livrés. Hébergement managé, véritable multi-région, fournisseur SSO et appareils mobiles réels, audits et certifications restent des validations externes — voir [`beep-platform/docs/phase-5.md`](beep-platform/docs/phase-5.md).
 
 | Axe | Contenu `beep` | Contenu `backoffice` |
 |---|---|---|

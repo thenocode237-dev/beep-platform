@@ -38,7 +38,11 @@ public class Workspaces {
   private final QrCodeRepository qrCodes;
   private final BioPageRepository bioPages;
   private final Clock clock;
+  private io.beep.core.app.port.EnterpriseRepository enterprise;
+  public Workspaces withEnterprise(io.beep.core.app.port.EnterpriseRepository enterprise){this.enterprise=enterprise;return this;}
   private io.beep.core.app.port.SubscriptionRepository subscriptions;
+  private io.beep.core.app.port.EcosystemRepository memberships;
+  public Workspaces withMemberships(io.beep.core.app.port.EcosystemRepository data){this.memberships=data;return this;}
   public Workspaces withSubscriptions(io.beep.core.app.port.SubscriptionRepository subscriptions){this.subscriptions=subscriptions;return this;}
 
   public Workspaces(WorkspaceRepository workspaces, PlanRepository plans, LinkRepository links, QrCodeRepository qrCodes, BioPageRepository bioPages, Clock clock) {
@@ -51,6 +55,12 @@ public class Workspaces {
   }
 
   public Workspace ensureFor(User user) {
+    UUID selected=WorkspaceScope.selected();
+    if(selected!=null){
+      Workspace chosen=workspaces.findById(selected).orElseThrow(()->new io.beep.core.domain.DomainException("not_found"));
+      if(!chosen.ownerId().equals(user.id())&&(memberships==null||!memberships.canAccess(selected,user.id())))throw new io.beep.core.domain.DomainException("forbidden");
+      return chosen;
+    }
     return workspaces.findByOwner(user.id())
         .orElseGet(() -> workspaces.ensure(Workspace.personal(UUID.randomUUID(), user.id(), defaultName(user), clock.instant())));
   }
@@ -63,6 +73,7 @@ public class Workspaces {
   public Entitlements entitlements(Workspace w) {
     Plan plan = plans.findByCode(w.planCode()).orElseThrow(() -> new IllegalStateException("plan inconnu : " + w.planCode()));
     Map<String, Long> overrides = plans.overrides(w.id()).stream().collect(Collectors.toMap(PlanRepository.EntitlementOverride::key, PlanRepository.EntitlementOverride::value));
+    if(enterprise!=null)enterprise.contract(w.id()).filter(c->io.beep.core.domain.enterprise.EnterprisePolicy.active(c,clock.instant())).ifPresent(c->{overrides.put("analytics.retention_days",((Number)c.get("retentionDays")).longValue());if(!"Beep".equals(c.get("brandName")))overrides.put("features.bio_badge_removable",1L);});
     return Entitlements.of(plan, overrides);
   }
 

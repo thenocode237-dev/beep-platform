@@ -35,3 +35,7 @@ services:
   backoffice-api:
     environment:
       SPRING_PROFILES_ACTIVE: dev
+
+  redirector:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
