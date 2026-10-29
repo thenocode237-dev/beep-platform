@@ -1,6 +1,5 @@
 package io.beep.core.app.auth;
 
-import io.beep.core.app.port.InvitationRepository;
 import io.beep.core.app.port.MailPort;
 import io.beep.core.app.port.OneTimeTokenRepository;
 import io.beep.core.app.port.PasswordHasherPort;
@@ -10,7 +9,6 @@ import io.beep.core.app.port.SessionRepository;
 import io.beep.core.app.port.TokenPort;
 import io.beep.core.app.port.TransactionPort;
 import io.beep.core.app.port.UserRepository;
-import io.beep.core.domain.invitation.Invitation;
 import io.beep.core.domain.user.Email;
 import io.beep.core.domain.user.User;
 import java.time.Clock;
@@ -75,25 +73,6 @@ public final class Fakes {
     public int deleteExpired(Instant now) { return 0; }
   }
 
-  public static class Invitations implements InvitationRepository {
-    public final Map<Email, Invitation> byEmail = new HashMap<>();
-
-    public Invitation upsert(Invitation i) {
-      Invitation existing = byEmail.get(i.email());
-      Invitation saved = existing != null && existing.usedAt() == null ? new Invitation(existing.id(), i.email(), i.invitedBy(), i.createdAt(), i.expiresAt(), null) : i;
-      byEmail.put(i.email(), saved);
-      return saved;
-    }
-    public Optional<Invitation> findByEmail(Email e) { return Optional.ofNullable(byEmail.get(e)); }
-    public boolean consume(Email e, Instant now) {
-      Invitation i = byEmail.get(e);
-      if (i == null || !i.usable(now)) return false;
-      byEmail.put(e, new Invitation(i.id(), i.email(), i.invitedBy(), i.createdAt(), i.expiresAt(), now));
-      return true;
-    }
-    public Page page(int limit, String cursor) { return new Page(new ArrayList<>(byEmail.values()), null); }
-  }
-
   public static class Hasher implements PasswordHasherPort {
     public String hash(String raw) { return "h:" + raw; }
     public boolean matches(String raw, String hash) { return hash.equals("h:" + raw); }
@@ -118,8 +97,6 @@ public final class Fakes {
     public void sendPasswordReset(Email to, String locale, String token) { sent.add("reset:" + to); lastToken = token; }
     public void sendAlreadyRegistered(Email to, String locale) { sent.add("already:" + to); }
     public void sendMagicLink(Email to, String locale, String token) { sent.add("magic:" + to); lastToken = token; }
-    public void sendInvitation(Email to, String locale) { sent.add("invite:" + to); }
-    public void sendInvitationRequired(Email to, String locale) { sent.add("invite-required:" + to); }
     public void sendReceipt(Email to, String locale, String invoiceNumber, String planName, long amountXaf, java.time.Instant validUntil, byte[] invoicePdf) { sent.add("receipt:" + to + ":" + invoiceNumber); }
     public void sendRenewalReminder(Email to, String locale, String planName, boolean trial, int daysLeft, java.time.Instant dueAt) { sent.add("reminder:" + to + ":d" + daysLeft); }
     public void sendGraceNotice(Email to, String locale, String planName, java.time.Instant graceEnd) { sent.add("grace:" + to); }

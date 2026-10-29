@@ -50,10 +50,10 @@ Le déploiement vérifie la configuration, construit les images, exécute les mi
 | **QR codes** | Dynamiques (suivent un lien, scans mesurés) et statiques (URL, texte, Wi-Fi, e-mail, SMS, téléphone, vCard) ; couleurs (contraste ≥ 3:1 vérifié), correction d'erreur ; export SVG, PNG, PDF vectoriel |
 | **Pages bio** | Blocs lien, bouton, titre, texte, image, réseaux sociaux ; 4 thèmes ; SEO (titre, description, image OG, `noindex`) ; rendu serveur sans script, CSS en ligne, quelques Ko ; clics de blocs mesurés |
 | **Plans & quotas** | Domaine `Plan` + `Entitlements` ; Starter (5 liens, 5 QR dynamiques, 1 page, 30 j d'analytics), Pro/Elite publiés « bientôt » ; quotas de stock/mensuels sous verrou, avertissement 80 %, blocage 100 % ; les redirections ne dépendent jamais d'un quota |
-| **Comptes** | Bêta sur invitation (`SIGNUP_MODE`), lien magique, OAuth Google/GitHub (PKCE), TOTP toujours exigé s'il est actif, workspace personnel |
-| **Back office** | Recherche/désactivation de liens, slugs réservés, fiche utilisateur (usage vs quotas, droits effectifs), overrides et suspension avec ré-authentification TOTP, plans, métriques (inscriptions, activation, clics/jour, tailles des bases, retard du worker, file d'événements), jobs, journal d'audit (filtres, intégrité de la chaîne), invitations ; contrat admin **0.9.0** |
+| **Comptes** | Inscription ouverte (mot de passe), lien magique, OAuth Google/GitHub (PKCE), TOTP toujours exigé s'il est actif, workspace personnel |
+| **Back office** | Recherche/désactivation de liens, slugs réservés, fiche utilisateur (usage vs quotas, droits effectifs), overrides et suspension avec ré-authentification TOTP, plans, métriques (inscriptions, activation, clics/jour, tailles des bases, retard du worker, file d'événements), jobs, journal d'audit (filtres, intégrité de la chaîne) ; contrat admin **0.9.0** |
 
-Ce qui reste ouvert pour clore la phase 1 (bêta de 100 personnes, mesure à 1 000 req/s en préproduction) : voir [`docs/phase-1.md`](docs/phase-1.md#reste-à-faire).
+Ce qui reste ouvert pour clore la phase 1 (mesure à 1 000 req/s en préproduction) : voir [`docs/phase-1.md`](docs/phase-1.md#reste-à-faire).
 
 ## Ce que livre la phase 0
 

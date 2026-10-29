@@ -60,7 +60,6 @@ public class PostgresPrivacyAdapter implements PrivacyRepository {
       dsl.execute("DELETE FROM rollups_daily WHERE workspace_id=?",wid);
     }
     dsl.execute("DELETE FROM team_invitations WHERE email=?",user.get("email",String.class));
-    dsl.execute("DELETE FROM beta_invitations WHERE email=?",user.get("email",String.class));
     dsl.execute("DELETE FROM users WHERE id=?",id);
   }
 }

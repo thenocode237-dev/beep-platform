@@ -15,7 +15,6 @@ const consoleEn: ConsoleDict = {
     saved: "Changes saved.",
     loading: "Loading…",
     unavailable: "This data is temporarily unavailable. Please try again shortly.",
-    beta: "Beta",
     confirmDelete: "Confirm deletion",
     clicks: "clicks",
     scans: "scans",
@@ -195,7 +194,6 @@ const consoleEn: ConsoleDict = {
     invalid_credentials: "Sign-in refused.",
     oauth_failed: "Signing in with this provider failed. Please try again.",
     oauth_email_unverified: "This account has no verified email address with the provider.",
-    invite_required: "BeepClick is in private beta: this address hasn't been invited yet.",
   },
   passwordless: {
     or: "or",
@@ -209,7 +207,6 @@ const consoleEn: ConsoleDict = {
     verifyTitle: "Two-step verification",
     verifySub: "Enter the code from your authenticator app.",
     verifySubmit: "Verify",
-    inviteNote: "BeepClick is in private beta: use the email address your invitation was sent to.",
   },
 };
 

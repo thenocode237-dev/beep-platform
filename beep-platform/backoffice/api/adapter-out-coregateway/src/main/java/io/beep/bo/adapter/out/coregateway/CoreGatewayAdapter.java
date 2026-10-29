@@ -293,18 +293,6 @@ public class CoreGatewayAdapter implements CoreGatewayPort {
   }
 
   @Override
-  public InvitationsPage invitations(int limit, String cursor, UUID staffId) {
-    return call(() -> client.get().uri(b -> page(b.path("/invitations"), limit, cursor).build()).header("X-Staff-Id", String.valueOf(staffId))
-        .retrieve().body(InvitationsPage.class));
-  }
-
-  @Override
-  public InvitationView invite(String email, String locale, UUID staffId) {
-    return call(() -> client.post().uri("/invitations").header("X-Staff-Id", String.valueOf(staffId)).contentType(MediaType.APPLICATION_JSON)
-        .body(Map.of("email", email, "locale", locale)).retrieve().body(InvitationView.class));
-  }
-
-  @Override
   public String contractVersion() {
     return call(() -> client.get().uri("/meta").retrieve().body(MetaDto.class)).contract();
   }

@@ -66,17 +66,6 @@ public class SmtpMailAdapter implements MailPort {
   }
 
   @Override
-  public void sendInvitation(Email to, String locale) {
-    boolean en = "en".equals(locale);
-    send(to, en ? "You're invited to the BeepClick private beta" : "Vous êtes invité(e) à la bêta privée de BeepClick",
-        en ? "Welcome to the BeepClick beta" : "Bienvenue dans la bêta de BeepClick",
-        en ? "Create your account with this email address to try short links, QR codes and bio pages. The invitation is valid for 30 days."
-            : "Créez votre compte avec cette adresse e-mail pour essayer les liens courts, QR codes et pages bio. L'invitation est valable 30 jours.",
-        en ? "Create my account" : "Créer mon compte", publicUrl + (en ? "/en" : "") + "/signup",
-        en ? "If you weren't expecting this invitation, you can ignore this email." : "Si vous n'attendiez pas cette invitation, ignorez simplement ce message.");
-  }
-
-  @Override
   public void sendReceipt(Email to, String locale, String invoiceNumber, String planName, long amountXaf, Instant validUntil, byte[] invoicePdf) {
     boolean en = "en".equals(locale);
     send(to, en ? "Your BeepClick receipt " + invoiceNumber : "Votre reçu BeepClick " + invoiceNumber,
@@ -122,17 +111,6 @@ public class SmtpMailAdapter implements MailPort {
             : "Votre offre " + planName + " est terminée. Les ressources au-delà des quotas Starter passent en lecture seule. Les liens en excès peuvent être mis en pause 30 jours après l'échéance impayée et supprimés à partir de J+90, avec au moins sept jours de préavis. Renouvelez ou exportez vos données.",
         en ? "Choose a plan" : "Choisir une offre", publicUrl + (en ? "/en" : "") + "/app/billing",
         en ? "You can renew at any time." : "Vous pouvez renouveler à tout moment.", null, null);
-  }
-
-  @Override
-  public void sendInvitationRequired(Email to, String locale) {
-    boolean en = "en".equals(locale);
-    send(to, en ? "BeepClick is in private beta" : "BeepClick est en bêta privée",
-        en ? "Invitation required" : "Invitation nécessaire",
-        en ? "Someone tried to create a BeepClick account with this address. During the private beta, accounts can only be created by invitation."
-            : "Quelqu'un a tenté de créer un compte BeepClick avec cette adresse. Pendant la bêta privée, les comptes sont créés uniquement sur invitation.",
-        en ? "Discover BeepClick" : "Découvrir BeepClick", publicUrl + (en ? "/en" : "/"),
-        en ? "If this wasn't you, no action is needed." : "Si ce n'était pas vous, aucune action n'est nécessaire.");
   }
 
   @Override

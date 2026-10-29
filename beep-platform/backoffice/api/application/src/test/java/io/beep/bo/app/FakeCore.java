@@ -33,11 +33,6 @@ class FakeCore implements CoreGatewayPort {
   }
   public PlatformMetrics metrics(int days, UUID staffId) { return null; }
   public List<JobView> jobs(UUID staffId) { return List.of(); }
-  public InvitationsPage invitations(int limit, String cursor, UUID staffId) { return new InvitationsPage(List.of(), null); }
-  public InvitationView invite(String email, String locale, UUID staffId) {
-    calls.add("invite:" + email);
-    return new InvitationView(UUID.randomUUID(), email, "pending", String.valueOf(staffId), T, T.plusSeconds(86400 * 30), null);
-  }
   public BillingSummary billingSummary(UUID staffId) { return new BillingSummary(0, 1, 0, 0, 4999, 59988, 4999, 0, 0); }
   public List<SubscriptionView> subscriptions(String status, int limit, int offset, UUID staffId) { return List.of(); }
   public List<SubscriptionView> upcomingRenewals(int days, int limit, UUID staffId) { return List.of(); }

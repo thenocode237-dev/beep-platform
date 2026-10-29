@@ -20,7 +20,7 @@ public final class EntitlementKeys {
   public static final String ANALYTICS_RETENTION_DAYS = "analytics.retention_days";
   public static final String FEATURE_ANALYTICS_ADVANCED = "features.analytics_advanced";
   public static final String FEATURE_BIO_BADGE_REMOVABLE = "features.bio_badge_removable";
-  /** Export CSV des statistiques : Pro et Elite (grille §6.1) ; activable pour un workspace de la bêta par override. */
+  /** Export CSV des statistiques : Pro et Elite (grille §6.1) ; activable pour un workspace par override. */
   public static final String FEATURE_EXPORT_CSV = "features.export_csv";
 
   /** Règles de lien : expiration et mot de passe (Pro, Elite). */

@@ -1,6 +1,5 @@
 package io.beep.core.app.auth;
 
-import io.beep.core.app.port.InvitationRepository;
 import io.beep.core.app.port.MailPort;
 import io.beep.core.app.port.OneTimeTokenRepository;
 import io.beep.core.app.port.OneTimeTokenRepository.Purpose;
@@ -18,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Connexion par lien magique (sans mot de passe), qui vaut aussi inscription pour une adresse invitée.
+ * Connexion par lien magique (sans mot de passe), qui vaut aussi inscription pour une nouvelle adresse.
  * Demande : réponse toujours identique. Consommation : un seul usage, 15 minutes ; elle prouve l'adresse (e-mail vérifié).
  */
 public class MagicLinkUseCase {
@@ -26,7 +25,6 @@ public class MagicLinkUseCase {
 
   private final UserRepository users;
   private final OneTimeTokenRepository tokens;
-  private final InvitationRepository invitations;
   private final TokenPort tokenPort;
   private final MailPort mail;
   private final RateLimiterPort limiter;
@@ -35,11 +33,10 @@ public class MagicLinkUseCase {
   private final Clock clock;
   private final AuthSettings settings;
 
-  public MagicLinkUseCase(UserRepository users, OneTimeTokenRepository tokens, InvitationRepository invitations, TokenPort tokenPort, MailPort mail,
+  public MagicLinkUseCase(UserRepository users, OneTimeTokenRepository tokens, TokenPort tokenPort, MailPort mail,
       RateLimiterPort limiter, TransactionPort tx, SessionIssuer issuer, Clock clock, AuthSettings settings) {
     this.users = users;
     this.tokens = tokens;
-    this.invitations = invitations;
     this.tokenPort = tokenPort;
     this.mail = mail;
     this.limiter = limiter;
@@ -66,17 +63,10 @@ public class MagicLinkUseCase {
       if (user.status() == UserStatus.SUSPENDED) return;
     } else {
       String locale = Locales.normalize(cmd.locale());
-      if (settings.inviteOnly() && !Invitations.usable(invitations, email, now)) {
-        mail.sendInvitationRequired(email, locale);
-        return;
-      }
       user = User.registerExternal(UUID.randomUUID(), email, locale, now);
       User created = user;
       try {
-        tx.run(() -> {
-          users.insert(created);
-          invitations.consume(email, now);
-        });
+        tx.run(() -> users.insert(created));
       } catch (UserRepository.DuplicateEmailException race) {
         return;
       }

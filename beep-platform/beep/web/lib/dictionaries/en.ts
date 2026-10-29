@@ -49,7 +49,7 @@ const en: Dict = {
       hasAccount: "Already have an account?",
       loginLink: "Log in",
       doneTitle: "Check your inbox",
-      done: "If your address was invited to the beta, a confirmation link is on its way (valid for 24 hours). Otherwise, an email explains how to join BeepClick.",
+      done: "A confirmation link is on its way (valid for 24 hours). If you already have an account, an email lets you know.",
     },
     login: {
       title: "Welcome back",

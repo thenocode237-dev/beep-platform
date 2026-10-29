@@ -86,7 +86,6 @@ services:
       SMTP_AUTH: ${SMTP_AUTH:-false}
       SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
       MAIL_FROM: ${MAIL_FROM:-BeepClick <no-reply@beep.localhost>}
-      SIGNUP_MODE: ${SIGNUP_MODE:-invite}               # bêta privée : inscription sur invitation (open : libre)
       GEOIP_DB_PATH: ${GEOIP_DB_PATH:-}                  # base MaxMind Country (.mmdb) montée en lecture seule ; vide = pays inconnus
       OAUTH_GOOGLE_CLIENT_ID: ${OAUTH_GOOGLE_CLIENT_ID:-}
       OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}

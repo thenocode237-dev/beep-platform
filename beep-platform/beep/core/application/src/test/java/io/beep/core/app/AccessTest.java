@@ -15,7 +15,7 @@ import io.beep.core.domain.user.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/** Bêta sur invitation, lien magique, OAuth, second facteur, suspension. */
+/** Inscription, lien magique, OAuth, second facteur, suspension. */
 class AccessTest {
   Platform p;
 
@@ -25,26 +25,14 @@ class AccessTest {
   }
 
   @Test
-  void signupWithoutInvitationSendsInvitationRequiredAndCreatesNothing() {
-    p.signUp().execute(new SignUpUseCase.Command("eve@example.com", "correct-horse-battery", "fr", "ip"));
-    assertThat(p.mail.sent).containsExactly("invite-required:eve@example.com");
-    assertThat(p.users.byId).isEmpty();
-  }
-
-  @Test
-  void invitationAllowsSignupOnceAndAlreadyRegisteredAddressesCannotBeInvited() {
-    p.adminInvitations.invite("Eve@Example.com", "fr", "staff-1");
-    assertThat(p.mail.sent).containsExactly("invite:eve@example.com");
+  void signupCreatesAnAccountAndSendsAVerificationEmail() {
     p.signUp().execute(new SignUpUseCase.Command("eve@example.com", "correct-horse-battery", "fr", "ip"));
     assertThat(p.users.findByEmail(new Email("eve@example.com"))).isPresent();
-    assertThat(p.invitations.findByEmail(new Email("eve@example.com")).orElseThrow().usedAt()).isNotNull();
-    p.verifiedUser("ada@example.com");
-    assertThatThrownBy(() -> p.adminInvitations.invite("ada@example.com", "fr", "s")).hasMessage("already_registered");
+    assertThat(p.mail.sent).containsExactly("verify:eve@example.com");
   }
 
   @Test
-  void magicLinkSignsUpAnInvitedAddressAndProvesIt() {
-    p.adminInvitations.invite("eve@example.com", "en", "staff-1");
+  void magicLinkSignsUpANewAddressAndProvesIt() {
     p.magicLink().request(new MagicLinkUseCase.Request("eve@example.com", "en", "ip"));
     assertThat(p.mail.sent).contains("magic:eve@example.com");
     AuthOutcome out = p.magicLink().consume(p.mail.lastToken);
@@ -58,11 +46,10 @@ class AccessTest {
   }
 
   @Test
-  void magicLinkForAnUninvitedAddressRevealsNothingAndCreatesNothing() {
-    p.magicLink().request(new MagicLinkUseCase.Request("eve@example.com", "fr", "ip"));
+  void magicLinkForAnInvalidAddressRevealsNothingAndCreatesNothing() {
     p.magicLink().request(new MagicLinkUseCase.Request("not an email", "fr", "ip"));
     assertThat(p.users.byId).isEmpty();
-    assertThat(p.mail.sent).containsExactly("invite-required:eve@example.com");
+    assertThat(p.mail.sent).isEmpty();
   }
 
   @Test
@@ -81,13 +68,11 @@ class AccessTest {
   }
 
   @Test
-  void oauthUsesPkceAndRequiresAVerifiedEmailAndAnInvitationForNewAccounts() {
+  void oauthUsesPkceAndRequiresAVerifiedEmail() {
     var start = p.oauthUseCase().start(OAuthPort.Provider.GOOGLE);
     assertThat(start.authorizationUrl()).contains("state=" + start.state()).contains("code_challenge=").doesNotContain(start.codeVerifier());
     assertThatThrownBy(() -> p.oauthUseCase().start(OAuthPort.Provider.GITHUB)).hasMessage("not_found"); // non configuré
 
-    assertThatThrownBy(() -> p.oauthUseCase().complete(OAuthPort.Provider.GOOGLE, "code", start.codeVerifier(), "fr")).hasMessage("invite_required");
-    p.adminInvitations.invite("ada@example.com", "fr", "s");
     AuthOutcome out = p.oauthUseCase().complete(OAuthPort.Provider.GOOGLE, "code", start.codeVerifier(), "fr");
     assertThat(out.sessionToken()).isNotBlank();
     assertThat(p.oauth.lastVerifier).isEqualTo(start.codeVerifier());

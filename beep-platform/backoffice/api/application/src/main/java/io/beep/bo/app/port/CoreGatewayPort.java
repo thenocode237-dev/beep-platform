@@ -38,10 +38,6 @@ public interface CoreGatewayPort {
 
   List<JobView> jobs(UUID staffId);
 
-  InvitationsPage invitations(int limit, String cursor, UUID staffId);
-
-  InvitationView invite(String email, String locale, UUID staffId);
-
   // ---- Catalogue d'applications (contrat 0.5) ----
   List<AppView> catalog(UUID staffId);
 
@@ -159,10 +155,6 @@ public interface CoreGatewayPort {
 
   record JobView(String name, String description, String schedule, Instant lastStartedAt, Instant lastFinishedAt, Boolean lastOk, String lastDetail,
       Instant lastSuccessAt, long runs24h, long failures24h) {}
-
-  record InvitationView(UUID id, String email, String status, String invitedBy, Instant createdAt, Instant expiresAt, Instant usedAt) {}
-
-  record InvitationsPage(List<InvitationView> items, String nextCursor) {}
 
   /** Le core ne répond pas : le back office reste utilisable en mode dégradé. */
   class CoreUnavailableException extends RuntimeException {

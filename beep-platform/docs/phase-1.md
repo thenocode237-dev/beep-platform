@@ -1,4 +1,4 @@
-# Phase 1 — MVP (bêta privée)
+# Phase 1 — MVP
 
 Livraison des trois cycles de la [feuille de route](../../beep-roadmap.md#phase-1--mvp-s3s8), côté `beep` et côté `backoffice`.
 Contrat admin : **0.2.0** (additif ; le back office exige un core ≥ 0.2 au démarrage).
@@ -34,14 +34,14 @@ Contrat admin : **0.2.0** (additif ; le back office exige un core ≥ 0.2 au dé
 | Pages bio : blocs lien, bouton, titre, texte, image, réseaux sociaux ; thèmes Ivoire, Forêt, Nuit, Soleil ; SEO (titre, description, image OG, `noindex`) ; rendu serveur sans script, mis en cache en mémoire ; clics de blocs mesurés | **Plans & droits** : plans publiés et droits ; **overrides par workspace** (ré-authentification TOTP, motif, avant/après journalisés) |
 | Connexion par **lien magique** et **OAuth Google/GitHub** (code + PKCE, état lié au navigateur) ; le TOTP reste exigé s'il est actif | **Fiche utilisateur / workspace** : usage face aux quotas, droits effectifs, overrides |
 | Domaine `Plan` + `Entitlements` ; Starter gratuit (5 liens, 5 QR dynamiques, 1 page, clics et scans illimités, 30 jours d'analytics) ; Pro et Elite publiés comme « bientôt » | **Suspension / réactivation** de compte (droit dédié, TOTP, motif) : sessions révoquées, liens et pages du workspace en page d'information |
-| **Bêta sur invitation** : seules les adresses invitées créent un compte, quel que soit le moyen ; réponses identiques pour ne rien révéler | **Invitations** à la bêta (envoi, liste, statut) |
+| **Inscription ouverte** : mot de passe, lien magique ou OAuth ; réponses identiques pour ne rien révéler sur les adresses existantes | |
 | | **Journal d'audit** consultable (filtres action/auteur, pagination, état d'intégrité de la chaîne) ; sa consultation est elle-même journalisée |
 
 ## Décisions et écarts
 
 - **Un workspace personnel par utilisateur**, créé à la première utilisation (comptes de la phase 0 compris). Les équipes et rôles de workspace arrivent en phase 4 ; l'index unique `workspaces_owner_key` sera alors relâché.
 - **Quotas mensuels sur le mois civil UTC** : les cycles de facturation n'existent qu'avec les abonnements (phase 2).
-- **Export CSV** : la roadmap le livre en phase 1, la grille le réserve à Pro et Elite. Il est porté par le droit `features.export_csv` (Starter : 0) et s'active pour un workspace de la bêta par override depuis le back office.
+- **Export CSV** : la roadmap le livre en phase 1, la grille le réserve à Pro et Elite. Il est porté par le droit `features.export_csv` (Starter : 0) et s'active pour un workspace par override depuis le back office.
 - **Badge « Propulsé par BeepClick »** toujours affiché : il n'est retirable qu'en Elite, qui n'est pas commercialisé avant la phase 3.
 - **Suspension** = compte **et** workspace : en plus de la connexion bloquée, les liens et pages du workspace affichent une page d'information (410). C'est une décision de modération, distincte des quotas, qui n'arrêtent jamais une redirection.
 - **Désactivation des pages bio** (modération) non incluse : elle arrive avec la file de modération (phase 2).
@@ -58,7 +58,6 @@ Contrat admin : **0.2.0** (additif ; le back office exige un core ≥ 0.2 au dé
 
 | Réglage | Rôle |
 |---|---|
-| `SIGNUP_MODE` | `invite` (défaut, bêta privée) ou `open` |
 | `GEOIP_DB_PATH` | Chemin du fichier `.mmdb` monté dans le conteneur `core` |
 | `OAUTH_GOOGLE_CLIENT_ID/SECRET`, `OAUTH_GITHUB_CLIENT_ID/SECRET` | Active le fournisseur ; URL de retour : `{BEEP_PUBLIC_URL}/v1/auth/oauth/{google,github}/callback` |
 | `BEEP_ROLLUP_INTERVAL` | Fréquence des agrégats (défaut `PT1M`, `PT10S` en dev) |
@@ -82,6 +81,6 @@ Non fait : revue visuelle dans un navigateur (captures mobile/bureau des nouveau
 
 ## Reste à faire
 
-- **Critères de sortie** : bêta de 100 personnes invitées avec taux d'activation mesuré (outillé : métrique « activation » du back office) ; p95 < 50 ms **à 1 000 req/s sur l'hôte de préproduction** (`make test-load RATE=1000 DURATION=60s`) ; sauvegarde/restauration vérifiées (PITR de la phase 0 toujours à démontrer en staging).
+- **Critères de sortie** : taux d'activation mesuré (outillé : métrique « activation » du back office) ; p95 < 50 ms **à 1 000 req/s sur l'hôte de préproduction** (`make test-load RATE=1000 DURATION=60s`) ; sauvegarde/restauration vérifiées (PITR de la phase 0 toujours à démontrer en staging).
 - Licence et fichier GeoLite2, identifiants OAuth de production.
 - Essais sur appareils réels (pages bio : LCP < 2 s en 4G) et audit Lighthouse mobile.

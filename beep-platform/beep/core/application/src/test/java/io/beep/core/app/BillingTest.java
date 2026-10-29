@@ -398,9 +398,9 @@ class BillingTest {
   @Test
   void staffCanGrantAPlanAndRevertToStarter() {
     var ws = p.workspaces.ensureFor(ada);
-    admin.changePlan(ws.id(), "elite", p.now.plus(Duration.ofDays(60)), "Partenaire bêta");
+    admin.changePlan(ws.id(), "elite", p.now.plus(Duration.ofDays(60)), "Partenaire");
     assertThat(planOf(ada)).isEqualTo("elite");
-    assertThatThrownBy(() -> admin.changePlan(ws.id(), "elite", p.now.minus(Duration.ofDays(1)), "Partenaire bêta")).hasMessage("invalid_request");
+    assertThatThrownBy(() -> admin.changePlan(ws.id(), "elite", p.now.minus(Duration.ofDays(1)), "Partenaire")).hasMessage("invalid_request");
     assertThatThrownBy(() -> admin.changePlan(ws.id(), "elite", p.now.plus(Duration.ofDays(60)), "")).isInstanceOf(io.beep.core.domain.DomainException.class);
     admin.changePlan(ws.id(), "starter", null, "Fin du partenariat");
     assertThat(planOf(ada)).isEqualTo("starter");

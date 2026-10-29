@@ -19,7 +19,6 @@ import io.beep.bo.adapter.out.security.SecureTokenAdapter;
 import io.beep.bo.app.audit.AuditLogUseCase;
 import io.beep.bo.app.audit.VerifyAuditChainUseCase;
 import io.beep.bo.app.auth.StepUp;
-import io.beep.bo.app.invitations.InvitationsUseCase;
 import io.beep.bo.app.links.LinksModerationUseCase;
 import io.beep.bo.app.ops.OperationsUseCase;
 import io.beep.bo.app.plans.EntitlementsUseCase;
@@ -190,11 +189,6 @@ class ApplicationWiring {
   @Bean
   AuditLogUseCase auditLog(AuditPort audit, Clock clock) {
     return new AuditLogUseCase(audit, clock);
-  }
-
-  @Bean
-  InvitationsUseCase invitations(CoreGatewayPort core, AuditPort audit, Clock clock) {
-    return new InvitationsUseCase(core, audit, clock);
   }
 
   @Bean

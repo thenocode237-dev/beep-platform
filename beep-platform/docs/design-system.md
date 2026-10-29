@@ -12,7 +12,7 @@ Le discours commence par les situations de partage : conversation WhatsApp, bio 
 
 La voix est chaleureuse, concrète et honnête sur l’avancement. Aucun taux de conversion, témoignage, nombre de clients ou résultat commercial fictif. Les photos et aperçus mettent en scène un atelier fictif, pas une cliente de BeepClick.
 
-**Disponibilité :** l’état fonctionnel suit la [phase 1](phase-1.md) et la [phase 2 en cours](phase-2.md). Liens courts, QR codes, pages bio et statistiques de base font partie de la bêta sur invitation. Deeplinks et Onelink restent des évolutions prévues. Les maquettes marketing restent des illustrations, sans données clients réelles. Les mentions de disponibilité doivent suivre ces documents.
+**Disponibilité :** l’état fonctionnel suit la [phase 1](phase-1.md) et la [phase 2 en cours](phase-2.md). Liens courts, QR codes, pages bio et statistiques de base sont disponibles dès l’inscription. Deeplinks et Onelink restent des évolutions prévues. Les maquettes marketing restent des illustrations, sans données clients réelles. Les mentions de disponibilité doivent suivre ces documents.
 
 ## Palette et thèmes
 

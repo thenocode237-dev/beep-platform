@@ -124,14 +124,6 @@ final class Schema {
   static final Field<String> BB_TYPE = field(name("bio_blocks", "type"), SQLDataType.CLOB);
   static final Field<JSONB> BB_CONFIG = field(name("bio_blocks", "config"), SQLDataType.JSONB);
 
-  static final Table<?> INVITATIONS = table(name("beta_invitations"));
-  static final Field<UUID> I_ID = field(name("beta_invitations", "id"), SQLDataType.UUID);
-  static final Field<String> I_EMAIL = field(name("beta_invitations", "email"), SQLDataType.CLOB);
-  static final Field<String> I_BY = field(name("beta_invitations", "invited_by"), SQLDataType.CLOB);
-  static final Field<OffsetDateTime> I_CREATED = field(name("beta_invitations", "created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);
-  static final Field<OffsetDateTime> I_EXPIRES = field(name("beta_invitations", "expires_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);
-  static final Field<OffsetDateTime> I_USED = field(name("beta_invitations", "used_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);
-
   static final Table<?> JOB_RUNS = table(name("job_runs"));
   static final Field<Long> J_ID = field(name("job_runs", "id"), SQLDataType.BIGINT);
   static final Field<String> J_JOB = field(name("job_runs", "job"), SQLDataType.CLOB);

@@ -61,13 +61,7 @@ check("GET /users?q= -> 200 + schéma UsersPage", search.status === 200 && valid
 const links = await call("GET", "/links?q=a&limit=5");
 check("GET /links?q= -> 200 + schéma LinksPage", links.status === 200 && validator("#/components/schemas/LinksPage")(links.json), `statut ${links.status}`);
 
-// 3. Écritures : invitation (201), validation (400), ressources inconnues (404)
-const email = `contract-${Date.now()}@example.com`;
-const inv = await call("POST", "/invitations", { body: { email, locale: "fr" } });
-const vInv = validator("#/components/schemas/Invitation");
-check("POST /invitations -> 201 + schéma Invitation", inv.status === 201 && vInv(inv.json) && inv.json.invitedBy === STAFF, `statut ${inv.status} ${JSON.stringify(vInv.errors ?? inv.json)}`);
-const badInv = await call("POST", "/invitations", { body: { email: "pas-une-adresse" } });
-check("POST /invitations (adresse invalide) -> 400 invalid_email", badInv.status === 400 && badInv.json?.code === "invalid_email", `statut ${badInv.status}`);
+// 3. Écritures : ressources inconnues (404), validation (400)
 const ent = await call("PUT", `/workspaces/${ZERO}/entitlements`, { body: { overrides: { "links.stock_max": 10 }, reason: "test de contrat" } });
 check("PUT /workspaces/{id}/entitlements (inconnu) -> 404", ent.status === 404, `statut ${ent.status}`);
 const entBad = await call("PUT", `/workspaces/${ZERO}/entitlements`, { body: { overrides: { "inconnu.cle": 1 }, reason: "test de contrat" } });

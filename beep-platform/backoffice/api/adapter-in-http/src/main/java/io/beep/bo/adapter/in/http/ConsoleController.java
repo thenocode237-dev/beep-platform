@@ -1,7 +1,6 @@
 package io.beep.bo.adapter.in.http;
 
 import io.beep.bo.app.audit.AuditLogUseCase;
-import io.beep.bo.app.invitations.InvitationsUseCase;
 import io.beep.bo.app.links.LinksModerationUseCase;
 import io.beep.bo.app.ops.OperationsUseCase;
 import io.beep.bo.app.plans.EntitlementsUseCase;
@@ -14,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Modules de la phase 1 : fiche utilisateur, liens, plans & droits, métriques, jobs, journal d'audit, invitations. */
+/** Modules de la phase 1 : fiche utilisateur, liens, plans & droits, métriques, jobs, journal d'audit. */
 @RestController
 @RequestMapping("/api")
 @Profile("!migrate")
@@ -36,8 +33,6 @@ public class ConsoleController {
   record ReasonRequest(String reason) {}
 
   record OverridesRequest(Map<String, Long> overrides, String reason, String totp) {}
-
-  record InvitationRequest(String email, String locale) {}
 
   record ReservedSlugs(List<String> items) {}
 
@@ -54,17 +49,15 @@ public class ConsoleController {
   private final EntitlementsUseCase entitlements;
   private final OperationsUseCase operations;
   private final AuditLogUseCase auditLog;
-  private final InvitationsUseCase invitations;
   private final StaffSessions sessions;
 
   public ConsoleController(UserAdminUseCase users, LinksModerationUseCase links, EntitlementsUseCase entitlements, OperationsUseCase operations,
-      AuditLogUseCase auditLog, InvitationsUseCase invitations, StaffSessions sessions) {
+      AuditLogUseCase auditLog, StaffSessions sessions) {
     this.users = users;
     this.links = links;
     this.entitlements = entitlements;
     this.operations = operations;
     this.auditLog = auditLog;
-    this.invitations = invitations;
     this.sessions = sessions;
   }
 
@@ -134,17 +127,6 @@ public class ConsoleController {
       @RequestParam(defaultValue = "50") int limit, HttpServletRequest req) {
     AuditLogUseCase.View v = auditLog.execute(sessions.require(req), limit, before, action, actor, req.getRemoteAddr());
     return new AuditPage(v.page().items().stream().map(ConsoleController::entry).toList(), v.page().nextBeforeSeq(), v.intact(), v.brokenAt(), v.total());
-  }
-
-  // ---- Invitations ----
-  @GetMapping("/invitations")
-  CoreGatewayPort.InvitationsPage invitations(@RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor, HttpServletRequest req) {
-    return invitations.list(sessions.require(req), limit, cursor);
-  }
-
-  @PostMapping(value = "/invitations", consumes = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<CoreGatewayPort.InvitationView> invite(@RequestBody InvitationRequest r, HttpServletRequest req) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(invitations.invite(sessions.require(req), r.email(), r.locale(), req.getRemoteAddr()));
   }
 
   private static AuditEntry entry(AuditChain.Entry e) {

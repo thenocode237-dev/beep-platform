@@ -41,7 +41,7 @@ class AuthFlowTest {
     var hasher = new Fakes.Hasher();
     var tx = new Fakes.Tx();
     var issuer = new SessionIssuer(sessions, tokens, tokenGen, Fakes.CLOCK, settings);
-    signUp = new SignUpUseCase(users, tokens, new Fakes.Invitations(), hasher, tokenGen, mail, limiter, tx, Fakes.CLOCK, settings);
+    signUp = new SignUpUseCase(users, tokens, hasher, tokenGen, mail, limiter, tx, Fakes.CLOCK, settings);
     verify = new VerifyEmailUseCase(users, tokens, tokenGen, tx, Fakes.CLOCK);
     login = new LoginUseCase(users, issuer, hasher, cipher, limiter, Fakes.CLOCK, settings);
     authenticate = new AuthenticateUseCase(sessions, users, tokenGen, Fakes.CLOCK);

@@ -71,7 +71,7 @@ class LinksAndRedirectTest {
   void overridesFromTheStaffRaiseTheQuota() {
     for (int i = 0; i < 5; i++) p.createLink.execute(ada, new CreateLinkUseCase.Command("example.com/" + i, null, null));
     var ws = p.workspaceRepo.findByOwner(ada.id()).orElseThrow();
-    var result = p.adminEntitlements.setOverrides(ws.id(), Map.of("links.stock_max", 55L), "offert à la bêta", "staff-1");
+    var result = p.adminEntitlements.setOverrides(ws.id(), Map.of("links.stock_max", 55L), "offert", "staff-1");
     assertThat(result.entitlements()).containsEntry("links.stock_max", 55L);
     assertThat(result.overrides()).singleElement().satisfies(o -> assertThat(o.updatedBy()).isEqualTo("staff-1"));
     assertThat(p.createLink.execute(ada, new CreateLinkUseCase.Command("example.com/6", null, null))).isNotNull();

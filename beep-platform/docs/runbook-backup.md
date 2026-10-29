@@ -50,6 +50,6 @@ prod() {
 
 Cette démonstration exige un stockage S3 et un environnement de staging : **elle reste à réaliser et à consigner ici** (date, instant cible, résultat, durée). Les fichiers nécessaires sont livrés (`infra/postgres/Dockerfile`, `backup-cron.sh`, `docker-compose.prod.yml`) mais n'ont pas été exécutés contre un vrai stockage.
 
-### Test mensuel automatisé (à mettre en place avant la bêta)
+### Test mensuel automatisé (à maintenir en production)
 
 Restaurer la dernière sauvegarde dans une base éphémère, lancer `make migrate-validate` puis un `select count(*)` sur les tables clés, alerter en cas d'échec ou si le retard d'archivage dépasse 1 minute.

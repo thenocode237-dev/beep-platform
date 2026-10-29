@@ -57,4 +57,4 @@ Commandes habituelles : `make test-unit`, `make test-int`, `make test-contract`,
 - Renseigner et vérifier les identifiants de production, les coordonnées légales et le numéro WhatsApp ; activer le fournisseur de sécurité et confirmer son fonctionnement avec une clé réelle.
 - Tester DNS et émission TLS sur un domaine public réel ; organiser la permanence de modération et mesurer le délai < 24 h.
 - Faire valider les textes, la durée de conservation des pièces comptables et la gestion des effacements après restauration. La recette locale ne constitue pas une validation juridique.
-- Publier et superviser la page de statut sur l’hébergement de production. Aucun lancement public ni changement de `SIGNUP_MODE` n’a été effectué ici.
+- Publier et superviser la page de statut sur l’hébergement de production. Aucun lancement public n’a été effectué ici.

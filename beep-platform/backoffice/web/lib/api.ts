@@ -70,8 +70,6 @@ export type Job = {
 };
 export type AuditEntry = { seq: number; at: string; actorEmail: string | null; action: string; target: string | null; detail: string | null; ip: string | null; hash: string };
 export type AuditPage = { items: AuditEntry[]; nextBefore: number | null; intact: boolean; brokenAt: number; total: number };
-export type Invitation = { id: string; email: string; status: "pending" | "used" | "expired"; invitedBy: string | null; createdAt: string; expiresAt: string; usedAt: string | null };
-export type InvitationsPage = { items: Invitation[]; nextCursor: string | null };
 
 export type Result<T> = { status: number; data?: T };
 
@@ -112,7 +110,6 @@ export const getPlanDrafts = () => get<{ items: PlanDraft[] }>("/plan-drafts");
 export const getMetrics = (days = 30) => get<Metrics>(`/metrics${qs({ days })}`);
 export const getJobs = () => get<{ items: Job[] }>("/jobs");
 export const getAudit = (p: { before?: string; action?: string; actor?: string }) => get<AuditPage>(`/audit${qs({ limit: 50, ...p })}`);
-export const getInvitations = (cursor?: string) => get<InvitationsPage>(`/invitations${qs({ limit: 20, cursor })}`);
 
 
 export type AbuseReport={id:string;url:string;category:string;detail:string;source:string;status:string;reason:string|null;createdAt:string;resolvedAt:string|null};

@@ -48,7 +48,7 @@ const fr = {
       hasAccount: "Déjà un compte ?",
       loginLink: "Se connecter",
       doneTitle: "Vérifiez votre boîte mail",
-      done: "Si votre adresse a été invitée à la bêta, un lien de confirmation vient de partir (valable 24 heures). Sinon, un e-mail vous explique comment rejoindre BeepClick.",
+      done: "Un lien de confirmation vient de partir (valable 24 heures). Si vous avez déjà un compte, un e-mail vous le signale.",
     },
     login: {
       title: "Content de vous revoir",

@@ -22,8 +22,6 @@ public enum Permission {
   METRICS_READ,
   JOBS_READ,
   AUDIT_READ,
-  /** Invitations à la bêta privée. */
-  INVITATIONS_WRITE,
   /** Abonnements, paiements, échéances, factures, MRR/ARR (lecture). */
   BILLING_READ,
   /** Paiements manuels, changement de plan manuel, coupons (ré-authentification TOTP exigée). */

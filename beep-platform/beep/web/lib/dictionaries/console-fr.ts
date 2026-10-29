@@ -14,7 +14,6 @@ const consoleFr = {
     saved: "Modifications enregistrées.",
     loading: "Chargement…",
     unavailable: "Ces données sont momentanément indisponibles. Réessayez dans un instant.",
-    beta: "Bêta",
     confirmDelete: "Confirmer la suppression",
     clicks: "clics",
     scans: "scans",
@@ -194,7 +193,6 @@ const consoleFr = {
     invalid_credentials: "Connexion refusée.",
     oauth_failed: "La connexion avec ce fournisseur a échoué. Réessayez.",
     oauth_email_unverified: "Ce compte n'a pas d'adresse e-mail vérifiée chez le fournisseur.",
-    invite_required: "BeepClick est en bêta privée : cette adresse n'a pas encore été invitée.",
   } as Record<string, string>,
   passwordless: {
     or: "ou",
@@ -208,7 +206,6 @@ const consoleFr = {
     verifyTitle: "Vérification en deux étapes",
     verifySub: "Saisissez le code de votre application d'authentification.",
     verifySubmit: "Valider",
-    inviteNote: "BeepClick est en bêta privée : utilisez l'adresse e-mail à laquelle vous avez reçu votre invitation.",
   },
 };
 

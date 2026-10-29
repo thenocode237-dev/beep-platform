@@ -28,7 +28,7 @@ Renseigner dans `.env.production` :
 | `LEGAL_*` | Éditeur, adresse, immatriculation, contact et hébergeur |
 | `BACKUP_S3_PREFIX`, `BACKUP_ACCESS_KEY`, `BACKUP_SECRET_KEY` | Dépôt `s3://bucket/chemin` et accès WAL-G ; paramètres endpoint/région si nécessaire |
 
-Adapter aussi `SIGNUP_MODE`, les contacts de support, les fournisseurs OAuth et `DOMAINS_CNAME_TARGET` aux fonctions utilisées. Les vérifications locales ne valident pas les accès aux fournisseurs : effectuer leurs recettes avec les comptes réels.
+Adapter aussi les contacts de support, les fournisseurs OAuth et `DOMAINS_CNAME_TARGET` aux fonctions utilisées. Les vérifications locales ne valident pas les accès aux fournisseurs : effectuer leurs recettes avec les comptes réels.
 
 Le modèle définit `DOMAINS_CNAME_TARGET=beepclick.app` pour les domaines personnalisés. Les callbacks OAuth sont `https://beepclick.app/v1/auth/oauth/google/callback` et `https://beepclick.app/v1/auth/oauth/github/callback`. Le développement local utilise toujours `.env.example` et `beep.localhost`.
 

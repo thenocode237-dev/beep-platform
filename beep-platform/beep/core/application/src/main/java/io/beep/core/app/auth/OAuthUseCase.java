@@ -1,7 +1,6 @@
 package io.beep.core.app.auth;
 
 import io.beep.core.app.common.PublicSite;
-import io.beep.core.app.port.InvitationRepository;
 import io.beep.core.app.port.OAuthPort;
 import io.beep.core.app.port.OAuthPort.Provider;
 import io.beep.core.app.port.TokenPort;
@@ -24,7 +23,7 @@ import java.util.UUID;
 /**
  * Connexion OAuth Google / GitHub (code d'autorisation + PKCE, état anti-CSRF).
  * Seule une adresse vérifiée par le fournisseur est acceptée ; un compte existant à cette adresse est rattaché.
- * Le TOTP éventuel reste exigé. En bêta privée, une nouvelle adresse doit avoir été invitée.
+ * Le TOTP éventuel reste exigé.
  */
 public class OAuthUseCase {
   /** À conserver côté navigateur (cookie HttpOnly, 10 min) jusqu'au retour du fournisseur. */
@@ -32,7 +31,6 @@ public class OAuthUseCase {
 
   private final OAuthPort oauth;
   private final UserRepository users;
-  private final InvitationRepository invitations;
   private final TokenPort tokenPort;
   private final TransactionPort tx;
   private final SessionIssuer issuer;
@@ -40,11 +38,10 @@ public class OAuthUseCase {
   private final Clock clock;
   private final AuthSettings settings;
 
-  public OAuthUseCase(OAuthPort oauth, UserRepository users, InvitationRepository invitations, TokenPort tokenPort, TransactionPort tx, SessionIssuer issuer,
+  public OAuthUseCase(OAuthPort oauth, UserRepository users, TokenPort tokenPort, TransactionPort tx, SessionIssuer issuer,
       PublicSite site, Clock clock, AuthSettings settings) {
     this.oauth = oauth;
     this.users = users;
-    this.invitations = invitations;
     this.tokenPort = tokenPort;
     this.tx = tx;
     this.issuer = issuer;
@@ -86,13 +83,9 @@ public class OAuthUseCase {
         users.update(user);
       }
     } else {
-      if (settings.inviteOnly() && !Invitations.usable(invitations, email, now)) throw new DomainException("invite_required");
       User created = User.registerExternal(UUID.randomUUID(), email, Locales.normalize(locale), now).verifyEmail(now);
       try {
-        tx.run(() -> {
-          users.insert(created);
-          invitations.consume(email, now);
-        });
+        tx.run(() -> users.insert(created));
         user = created;
       } catch (UserRepository.DuplicateEmailException race) {
         user = users.findByEmail(email).orElseThrow(() -> new DomainException("oauth_failed"));

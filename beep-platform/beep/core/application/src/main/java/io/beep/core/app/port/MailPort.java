@@ -18,9 +18,6 @@ public interface MailPort {
   /** Lien de connexion à usage unique (15 min). */
   void sendMagicLink(Email to, String locale, String token);
 
-  /** Invitation à la bêta privée envoyée par le staff. */
-  void sendInvitation(Email to, String locale);
-
   /** Reçu de paiement avec la facture PDF en pièce jointe. */
   void sendReceipt(Email to, String locale, String invoiceNumber, String planName, long amountXaf, java.time.Instant validUntil, byte[] invoicePdf);
 
@@ -32,7 +29,4 @@ public interface MailPort {
 
   /** Fin de la période de grâce (ou de l'essai) : retour au plan Starter, ressources conservées. */
   void sendPlanExpired(Email to, String locale, String planName);
-
-  /** Réponse à une inscription d'une adresse non invitée pendant la bêta privée (même réponse API qu'une inscription). */
-  void sendInvitationRequired(Email to, String locale);
 }

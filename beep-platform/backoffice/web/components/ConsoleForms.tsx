@@ -118,7 +118,7 @@ export function OverrideForm({ workspaceId, current }: { workspaceId: string; cu
           required
         />
       )}
-      <TextField name="reason" label="Motif (journalisé)" hint="Ex. : +50 liens offerts pour la bêta." required minLength={3} maxLength={500} />
+      <TextField name="reason" label="Motif (journalisé)" hint="Ex. : +50 liens offerts à titre commercial." required minLength={3} maxLength={500} />
       <TotpField />
       <Button type="submit" loading={a.busy}>
         Enregistrer l'override
@@ -151,35 +151,6 @@ export function LinkModerationForm({ linkId, disabled }: { linkId: string; disab
       <TextField name="reason" label="Motif (journalisé)" hint="Ex. : hameçonnage signalé, contenu illicite." required minLength={3} maxLength={500} />
       <Button type="submit" loading={a.busy}>
         Désactiver le lien
-      </Button>
-    </form>
-  );
-}
-
-export function InviteForm() {
-  const a = useAction();
-  return (
-    <form
-      className="bp-stack invite-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const form = e.currentTarget;
-        a.run(() => send("POST", "/invitations", { email: field(e, "email"), locale: field(e, "locale") || "fr" }), "Invitation envoyée.").then(() => form.reset());
-      }}
-    >
-      <Feedback {...a} />
-      <TextField name="email" type="email" label="Adresse e-mail à inviter" autoComplete="off" required />
-      <div className="bp-field">
-        <label className="bp-field__label" htmlFor="invite-locale">
-          Langue de l'e-mail
-        </label>
-        <select id="invite-locale" name="locale" className="bp-input" defaultValue="fr">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-      <Button type="submit" loading={a.busy}>
-        Envoyer l'invitation
       </Button>
     </form>
   );

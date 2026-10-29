@@ -46,7 +46,6 @@ import io.beep.core.adapter.out.postgres.CachingSlugResolverAdapter;
 import io.beep.core.adapter.out.postgres.PostgresAnalyticsAdapter;
 import io.beep.core.adapter.out.postgres.PostgresBioPageAdapter;
 import io.beep.core.adapter.out.postgres.PostgresClickEventAdapter;
-import io.beep.core.adapter.out.postgres.PostgresInvitationAdapter;
 import io.beep.core.adapter.out.postgres.PostgresJobRunAdapter;
 import io.beep.core.adapter.out.postgres.PostgresLinkAdapter;
 import io.beep.core.adapter.out.postgres.PostgresOneTimeTokenAdapter;
@@ -66,7 +65,6 @@ import io.beep.core.adapter.out.security.AesGcmSecretCipherAdapter;
 import io.beep.core.adapter.out.security.Argon2PasswordHasherAdapter;
 import io.beep.core.adapter.out.security.SecureTokenAdapter;
 import io.beep.core.app.admin.AdminEntitlementsUseCase;
-import io.beep.core.app.admin.AdminInvitationsUseCase;
 import io.beep.core.app.admin.AdminLinksUseCase;
 import io.beep.core.app.admin.AdminUsersUseCase;
 import io.beep.core.app.admin.ListUsersUseCase;
@@ -101,7 +99,6 @@ import io.beep.core.app.port.BioPageRepository;
 import io.beep.core.app.port.ClickEventRepository;
 import io.beep.core.app.port.ClickSinkPort;
 import io.beep.core.app.port.GeoIpPort;
-import io.beep.core.app.port.InvitationRepository;
 import io.beep.core.app.port.JobRunRepository;
 import io.beep.core.app.port.LinkRepository;
 import io.beep.core.app.port.MailPort;
@@ -164,9 +161,8 @@ class ApplicationWiring {
   }
 
   @Bean
-  AuthSettings authSettings(@Value("${beep.signup-mode}") String signupMode) {
-    if (!signupMode.equals("invite") && !signupMode.equals("open")) throw new IllegalStateException("SIGNUP_MODE doit valoir invite ou open");
-    return AuthSettings.defaults().withInviteOnly(signupMode.equals("invite"));
+  AuthSettings authSettings() {
+    return AuthSettings.defaults();
   }
 
   @Bean
@@ -228,11 +224,6 @@ class ApplicationWiring {
   @Bean
   BioPageRepository bioPageRepository(DSLContext dsl) {
     return new PostgresBioPageAdapter(dsl);
-  }
-
-  @Bean
-  InvitationRepository invitationRepository(DSLContext dsl) {
-    return new PostgresInvitationAdapter(dsl);
   }
 
   @Bean
@@ -350,9 +341,9 @@ class ApplicationWiring {
   }
 
   @Bean
-  SignUpUseCase signUp(UserRepository users, OneTimeTokenRepository tokens, InvitationRepository invitations, PasswordHasherPort hasher, TokenPort tokenPort,
+  SignUpUseCase signUp(UserRepository users, OneTimeTokenRepository tokens, PasswordHasherPort hasher, TokenPort tokenPort,
       MailPort mail, RateLimiterPort limiter, TransactionPort tx, Clock clock, AuthSettings settings) {
-    return new SignUpUseCase(users, tokens, invitations, hasher, tokenPort, mail, limiter, tx, clock, settings);
+    return new SignUpUseCase(users, tokens, hasher, tokenPort, mail, limiter, tx, clock, settings);
   }
 
   @Bean
@@ -399,9 +390,9 @@ class ApplicationWiring {
   }
 
   @Bean
-  MagicLinkUseCase magicLink(UserRepository users, OneTimeTokenRepository tokens, InvitationRepository invitations, TokenPort tokenPort, MailPort mail,
+  MagicLinkUseCase magicLink(UserRepository users, OneTimeTokenRepository tokens, TokenPort tokenPort, MailPort mail,
       RateLimiterPort limiter, TransactionPort tx, SessionIssuer issuer, Clock clock, AuthSettings settings) {
-    return new MagicLinkUseCase(users, tokens, invitations, tokenPort, mail, limiter, tx, issuer, clock, settings);
+    return new MagicLinkUseCase(users, tokens, tokenPort, mail, limiter, tx, issuer, clock, settings);
   }
 
   @Bean
@@ -411,9 +402,9 @@ class ApplicationWiring {
   }
 
   @Bean
-  OAuthUseCase oauthUseCase(OAuthPort oauth, UserRepository users, InvitationRepository invitations, TokenPort tokenPort, TransactionPort tx, SessionIssuer issuer,
+  OAuthUseCase oauthUseCase(OAuthPort oauth, UserRepository users, TokenPort tokenPort, TransactionPort tx, SessionIssuer issuer,
       PublicSite site, Clock clock, AuthSettings settings) {
-    return new OAuthUseCase(oauth, users, invitations, tokenPort, tx, issuer, site, clock, settings);
+    return new OAuthUseCase(oauth, users, tokenPort, tx, issuer, site, clock, settings);
   }
 
   // ---- Cas d'usage : espace client ----
@@ -506,11 +497,6 @@ class ApplicationWiring {
   @Bean
   AdminEntitlementsUseCase adminEntitlements(PlanRepository plans, WorkspaceRepository workspaceRepository, Workspaces workspaces, TransactionPort tx, Clock clock) {
     return new AdminEntitlementsUseCase(plans, workspaceRepository, workspaces, tx, clock);
-  }
-
-  @Bean
-  AdminInvitationsUseCase adminInvitations(InvitationRepository invitations, UserRepository users, MailPort mail, TransactionPort tx, Clock clock) {
-    return new AdminInvitationsUseCase(invitations, users, mail, tx, clock);
   }
 
   @Bean

@@ -75,12 +75,6 @@ export const navItems: NavItem[] = [
     mobile: true,
   },
   {
-    href: "/invitations",
-    label: "Invitations",
-    icon: "mail",
-    permission: "INVITATIONS_WRITE",
-  },
-  {
     href: "/catalog",
     label: "Catalogue d'apps",
     icon: "smartphone",

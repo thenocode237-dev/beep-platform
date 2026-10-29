@@ -12,7 +12,6 @@ import io.beep.bo.app.domains.DomainsUseCase;
 import io.beep.bo.app.plans.PlanDraftsUseCase;
 import io.beep.bo.app.port.PlanDraftRepository;
 import java.util.Optional;
-import io.beep.bo.app.invitations.InvitationsUseCase;
 import io.beep.bo.app.links.LinksModerationUseCase;
 import io.beep.bo.app.plans.EntitlementsUseCase;
 import io.beep.bo.app.port.AuditPort;
@@ -155,16 +154,6 @@ class ModulesTest {
     assertThatThrownBy(() -> log.execute(staff(Role.SUPPORT), 50, null, null, null, "ip")).hasMessage("forbidden");
     assertThat(log.execute(staff(Role.SUPERADMIN), 50, null, "links.", null, "ip").intact()).isTrue();
     assertThat(audit).extracting(AuditEvent::action).containsExactly("audit.read");
-  }
-
-  @Test
-  void invitationsAreAuditedAndValidatedBeforeReachingTheCore() {
-    var invitations = new InvitationsUseCase(core, auditPort, clock);
-    assertThatThrownBy(() -> invitations.invite(staff(Role.SUPPORT), "pas-une-adresse", "fr", "ip")).hasMessage("invalid_email");
-    invitations.invite(staff(Role.SUPPORT), "Eve@Example.com", "fr", "ip");
-    assertThat(core.calls).containsExactly("invite:eve@example.com");
-    assertThat(audit).extracting(AuditEvent::action).containsExactly("invitations.create");
-    assertThatThrownBy(() -> invitations.list(staff(Role.FINANCE), 20, null)).hasMessage("forbidden");
   }
 
   // ---- Phase 2 : facturation ----

@@ -1,7 +1,6 @@
 package io.beep.core.app;
 
 import io.beep.core.app.admin.AdminEntitlementsUseCase;
-import io.beep.core.app.admin.AdminInvitationsUseCase;
 import io.beep.core.app.admin.AdminLinksUseCase;
 import io.beep.core.app.admin.AdminUsersUseCase;
 import io.beep.core.app.analytics.ClickRecorder;
@@ -82,7 +81,6 @@ final class Platform {
   final Fakes.Users users = new Fakes.Users();
   final Fakes.Sessions sessions = new Fakes.Sessions();
   final Fakes.Tokens tokens = new Fakes.Tokens();
-  final Fakes.Invitations invitations = new Fakes.Invitations();
   final Fakes.Mail mail = new Fakes.Mail();
   final Fakes.Limiter limiter = new Fakes.Limiter();
   final Fakes.TokenGen tokenGen = new Fakes.TokenGen();
@@ -98,7 +96,7 @@ final class Platform {
   final MemSink sink = new MemSink();
   final MemAnalytics analytics = new MemAnalytics();
   final FakeOAuth oauth = new FakeOAuth();
-  AuthSettings authSettings = AuthSettings.defaults().withInviteOnly(true);
+  AuthSettings authSettings = AuthSettings.defaults();
 
   final Workspaces workspaces = new Workspaces(workspaceRepo, plans, links, qrCodes, bioPages, clock);
   final VisitorSaltRepository salts = new VisitorSaltRepository() {
@@ -124,14 +122,13 @@ final class Platform {
   final AdminUsersUseCase adminUsers = new AdminUsersUseCase(users, workspaceRepo, workspaces, plans, sessions, tx);
   final AdminLinksUseCase adminLinks = new AdminLinksUseCase(links, tx, clock);
   final AdminEntitlementsUseCase adminEntitlements = new AdminEntitlementsUseCase(plans, workspaceRepo, workspaces, tx, clock);
-  final AdminInvitationsUseCase adminInvitations = new AdminInvitationsUseCase(invitations, users, mail, tx, clock);
 
   SignUpUseCase signUp() {
-    return new SignUpUseCase(users, tokens, invitations, hasher, tokenGen, mail, limiter, tx, clock, authSettings);
+    return new SignUpUseCase(users, tokens, hasher, tokenGen, mail, limiter, tx, clock, authSettings);
   }
 
   MagicLinkUseCase magicLink() {
-    return new MagicLinkUseCase(users, tokens, invitations, tokenGen, mail, limiter, tx, issuer, clock, authSettings);
+    return new MagicLinkUseCase(users, tokens, tokenGen, mail, limiter, tx, issuer, clock, authSettings);
   }
 
   CompleteMfaUseCase mfa() {
@@ -139,7 +136,7 @@ final class Platform {
   }
 
   OAuthUseCase oauthUseCase() {
-    return new OAuthUseCase(oauth, users, invitations, tokenGen, tx, issuer, site, clock, authSettings);
+    return new OAuthUseCase(oauth, users, tokenGen, tx, issuer, site, clock, authSettings);
   }
 
   User verifiedUser(String email) {

@@ -11,7 +11,6 @@ import io.beep.core.domain.analytics.DeviceType;
 import io.beep.core.domain.analytics.EventKind;
 import io.beep.core.domain.bio.BioBlock;
 import io.beep.core.domain.bio.BioPage;
-import io.beep.core.domain.invitation.Invitation;
 import io.beep.core.domain.link.Destination;
 import io.beep.core.domain.link.Link;
 import io.beep.core.domain.link.Slug;
@@ -76,7 +75,7 @@ class Phase1AdaptersIT {
 
   @BeforeEach
   void init() {
-    dsl.execute("TRUNCATE users, slugs, click_events, rollups_hourly, rollups_daily, job_runs, beta_invitations, visitor_salts CASCADE");
+    dsl.execute("TRUNCATE users, slugs, click_events, rollups_hourly, rollups_daily, job_runs, visitor_salts CASCADE");
     users = new PostgresUserAdapter(dsl);
     workspaces = new PostgresWorkspaceAdapter(dsl);
     links = new PostgresLinkAdapter(dsl);
@@ -249,21 +248,6 @@ class Phase1AdaptersIT {
       for (int i = 0; i < 50 && cache.resolve("unknown").kind() == Resolution.Kind.NONE; i++) Thread.sleep(100);
       assertThat(cache.resolve("unknown").kind()).isEqualTo(Resolution.Kind.LINK);
     }
-  }
-
-  @Test
-  void invitationsAreRenewedUntilUsedAndConsumedOnce() {
-    var invitations = new PostgresInvitationAdapter(dsl);
-    Email email = new Email("eve@example.com");
-    Instant now = Instant.parse("2026-03-10T00:00:00Z");
-    invitations.upsert(Invitation.create(UUID.randomUUID(), email, "staff-1", now.minus(Duration.ofDays(40))));
-    assertThat(invitations.consume(email, now)).isFalse(); // expirée
-    invitations.upsert(Invitation.create(UUID.randomUUID(), email, "staff-2", now));
-    assertThat(invitations.consume(email, now)).isTrue();
-    assertThat(invitations.consume(email, now)).isFalse();
-    Invitation used = invitations.upsert(Invitation.create(UUID.randomUUID(), email, "staff-3", now));
-    assertThat(used.invitedBy()).isEqualTo("staff-2"); // une invitation utilisée n'est pas réécrite
-    assertThat(invitations.page(10, null).items()).hasSize(1);
   }
 
   @Test

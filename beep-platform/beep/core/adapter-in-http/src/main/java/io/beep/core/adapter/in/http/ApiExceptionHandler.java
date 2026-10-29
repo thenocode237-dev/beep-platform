@@ -101,7 +101,6 @@ public class ApiExceptionHandler {
       Map.entry("quota_exceeded", HttpStatus.FORBIDDEN),
       Map.entry("workspace_suspended", HttpStatus.FORBIDDEN),
       Map.entry("feature_unavailable", HttpStatus.FORBIDDEN),
-      Map.entry("invite_required", HttpStatus.FORBIDDEN),
       Map.entry("not_found", HttpStatus.NOT_FOUND),
       Map.entry("slug_taken", HttpStatus.CONFLICT),
       Map.entry("link_in_use", HttpStatus.CONFLICT),

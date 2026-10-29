@@ -1,6 +1,6 @@
 // Bout en bout sur la stack Compose en cours d'exécution (make up). Aucune dépendance : Node ≥ 20.
 //   Phase 0 : inscription -> e-mail (Mailpit) -> confirmation -> connexion -> TOTP -> réinitialisation ; staff (TOTP), audit append-only
-//   Phase 1 : bêta sur invitation, liens (slugs, quotas), redirection, QR dynamiques, page bio, statistiques, lien magique,
+//   Phase 1 : inscription ouverte, liens (slugs, quotas), redirection, QR dynamiques, page bio, statistiques, lien magique,
 //             actions staff (désactivation, override, suspension) et leur journalisation
 import { phase5 } from "./phase5-e2e.mjs";
 import { phase4 } from "./phase4-e2e.mjs";
@@ -19,7 +19,7 @@ const STAFF_TOTP_SECRET = process.env.E2E_STAFF_TOTP_SECRET;
 const BROWSER = "Mozilla/5.0 (Linux; Android 13; SM-A145F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36";
 
 if (!STAFF_EMAIL || !STAFF_TOTP_SECRET) {
-  console.error("Définir E2E_STAFF_EMAIL et E2E_STAFF_TOTP_SECRET (scripts/e2e.sh s'en charge) : la bêta est sur invitation.");
+  console.error("Définir E2E_STAFF_EMAIL et E2E_STAFF_TOTP_SECRET (scripts/e2e.sh s'en charge) pour piloter le back office.");
   process.exit(2);
 }
 
@@ -157,16 +157,6 @@ step("back office : le core est joignable (mode nominal)", r.status === 200 && r
 r = await bo.get("/api/auth/me");
 step("back office : /me expose les droits du rôle", r.status === 200 && r.json?.permissions?.includes("LINKS_MODERATE"), `statut ${r.status} ${r.text}`);
 
-// ===== Bêta privée : inscription sur invitation =====
-r = await site.post("/v1/auth/signup", { email, password, locale: "fr" });
-step("bêta : inscription d'une adresse non invitée -> même réponse 202", r.status === 202, `statut ${r.status}`);
-step("bêta : … et e-mail « invitation requise », aucun compte créé", !!(await lastMailFor(email, /bêta privée|private beta/i)), "e-mail absent");
-r = await site.post("/v1/auth/login", { email, password });
-step("bêta : pas de compte pour une adresse non invitée", r.status === 401, `statut ${r.status}`);
-r = await bo.post("/api/invitations", { email, locale: "fr" });
-step("back office : invitation envoyée (201)", r.status === 201 && r.json?.status === "pending", `statut ${r.status} ${r.text}`);
-step("bêta : e-mail d'invitation reçu", !!(await lastMailFor(email, /invité|invited/i)), "e-mail absent");
-
 // ===== Inscription =====
 r = await site.post("/v1/auth/signup", { email, password: "short", locale: "fr" });
 step("inscription : mot de passe trop court -> 400 weak_password", r.status === 400 && r.json?.code === "weak_password", `statut ${r.status} ${r.text}`);
@@ -300,9 +290,9 @@ step("back office : recherche de l'utilisateur par e-mail", r.status === 200 && 
 r = await bo.get(`/api/users/${userId}`);
 const workspaceId = r.json?.workspace?.id;
 step("back office : fiche (usage face aux quotas)", r.status === 200 && r.json?.usage?.find((u) => u.resource === "links")?.used === 4, `statut ${r.status} ${r.text.slice(0, 300)}`);
-r = await bo.put(`/api/workspaces/${workspaceId}/entitlements`, { overrides: { "features.export_csv": 1 }, reason: "bêta : export activé", totp: "000000" });
+r = await bo.put(`/api/workspaces/${workspaceId}/entitlements`, { overrides: { "features.export_csv": 1 }, reason: "export CSV offert", totp: "000000" });
 step("back office : override sans ré-authentification valide -> 403 reauth_required", r.status === 403 && r.json?.code === "reauth_required", `statut ${r.status}`);
-r = await bo.put(`/api/workspaces/${workspaceId}/entitlements`, { overrides: { "features.export_csv": 1 }, reason: "bêta : export activé", totp: totp(STAFF_TOTP_SECRET) });
+r = await bo.put(`/api/workspaces/${workspaceId}/entitlements`, { overrides: { "features.export_csv": 1 }, reason: "export CSV offert", totp: totp(STAFF_TOTP_SECRET) });
 step("back office : override export CSV appliqué", r.status === 200 && r.json?.entitlements?.["features.export_csv"] === 1, `statut ${r.status} ${r.text}`);
 r = await site.get(`/v1/links/${link.id}/stats.csv?days=30`);
 step("export CSV : disponible après override (text/csv)", r.status === 200 && /text\/csv/.test(r.headers.get("content-type") ?? "") && r.text.includes("section,cle,clics"), `statut ${r.status}`);
@@ -384,7 +374,7 @@ step("connexion avec le nouveau mot de passe -> 200", r.status === 200, `statut 
 // ===== Back office : pages et journal d'audit =====
 r = await bo.get("/api/users?limit=100");
 step("back office : l'utilisateur apparaît (via l'API admin du core)", r.status === 200 && r.json?.items?.some((u) => u.email === email && u.emailVerified && u.totpEnabled), `statut ${r.status}`);
-for (const p of ["/users", `/users/${userId}`, "/links", `/links/${link.id}`, "/metrics", "/jobs", "/plans", "/audit", "/invitations", "/menu"]) {
+for (const p of ["/users", `/users/${userId}`, "/links", `/links/${link.id}`, "/metrics", "/jobs", "/plans", "/audit", "/menu"]) {
   r = await bo.get(p);
   step(`back office : page ${p} rendue côté serveur (200)`, r.status === 200, `statut ${r.status}`);
 }
@@ -402,7 +392,7 @@ const sql = (q) => process.env.E2E_AUDIT_PG==="1"
   : execFileSync("docker", ["exec",process.env.E2E_PG_CONTAINER??"beep-postgres-1", "sh", "-c", `psql -U "$POSTGRES_USER" -d backoffice -tAc "${q}"`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 try {
   const actions = sql(`select string_agg(distinct action, ',') from audit_log where actor_email = '${STAFF_EMAIL}'`).split(",");
-  for (const a of ["staff.login", "staff.login_failed", "invitations.create", "users.list", "users.view", "entitlements.override", "links.search", "links.disable", "links.enable", "users.suspend", "users.reactivate", "audit.read"]) {
+  for (const a of ["staff.login", "staff.login_failed", "users.list", "users.view", "entitlements.override", "links.search", "links.disable", "links.enable", "users.suspend", "users.reactivate", "audit.read"]) {
     step(`audit : action « ${a} » journalisée`, actions.includes(a), `actions : ${actions.join(",")}`);
   }
   let blockedUpdate = false;

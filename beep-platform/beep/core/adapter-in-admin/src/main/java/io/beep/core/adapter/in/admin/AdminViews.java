@@ -2,7 +2,6 @@ package io.beep.core.adapter.in.admin;
 
 import io.beep.core.app.port.LinkRepository;
 import io.beep.core.app.port.PlanRepository;
-import io.beep.core.domain.invitation.Invitation;
 import io.beep.core.domain.link.Link;
 import io.beep.core.domain.plan.QuotaPolicy;
 import io.beep.core.domain.user.User;
@@ -27,8 +26,6 @@ final class AdminViews {
   record LinkView(UUID id, String slug, String destination, String title, String status, String disabledReason, UUID workspaceId, String ownerEmail,
       Instant createdAt, Instant updatedAt) {}
 
-  record InvitationView(UUID id, String email, String status, String invitedBy, Instant createdAt, Instant expiresAt, Instant usedAt) {}
-
   static UserView user(User u) {
     return new UserView(u.id(), u.email().value(), u.status().db(), u.emailVerified(), u.totpEnabled(), u.createdAt());
   }
@@ -49,10 +46,6 @@ final class AdminViews {
     Link l = row.link();
     return new LinkView(l.id(), l.slug().value(), l.destination().url(), l.title(), l.status().db(), l.disabledReason(), l.workspaceId(), row.ownerEmail(),
         l.createdAt(), l.updatedAt());
-  }
-
-  static InvitationView invitation(Invitation i, Instant now) {
-    return new InvitationView(i.id(), i.email().value(), i.status(now).db(), i.invitedBy(), i.createdAt(), i.expiresAt(), i.usedAt());
   }
 
   static Map<String, Long> sorted(Map<String, Long> m) {

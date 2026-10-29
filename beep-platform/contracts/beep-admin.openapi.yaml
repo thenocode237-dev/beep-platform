@@ -13,13 +13,14 @@ info:
     - Listes paginées par curseur.
 
     Historique : 0.1.0 (phase 0) utilisateurs en lecture ; 0.2.0 (phase 1) recherche, fiche et suspension de compte,
-    liens (recherche, désactivation), slugs réservés, plans et overrides de droits, métriques plateforme, jobs, invitations ;
+    liens (recherche, désactivation), slugs réservés, plans et overrides de droits, métriques plateforme, jobs ;
     0.3.0 (phase 2, cycle 4) facturation : abonnements, paiements, échéances, MRR/ARR, paiements manuels, changement de plan manuel,
     coupons, factures, publication de plans versionnés (prix trimestriel / annuel ajoutés à `Plan`) ;
     0.4.0 (phase 2, cycle 5) domaines personnalisés : liste globale, état DNS/TLS, relance de la vérification, blocage ;
     0.5.0 (phase 2, cycle 6) catalogue d'applications (deeplinks) : lecture, publication versionnée, activation, test en direct ;
     0.6.0 (phase 2) signalements, modération, liste noire, feature flags et export/suppression de compte ;
     0.7.0 (phase 3) pipeline de conversion, clés API, livraisons, limites et droits des visiteurs.
+    Les invitations (inscription sur invitation) ont été retirées avec la fin de la phase de lancement : l'inscription est ouverte.
 servers:
   - url: http://core:8080/internal/admin/v1
 security:
@@ -413,42 +414,6 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/JobsList" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
-  /invitations:
-    get:
-      operationId: listInvitations
-      summary: Invitations à la bêta privée (plus récentes d'abord)
-      parameters:
-        - $ref: "#/components/parameters/Limit"
-        - $ref: "#/components/parameters/Cursor"
-        - $ref: "#/components/parameters/StaffId"
-      responses:
-        "200":
-          description: Une page d'invitations
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/InvitationsPage" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-    post:
-      operationId: createInvitation
-      summary: Inviter une adresse (envoie l'e-mail d'invitation ; renouvelle une invitation non utilisée)
-      parameters:
-        - $ref: "#/components/parameters/StaffId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/InvitationRequest" }
-      responses:
-        "201":
-          description: Invitation créée
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Invitation" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "409": { $ref: "#/components/responses/Conflict" }
 
   /billing/summary:
     get:
@@ -1924,34 +1889,6 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/Job" }
-    InvitationRequest:
-      type: object
-      required: [email]
-      additionalProperties: false
-      properties:
-        email: { type: string, format: email }
-        locale: { type: string, enum: [fr, en], default: fr }
-    Invitation:
-      type: object
-      required: [id, email, status, invitedBy, createdAt, expiresAt, usedAt]
-      additionalProperties: false
-      properties:
-        id: { type: string, format: uuid }
-        email: { type: string, format: email }
-        status: { type: string, enum: [pending, used, expired] }
-        invitedBy: { type: [string, "null"] }
-        createdAt: { type: string, format: date-time }
-        expiresAt: { type: string, format: date-time }
-        usedAt: { type: [string, "null"], format: date-time }
-    InvitationsPage:
-      type: object
-      required: [items, nextCursor]
-      additionalProperties: false
-      properties:
-        items:
-          type: array
-          items: { $ref: "#/components/schemas/Invitation" }
-        nextCursor: { type: [string, "null"] }
     Cycle:
       type: string
       enum: [monthly, quarterly, annual]
