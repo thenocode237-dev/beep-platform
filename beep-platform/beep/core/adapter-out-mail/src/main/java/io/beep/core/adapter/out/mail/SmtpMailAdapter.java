@@ -11,7 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 /** E-mails transactionnels via SMTP (Mailpit en dev, fournisseur transactionnel en production). */
 public class SmtpMailAdapter implements MailPort {
   @Override public void sendWorkspaceMessage(Email to,String locale,String subject,String message,String path){
-    send(to,subject,subject,message,"en".equals(locale)?"Open Beep":"Ouvrir Beep",publicUrl+("en".equals(locale)?"/en":"")+path,"Beep · Workspace");
+    send(to,subject,subject,message,"en".equals(locale)?"Open BeepClick":"Ouvrir BeepClick",publicUrl+("en".equals(locale)?"/en":"")+path,"BeepClick · Workspace");
   }
   private final JavaMailSender sender;
   private final String from;
@@ -27,8 +27,8 @@ public class SmtpMailAdapter implements MailPort {
   public void sendVerification(Email to, String locale, String token) {
     String link = link(locale, "/verify-email", token);
     boolean en = "en".equals(locale);
-    send(to, en ? "Confirm your Beep email address" : "Confirmez votre adresse e-mail Beep",
-        en ? "Welcome to Beep!" : "Bienvenue sur Beep !",
+    send(to, en ? "Confirm your BeepClick email address" : "Confirmez votre adresse e-mail BeepClick",
+        en ? "Welcome to BeepClick!" : "Bienvenue sur BeepClick !",
         en ? "Confirm your address to activate your account. The link is valid for 24 hours." : "Confirmez votre adresse pour activer votre compte. Le lien est valable 24 heures.",
         en ? "Confirm my address" : "Confirmer mon adresse", link,
         en ? "If you did not create an account, you can ignore this email." : "Si vous n'avez pas créé de compte, ignorez simplement ce message.");
@@ -38,7 +38,7 @@ public class SmtpMailAdapter implements MailPort {
   public void sendPasswordReset(Email to, String locale, String token) {
     String link = link(locale, "/reset-password", token);
     boolean en = "en".equals(locale);
-    send(to, en ? "Reset your Beep password" : "Réinitialisez votre mot de passe Beep",
+    send(to, en ? "Reset your BeepClick password" : "Réinitialisez votre mot de passe BeepClick",
         en ? "Password reset" : "Réinitialisation du mot de passe",
         en ? "Use the button below to choose a new password. The link is valid for 1 hour and works once." : "Utilisez le bouton ci-dessous pour choisir un nouveau mot de passe. Le lien est valable 1 heure et ne fonctionne qu'une fois.",
         en ? "Choose a new password" : "Choisir un nouveau mot de passe", link,
@@ -48,7 +48,7 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendAlreadyRegistered(Email to, String locale) {
     boolean en = "en".equals(locale);
-    send(to, en ? "You already have a Beep account" : "Vous avez déjà un compte Beep",
+    send(to, en ? "You already have a BeepClick account" : "Vous avez déjà un compte BeepClick",
         en ? "You already have an account" : "Vous avez déjà un compte",
         en ? "Someone tried to sign up with this address. You can log in, or reset your password if you forgot it." : "Quelqu'un a tenté de s'inscrire avec cette adresse. Connectez-vous, ou réinitialisez votre mot de passe si vous l'avez oublié.",
         en ? "Log in" : "Se connecter", publicUrl + ("en".equals(locale) ? "/en" : "") + "/login",
@@ -58,8 +58,8 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendMagicLink(Email to, String locale, String token) {
     boolean en = "en".equals(locale);
-    send(to, en ? "Your Beep sign-in link" : "Votre lien de connexion Beep",
-        en ? "Sign in to Beep" : "Connexion à Beep",
+    send(to, en ? "Your BeepClick sign-in link" : "Votre lien de connexion BeepClick",
+        en ? "Sign in to BeepClick" : "Connexion à BeepClick",
         en ? "Use the button below to sign in. The link is valid for 15 minutes and works once." : "Utilisez le bouton ci-dessous pour vous connecter. Le lien est valable 15 minutes et ne fonctionne qu'une fois.",
         en ? "Sign in" : "Me connecter", link(locale, "/login/magic", token),
         en ? "If you did not request this, you can ignore this email." : "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.");
@@ -68,8 +68,8 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendInvitation(Email to, String locale) {
     boolean en = "en".equals(locale);
-    send(to, en ? "You're invited to the Beep private beta" : "Vous êtes invité(e) à la bêta privée de Beep",
-        en ? "Welcome to the Beep beta" : "Bienvenue dans la bêta de Beep",
+    send(to, en ? "You're invited to the BeepClick private beta" : "Vous êtes invité(e) à la bêta privée de BeepClick",
+        en ? "Welcome to the BeepClick beta" : "Bienvenue dans la bêta de BeepClick",
         en ? "Create your account with this email address to try short links, QR codes and bio pages. The invitation is valid for 30 days."
             : "Créez votre compte avec cette adresse e-mail pour essayer les liens courts, QR codes et pages bio. L'invitation est valable 30 jours.",
         en ? "Create my account" : "Créer mon compte", publicUrl + (en ? "/en" : "") + "/signup",
@@ -79,7 +79,7 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendReceipt(Email to, String locale, String invoiceNumber, String planName, long amountXaf, Instant validUntil, byte[] invoicePdf) {
     boolean en = "en".equals(locale);
-    send(to, en ? "Your Beep receipt " + invoiceNumber : "Votre reçu Beep " + invoiceNumber,
+    send(to, en ? "Your BeepClick receipt " + invoiceNumber : "Votre reçu BeepClick " + invoiceNumber,
         en ? "Payment received" : "Paiement reçu",
         en ? "Thank you! Your " + planName + " plan is active until " + date(validUntil) + ". Amount paid: " + money(amountXaf) + " FCFA. Your invoice " + invoiceNumber + " is attached."
             : "Merci ! Votre offre " + planName + " est active jusqu'au " + date(validUntil) + ". Montant payé : " + money(amountXaf) + " FCFA. Votre facture " + invoiceNumber + " est jointe.",
@@ -92,7 +92,7 @@ public class SmtpMailAdapter implements MailPort {
   public void sendRenewalReminder(Email to, String locale, String planName, boolean trial, int daysLeft, Instant dueAt) {
     boolean en = "en".equals(locale);
     String when = daysLeft == 1 ? (en ? "tomorrow" : "demain") : (en ? "in " + daysLeft + " days" : "dans " + daysLeft + " jours");
-    send(to, trial ? (en ? "Your Beep Elite trial ends " + when : "Votre essai Elite se termine " + when) : (en ? "Your Beep " + planName + " plan expires " + when : "Votre offre Beep " + planName + " expire " + when),
+    send(to, trial ? (en ? "Your BeepClick Elite trial ends " + when : "Votre essai Elite se termine " + when) : (en ? "Your BeepClick " + planName + " plan expires " + when : "Votre offre BeepClick " + planName + " expire " + when),
         trial ? (en ? "Your trial is ending" : "Votre essai se termine") : (en ? "Time to renew" : "C'est bientôt l'échéance"),
         trial ? (en ? "Your free Elite trial ends on " + date(dueAt) + ". Choose a plan to keep your Pro features; otherwise you return to Starter and keep all your links."
             : "Votre essai gratuit Elite se termine le " + date(dueAt) + ". Choisissez une offre pour conserver vos fonctions Pro ; sinon vous repassez en Starter et gardez tous vos liens.")
@@ -105,7 +105,7 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendGraceNotice(Email to, String locale, String planName, Instant graceEnd) {
     boolean en = "en".equals(locale);
-    send(to, en ? "Your Beep plan has expired — 7 days of grace" : "Votre offre Beep a expiré — 7 jours de grâce",
+    send(to, en ? "Your BeepClick plan has expired — 7 days of grace" : "Votre offre BeepClick a expiré — 7 jours de grâce",
         en ? "Your plan has expired" : "Votre offre a expiré",
         en ? "Your " + planName + " plan was not renewed. You keep full access until " + date(graceEnd) + ", then return to Starter. Excess links may pause at day 30 and be deleted from day 90 after the unpaid expiry, with advance notice."
             : "Votre offre " + planName + " n'a pas été renouvelée. Vous gardez l'accès complet jusqu'au " + date(graceEnd) + ", puis repassez en Starter. Les liens en excès peuvent être mis en pause à J+30 et supprimés à partir de J+90 après l'échéance impayée, avec préavis.",
@@ -127,18 +127,18 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendInvitationRequired(Email to, String locale) {
     boolean en = "en".equals(locale);
-    send(to, en ? "Beep is in private beta" : "Beep est en bêta privée",
+    send(to, en ? "BeepClick is in private beta" : "BeepClick est en bêta privée",
         en ? "Invitation required" : "Invitation nécessaire",
-        en ? "Someone tried to create a Beep account with this address. During the private beta, accounts can only be created by invitation."
-            : "Quelqu'un a tenté de créer un compte Beep avec cette adresse. Pendant la bêta privée, les comptes sont créés uniquement sur invitation.",
-        en ? "Discover Beep" : "Découvrir Beep", publicUrl + (en ? "/en" : "/"),
+        en ? "Someone tried to create a BeepClick account with this address. During the private beta, accounts can only be created by invitation."
+            : "Quelqu'un a tenté de créer un compte BeepClick avec cette adresse. Pendant la bêta privée, les comptes sont créés uniquement sur invitation.",
+        en ? "Discover BeepClick" : "Découvrir BeepClick", publicUrl + (en ? "/en" : "/"),
         en ? "If this wasn't you, no action is needed." : "Si ce n'était pas vous, aucune action n'est nécessaire.");
   }
 
   @Override
   public void sendAccountDeletion(Email to, String locale, String token) {
     boolean en = "en".equals(locale);
-    send(to, en ? "Confirm deletion of your Beep account" : "Confirmer la suppression de votre compte Beep",
+    send(to, en ? "Confirm deletion of your BeepClick account" : "Confirmer la suppression de votre compte BeepClick",
       en ? "Account deletion" : "Suppression du compte",
       en ? "You requested account deletion. Open this link within 15 minutes and confirm. Nothing is deleted by opening it."
          : "Vous avez demandé la suppression de votre compte. Ouvrez ce lien dans les 15 minutes et confirmez. Ouvrir le lien ne supprime rien.",
@@ -149,7 +149,7 @@ public class SmtpMailAdapter implements MailPort {
   @Override
   public void sendQuotaNotice(Email to,String locale,long links,Instant expiredAt) {
     boolean en="en".equals(locale);
-    send(to,en ? "Your excess Beep links" : "Vos liens Beep en excès",
+    send(to,en ? "Your excess BeepClick links" : "Vos liens BeepClick en excès",
       en ? "Keep your links" : "Conservez vos liens",
       en ? links+" links exceed your current plan. They pause on "+date(expiredAt.plus(java.time.Duration.ofDays(30)))+" and are deleted from "+date(expiredAt.plus(java.time.Duration.ofDays(90)))+". Renew or export your account."
          : links+" liens dépassent votre offre actuelle. Mise en pause le "+date(expiredAt.plus(java.time.Duration.ofDays(30)))+", suppression à partir du "+date(expiredAt.plus(java.time.Duration.ofDays(90)))+". Renouvelez ou exportez votre compte.",

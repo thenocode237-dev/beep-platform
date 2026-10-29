@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * QR code. Dynamique : encode `{public}/q/{code}` et suit un lien Beep (destination modifiable sans réimprimer,
+ * QR code. Dynamique : encode `{public}/q/{code}` et suit un lien BeepClick (destination modifiable sans réimprimer,
  * scans mesurés). Statique : encode directement son contenu.
  */
 public record QrCode(

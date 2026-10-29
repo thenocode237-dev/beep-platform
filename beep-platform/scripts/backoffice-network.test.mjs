@@ -15,7 +15,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 test("production Compose isolates staff services while development stays accessible", () => {
   function compose(overlay) {
     return JSON.parse(execFileSync("docker", ["compose", "--env-file", ".env.production.example", "-f", "docker-compose.yml", "-f", overlay, "--profile", "prod", "config", "--format", "json"], {
-      cwd: root, encoding: "utf8", env: { ...process.env, BEEP_DOMAIN: "beep.click", BO_PUBLIC_URL: "https://beep-admin.tail123.ts.net" }, stdio: ["ignore", "pipe", "pipe"],
+      cwd: root, encoding: "utf8", env: { ...process.env, BEEP_DOMAIN: "beepclick.app", BO_PUBLIC_URL: "https://beep-admin.tail123.ts.net" }, stdio: ["ignore", "pipe", "pipe"],
     }));
   }
   const prod = compose("docker-compose.prod.yml");
@@ -94,27 +94,27 @@ http://:8080 {
     });
     // Use the production routes verbatim. Replace only ACME issuance with an
     // internal CA so HTTPS/Host bypasses can be tested offline on a Docker network.
-    const publicConfig = JSON.parse(docker("run", "--rm", "-e", "BEEP_SITE=beep.click", "-e", "ACME_EMAIL=ops@beep.click", "-v", `${root}:/repo:ro`, "caddy:2", "caddy", "adapt", "--config", "/repo/infra/caddy/Caddyfile"));
+    const publicConfig = JSON.parse(docker("run", "--rm", "-e", "BEEP_SITE=beepclick.app", "-e", "ACME_EMAIL=ops@beepclick.app", "-v", `${root}:/repo:ro`, "caddy:2", "caddy", "adapt", "--config", "/repo/infra/caddy/Caddyfile"));
     publicConfig.apps.tls.automation.policies = [{ issuers: [{ module: "internal" }], on_demand: true }];
     writeFileSync(path.join(temp, "public.json"), JSON.stringify(publicConfig));
-    const proxy = run("public", ["--network", edge, "--network-alias", "beep.click", "--network-alias", "dashboard.beep.click", "--network-alias", "customer.invalid", "-v", `${temp}:/test:ro`, "caddy:2", "caddy", "run", "--config", "/test/public.json"]);
-    await ready(proxy, "https://beep.click/");
+    const proxy = run("public", ["--network", edge, "--network-alias", "beepclick.app", "--network-alias", "dashboard.beepclick.app", "--network-alias", "customer.invalid", "-v", `${temp}:/test:ro`, "caddy:2", "caddy", "run", "--config", "/test/public.json"]);
+    await ready(proxy, "https://beepclick.app/");
     await t.test("old public host is denied including HTTPS, forged Host and API routes", () => {
       for (const route of ["/login", "/api/auth/session", "/_next/static/app.js"]) {
-        denied(proxy, `http://dashboard.beep.click${route}`);
-        denied(proxy, `https://dashboard.beep.click${route}`);
-        denied(proxy, `https://beep.click${route}`, ["Host: dashboard.beep.click"]);
+        denied(proxy, `http://dashboard.beepclick.app${route}`);
+        denied(proxy, `https://dashboard.beepclick.app${route}`);
+        denied(proxy, `https://beepclick.app${route}`, ["Host: dashboard.beepclick.app"]);
       }
     });
     await t.test("public pages, client area, API and custom domains still route", () => {
-      for (const route of ["/", "/app", "/en/features"]) assert.equal(request(proxy, `https://beep.click${route}`), "public-web");
-      assert.equal(request(proxy, "https://beep.click/v1/health"), "public-api");
+      for (const route of ["/", "/app", "/en/features"]) assert.equal(request(proxy, `https://beepclick.app${route}`), "public-web");
+      assert.equal(request(proxy, "https://beepclick.app/v1/health"), "public-api");
       assert.equal(request(proxy, "https://customer.invalid/my-link"), "public-api");
     });
     await t.test("public service remains functional when private access stops", () => {
       docker("stop", "--time", "1", gateway, vpn);
-      assert.equal(request(proxy, "https://beep.click/app"), "public-web");
-      denied(proxy, "https://dashboard.beep.click/api/auth/session");
+      assert.equal(request(proxy, "https://beepclick.app/app"), "public-web");
+      denied(proxy, "https://dashboard.beepclick.app/api/auth/session");
     });
   } finally {
     for (const name of containers.reverse()) spawnSync("docker", ["rm", "-f", "-v", name], { stdio: "ignore", timeout: 15_000 });

@@ -9,8 +9,8 @@ import java.util.UUID;
  * Domaine personnalisé d'un workspace. Il sert des liens uniquement une fois le DNS vérifié (propriété par TXT, routage par CNAME/A),
  * tant qu'il n'est pas bloqué par le staff et que le workspace n'est pas suspendu.
  *
- * @param rootRedirectUrl page racine : redirection de `domaine/` (sinon la page 404 de Beep)
- * @param notFoundUrl     redirection d'un chemin inconnu (sinon la page 404 de Beep)
+ * @param rootRedirectUrl page racine : redirection de `domaine/` (sinon la page 404 de BeepClick)
+ * @param notFoundUrl     redirection d'un chemin inconnu (sinon la page 404 de BeepClick)
  */
 public record CustomDomain(UUID id, UUID workspaceId, String hostname, DnsStatus dnsStatus, TlsStatus tlsStatus, String verifyToken, Instant verifiedAt, Instant lastCheckAt,
     String lastError, boolean isDefault, String rootRedirectUrl, String notFoundUrl, boolean blocked, String blockedReason, Instant createdAt) {

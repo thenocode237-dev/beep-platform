@@ -13,7 +13,7 @@ export default async function BioPages({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   const t = getConsole(locale);
   const res = await coreGet<{ items: BioView[] }>("/bio-pages");
-  const site = process.env.BEEP_PUBLIC_URL || "https://beep.click";
+  const site = process.env.BEEP_PUBLIC_URL || "https://beepclick.app";
 
   return (
     <div className="app-page bp-stack bp-stack--lg">

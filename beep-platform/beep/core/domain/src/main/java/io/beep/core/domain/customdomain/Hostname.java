@@ -4,7 +4,7 @@ import io.beep.core.domain.DomainException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/** Nom d'hôte d'un domaine personnalisé : FQDN en minuscules, ni adresse IP, ni joker, ni le site de Beep ou l'un de ses sous-domaines. */
+/** Nom d'hôte d'un domaine personnalisé : FQDN en minuscules, ni adresse IP, ni joker, ni le site de BeepClick ou l'un de ses sous-domaines. */
 public final class Hostname {
   private Hostname() {}
 

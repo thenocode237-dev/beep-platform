@@ -52,7 +52,7 @@ class LinksAndRedirectTest {
     assertThatThrownBy(() -> p.createLink.execute(bob, new CreateLinkUseCase.Command("example.com", "promo", null))).hasMessage("slug_taken");
     assertThatThrownBy(() -> p.bio.create(bob, new io.beep.core.app.bio.BioPagesUseCase.CreateCommand("promo", "Bob"))).hasMessage("slug_taken");
     assertThatThrownBy(() -> p.createLink.execute(bob, new CreateLinkUseCase.Command("example.com", "Pricing", null))).hasMessage("reserved_slug");
-    assertThatThrownBy(() -> p.createLink.execute(bob, new CreateLinkUseCase.Command("https://beep.click/abc", null, null))).hasMessage("destination_loop");
+    assertThatThrownBy(() -> p.createLink.execute(bob, new CreateLinkUseCase.Command("https://beepclick.app/abc", null, null))).hasMessage("destination_loop");
   }
 
   @Test

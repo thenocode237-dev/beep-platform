@@ -91,7 +91,7 @@ public class PostgresEcosystemAdapter implements EcosystemRepository {
       Instant end=now.atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant(),start=end.minusSeconds(seconds);
       long clicks=count("SELECT coalesce(sum(clicks),0) FROM rollups_daily WHERE workspace_id=? AND resource_type='link' AND dimension='total' AND day>=?::date AND day<?::date",w,start.atOffset(ZoneOffset.UTC).toLocalDate(),end.atOffset(ZoneOffset.UTC).toLocalDate());
       long sales=count("SELECT count(*) FROM conversion_events WHERE workspace_id=? AND name='sale' AND at>=?::timestamptz AND at<?::timestamptz",w,at(start),at(end));
-      String body="Rapport Beep · "+frequency+" · "+start+" → "+end+" · clicks="+clicks+" · sales="+sales;
+      String body="Rapport BeepClick · "+frequency+" · "+start+" → "+end+" · clicks="+clicks+" · sales="+sales;
       db.execute("INSERT INTO ecosystem_tasks(workspace_id,channel,destination_cipher,body) VALUES(?,'email','owner',?)",w,body);
       db.execute("UPDATE scheduled_reports SET next_at=?::timestamptz WHERE workspace_id=?",at(now.plusSeconds(seconds)),w);
     }

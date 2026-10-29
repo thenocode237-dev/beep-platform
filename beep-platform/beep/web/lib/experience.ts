@@ -69,7 +69,7 @@ const copy = {
     faqIntro: "Les réponses pour choisir vos outils et commencer sereinement.",
     faqs: [
       {
-        q: "Que puis-je créer avec Beep ?",
+        q: "Que puis-je créer avec BeepClick ?",
         a: "Des liens courts personnalisés, des QR codes statiques ou dynamiques et des pages bio. Vous disposez aussi de statistiques, de règles de destination et d’outils pour vos campagnes. Les fonctions avancées et les quotas dépendent de votre offre.",
       },
       {
@@ -85,7 +85,7 @@ const copy = {
         a: "Oui. Les offres compatibles vous permettent de connecter un domaine vérifié et de partager des liens au nom de votre marque. Les conditions et limites sont détaillées sur la page des offres.",
       },
       {
-        q: "Beep est-il pensé pour le mobile ?",
+        q: "BeepClick est-il pensé pour le mobile ?",
         a: "Oui. L’interface s’adapte aux petits écrans, les actions restent accessibles au toucher et les images sont optimisées. Une connexion reste nécessaire pour créer et gérer votre compte.",
       },
       {
@@ -118,7 +118,7 @@ const copy = {
     authSecure: "Un accès personnel et protégé",
     authBack: "Retour à l’accueil",
     workspaceTitle: "Faisons le lien.",
-    workspaceSub: "Bienvenue dans votre espace Beep.",
+    workspaceSub: "Bienvenue dans votre espace BeepClick.",
     account: "Votre compte",
     accountVerified: "Adresse e-mail vérifiée",
     accountUnverified: "Adresse e-mail à vérifier",
@@ -196,7 +196,7 @@ const copy = {
     faqIntro: "Answers to help you choose your tools and get started with confidence.",
     faqs: [
       {
-        q: "What can I create with Beep?",
+        q: "What can I create with BeepClick?",
         a: "Custom short links, static and dynamic QR codes, and bio pages. You also get analytics, destination rules and campaign tools. Advanced features and quotas depend on your plan.",
       },
       {
@@ -212,7 +212,7 @@ const copy = {
         a: "Yes. Compatible plans let you connect a verified domain and share links in your brand’s name. The plans page explains the conditions and limits.",
       },
       {
-        q: "Is Beep designed for mobile?",
+        q: "Is BeepClick designed for mobile?",
         a: "Yes. The interface adapts to small screens, actions are accessible by touch and images are optimized. An internet connection is still needed to create and manage your account.",
       },
       {
@@ -245,7 +245,7 @@ const copy = {
     authSecure: "Personal, protected access",
     authBack: "Back to home",
     workspaceTitle: "Let’s make the connection.",
-    workspaceSub: "Welcome to your Beep workspace.",
+    workspaceSub: "Welcome to your BeepClick workspace.",
     account: "Your account",
     accountVerified: "Email address verified",
     accountUnverified: "Please verify your email address",

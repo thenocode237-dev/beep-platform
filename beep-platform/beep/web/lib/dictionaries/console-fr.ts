@@ -22,7 +22,7 @@ const consoleFr = {
   },
   overview: {
     title: "Faisons le lien.",
-    sub: "Collez une adresse : Beep la raccourcit, la mesure et la rend facile à partager.",
+    sub: "Collez une adresse : BeepClick la raccourcit, la mesure et la rend facile à partager.",
     quickLabel: "Adresse à raccourcir",
     quickPlaceholder: "https://votre-boutique.com/nouvelle-collection",
     quickSubmit: "Créer le lien",
@@ -54,7 +54,7 @@ const consoleFr = {
     empty: "Aucun lien pour le moment. Créez le premier en collant une adresse.",
     noMatch: "Aucun lien ne correspond à cette recherche.",
     last30: "clics sur 30 jours",
-    disabled: "Désactivé par l'équipe Beep",
+    disabled: "Désactivé par l'équipe BeepClick",
     disabledText: "Ce lien ne redirige plus : il affiche une page d'avertissement. Contactez le support si vous pensez qu'il s'agit d'une erreur.",
     more: "Liens suivants",
     back: "Tous les liens",
@@ -90,7 +90,7 @@ const consoleFr = {
   },
   qr: {
     title: "Vos QR codes",
-    sub: "Dynamiques : suivez un lien Beep et changez sa destination sans réimprimer. Statiques : un contenu figé (Wi-Fi, carte de visite…).",
+    sub: "Dynamiques : suivez un lien BeepClick et changez sa destination sans réimprimer. Statiques : un contenu figé (Wi-Fi, carte de visite…).",
     create: "Nouveau QR code",
     kind: "Type",
     dynamic: "Dynamique (suit un lien, scans mesurés)",
@@ -154,7 +154,7 @@ const consoleFr = {
     noBlocks: "Ajoutez un premier bloc : un lien vers votre boutique, vos réseaux…",
     deleteTitle: "Supprimer cette page",
     deleteText: "La page ne sera plus accessible et son adresse sera libérée.",
-    badge: "Le badge « Propulsé par Beep » s'affiche sur les pages des plans Starter et Pro.",
+    badge: "Le badge « Propulsé par BeepClick » s'affiche sur les pages des plans Starter et Pro.",
     colors: "Couleurs de la page",
     colorsHint: "Laissez vide pour garder les couleurs du thème. Les textes s'adaptent automatiquement pour rester lisibles.",
     colorPrimary: "Principale (boutons)",
@@ -171,7 +171,7 @@ const consoleFr = {
     network: "Connexion impossible. Vérifiez votre réseau et réessayez.",
     unauthorized: "Votre session a expiré : reconnectez-vous.",
     invalid_destination: "Adresse invalide : utilisez une adresse web complète (https://…).",
-    destination_loop: "Un lien Beep ne peut pas rediriger vers Beep.",
+    destination_loop: "Un lien BeepClick ne peut pas rediriger vers BeepClick.",
     invalid_slug: "Chemin invalide : 3 à 64 caractères, lettres, chiffres, - et _.",
     reserved_slug: "Ce chemin est réservé. Choisissez-en un autre.",
     slug_taken: "Ce chemin est déjà pris. Essayez une variante.",
@@ -194,7 +194,7 @@ const consoleFr = {
     invalid_credentials: "Connexion refusée.",
     oauth_failed: "La connexion avec ce fournisseur a échoué. Réessayez.",
     oauth_email_unverified: "Ce compte n'a pas d'adresse e-mail vérifiée chez le fournisseur.",
-    invite_required: "Beep est en bêta privée : cette adresse n'a pas encore été invitée.",
+    invite_required: "BeepClick est en bêta privée : cette adresse n'a pas encore été invitée.",
   } as Record<string, string>,
   passwordless: {
     or: "ou",
@@ -208,7 +208,7 @@ const consoleFr = {
     verifyTitle: "Vérification en deux étapes",
     verifySub: "Saisissez le code de votre application d'authentification.",
     verifySubmit: "Valider",
-    inviteNote: "Beep est en bêta privée : utilisez l'adresse e-mail à laquelle vous avez reçu votre invitation.",
+    inviteNote: "BeepClick est en bêta privée : utilisez l'adresse e-mail à laquelle vous avez reçu votre invitation.",
   },
 };
 

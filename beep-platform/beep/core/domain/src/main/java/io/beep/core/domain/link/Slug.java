@@ -4,7 +4,7 @@ import io.beep.core.domain.DomainException;
 import java.util.regex.Pattern;
 
 /**
- * Chemin public `beep.click/{slug}`, partagé par les liens courts et les pages bio.
+ * Chemin public `beepclick.app/{slug}`, partagé par les liens courts et les pages bio.
  * Sensible à la casse (base62) ; les slugs réservés sont comparés sans la casse.
  */
 public record Slug(String value) {

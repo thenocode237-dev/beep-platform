@@ -47,7 +47,7 @@ export function Shell({
     <div className="shell">
       <aside className="sidebar" aria-label="Navigation principale">
         <div>
-          <Logo href="/" label="Beep back office" />
+          <Logo href="/" label="BeepClick back office" />
           <p className="sidebar__label">Espace équipe</p>
         </div>
         <nav className="nav">{allowed.map(link)}</nav>
@@ -71,12 +71,12 @@ export function Shell({
         {logout}
       </aside>
       <header className="topbar">
-        <Logo href="/" label="Beep back office" />
+        <Logo href="/" label="BeepClick back office" />
         <span className="topbar__who">Espace équipe</span>
       </header>
       <div className="shell__main">
         <div className="console-context">
-          <span>Beep / Administration</span>
+          <span>BeepClick / Administration</span>
           <span>
             <Icon name="shield" size={16} />
             {role}

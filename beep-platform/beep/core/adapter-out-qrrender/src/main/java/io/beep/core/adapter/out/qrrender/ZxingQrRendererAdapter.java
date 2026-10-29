@@ -113,7 +113,7 @@ public class ZxingQrRendererAdapter implements QrRendererPort {
     objects.add("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
     objects.add("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + fmt(page) + " " + fmt(page) + "] /Contents 4 0 R /Resources << >> >>");
     objects.add("<< /Length " + stream.length + " >>\nstream\n" + new String(stream, StandardCharsets.US_ASCII) + "endstream");
-    objects.add("<< /Title (QR code Beep) /Producer (Beep) >>");
+    objects.add("<< /Title (QR code BeepClick) /Producer (BeepClick) >>");
 
     StringBuilder pdf = new StringBuilder("%PDF-1.4\n");
     List<Integer> offsets = new ArrayList<>();

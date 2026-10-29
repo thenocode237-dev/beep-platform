@@ -1038,7 +1038,7 @@ export function EcosystemPanel({
       {section === "affiliates" && (
         <>
           <section className="bp-card bp-stack">
-            <h2>{t("Recommandez Beep", "Refer Beep")}</h2>
+            <h2>{t("Recommandez BeepClick", "Refer BeepClick")}</h2>
             <p>
               {t(
                 "20 % des montants encaissés pendant les 12 premiers mois du compte recommandé. Validation après 30 jours ; remboursements exclus. Les paiements de test sont exclus. Versements manuels après vérification par la finance.",

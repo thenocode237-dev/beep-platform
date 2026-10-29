@@ -4,7 +4,7 @@
 
 Exécuter les commandes depuis la racine `beep-platform`, sur l’hôte qui doit héberger la production. Prérequis : Docker avec Compose v2 récent (`--wait` et `--wait-timeout`), Node ≥ 20, GNU Make et Bash. Sous Windows, utiliser Git Bash avec Node dans le `PATH`.
 
-Le domaine public est **`beep.click`**. Faire pointer ce nom DNS vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP ; Caddy gère son HTTPS. Le backoffice est privé, sur **`https://beep-admin.<réseau>.ts.net`**, avec Tailscale installé sur les appareils autorisés. Préparer le réseau et le secret selon le [guide d’accès privé](backoffice-private.md). Ne pas créer de DNS public pour le backoffice ; retirer l’ancien `dashboard.beep.click` après la recette. Les ports 80 et 443 doivent être libres ; deux projets Compose ne peuvent pas les publier simultanément sur la même adresse.
+Le domaine public est **`beepclick.app`**. Faire pointer ce nom DNS vers le serveur et ouvrir les ports 80/TCP et 443/TCP/UDP ; Caddy gère son HTTPS. Le backoffice est privé, sur **`https://beep-admin.<réseau>.ts.net`**, avec Tailscale installé sur les appareils autorisés. Préparer le réseau et le secret selon le [guide d’accès privé](backoffice-private.md). Ne pas créer de DNS public pour le backoffice ; retirer l’ancien `dashboard.beepclick.app` après la recette. Les ports 80 et 443 doivent être libres ; deux projets Compose ne peuvent pas les publier simultanément sur la même adresse.
 
 ```bash
 cp .env.production.example .env.production
@@ -16,7 +16,7 @@ Renseigner dans `.env.production` :
 
 | Variables | Configuration attendue |
 |---|---|
-| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL` | Déjà définis : `beep.click`, `https://beep.click` |
+| `BEEP_DOMAIN`, `BEEP_PUBLIC_URL` | Déjà définis : `beepclick.app`, `https://beepclick.app` |
 | `BO_PUBLIC_URL`, `TAILSCALE_AUTHKEY_FILE` | Origine privée exacte `https://beep-admin.<réseau>.ts.net`, sans slash final ; chemin du fichier secret d’inscription (par défaut `./secrets/tailscale-authkey`) |
 | `ACME_EMAIL`, `BEEP_VERSION` | Adresse d’exploitation réelle et identifiant de release stable, par exemple `v1.0.0` ; ni `dev` ni `latest` |
 | Mots de passe PostgreSQL, `ADMIN_API_TOKEN`, clés TOTP | Secrets générés par `make init` ; conserver ceux d’une installation existante |
@@ -30,7 +30,7 @@ Renseigner dans `.env.production` :
 
 Adapter aussi `SIGNUP_MODE`, les contacts de support, les fournisseurs OAuth et `DOMAINS_CNAME_TARGET` aux fonctions utilisées. Les vérifications locales ne valident pas les accès aux fournisseurs : effectuer leurs recettes avec les comptes réels.
 
-Le modèle définit `DOMAINS_CNAME_TARGET=beep.click` pour les domaines personnalisés. Les callbacks OAuth sont `https://beep.click/v1/auth/oauth/google/callback` et `https://beep.click/v1/auth/oauth/github/callback`. Le développement local utilise toujours `.env.example` et `beep.localhost`.
+Le modèle définit `DOMAINS_CNAME_TARGET=beepclick.app` pour les domaines personnalisés. Les callbacks OAuth sont `https://beepclick.app/v1/auth/oauth/google/callback` et `https://beepclick.app/v1/auth/oauth/github/callback`. Le développement local utilise toujours `.env.example` et `beep.localhost`.
 
 Le fichier de secrets est ignoré par Git et exclu du contexte Docker. L’URL publique, non secrète, est transmise au build du site pour que les pages pré-générées utilisent le même domaine que le rendu serveur.
 
@@ -66,10 +66,10 @@ Les pages publiques FR/EN ont des titres et descriptions localisés, une canoniq
 `/sitemap.xml` liste les pages publiques et les articles FR/EN publiés. Les articles sont chargés à la requête : si l’API éditoriale est indisponible, les pages fixes restent listées. Les dates de publication réelles sont utilisées, sans date de modification artificielle. `/robots.txt` annonce ce sitemap. Les routes de compte, de connexion et de signalement renvoient `X-Robots-Tag: noindex, nofollow` ; l’espace client et le back-office ont aussi une métadonnée `noindex`. Les pages bio clientes conservent leurs réglages SEO existants.
 
 ```bash
-curl -fsS https://beep.click/robots.txt
-curl -fsS https://beep.click/sitemap.xml
-curl -fsS https://beep.click/en/features
-curl -sSI https://beep.click/login
+curl -fsS https://beepclick.app/robots.txt
+curl -fsS https://beepclick.app/sitemap.xml
+curl -fsS https://beepclick.app/en/features
+curl -sSI https://beepclick.app/login
 ```
 
 Vérifier que les canoniques, les `hreflang`, les URL du sitemap et les aperçus de partage utilisent le domaine HTTPS final. Soumettre ensuite le sitemap dans Google Search Console et Bing Webmaster Tools. Un changement de domaine nécessite de reconstruire l’image du site.

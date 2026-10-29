@@ -65,7 +65,7 @@ class DevSeeder implements ApplicationRunner {
       staff.insert(new StaffUser(UUID.randomUUID(), address, hasher.hash(password), Role.SUPERADMIN, cipher.encrypt(secret), true, clock.instant()));
       log.info("compte staff de démo créé : {} / {}", address, password);
       log.info("secret TOTP (à enregistrer maintenant) : {}", secret);
-      log.info("otpauth : {}", Totp.otpauthUri("Beep Back office", address.value(), secret));
+      log.info("otpauth : {}", Totp.otpauthUri("BeepClick Back office", address.value(), secret));
     }
     System.exit(SpringApplication.exit(context, () -> 0));
   }

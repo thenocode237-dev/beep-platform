@@ -1,11 +1,11 @@
 const fr = {
   meta: {
-    title: "Beep — Des liens plus intelligents pour plus de conversions",
+    title: "BeepClick — Des liens plus intelligents pour plus de conversions",
     description:
       "Liens courts, deeplinks, QR codes et link in bio, mesurés du clic jusqu'à la vente. Pensé pour le mobile et les connexions instables.",
   },
   common: { skip: "Aller au contenu", language: "Langue", loading: "Chargement…", soon: "Bientôt" },
-  nav: { login: "Se connecter", signup: "Commencer", home: "Accueil Beep" },
+  nav: { login: "Se connecter", signup: "Commencer", home: "Accueil BeepClick" },
   home: {
     h1: "Des liens plus intelligents pour plus de conversions",
     sub: "Liens courts, deeplinks, QR codes et link in bio, mesurés du clic jusqu'à la vente. Léger sur mobile, fiable même quand la connexion ne l'est pas.",
@@ -48,7 +48,7 @@ const fr = {
       hasAccount: "Déjà un compte ?",
       loginLink: "Se connecter",
       doneTitle: "Vérifiez votre boîte mail",
-      done: "Si votre adresse a été invitée à la bêta, un lien de confirmation vient de partir (valable 24 heures). Sinon, un e-mail vous explique comment rejoindre Beep.",
+      done: "Si votre adresse a été invitée à la bêta, un lien de confirmation vient de partir (valable 24 heures). Sinon, un e-mail vous explique comment rejoindre BeepClick.",
     },
     login: {
       title: "Content de vous revoir",

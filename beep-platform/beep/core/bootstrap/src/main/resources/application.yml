@@ -55,7 +55,7 @@ management:
 
 beep:
   public-url: ${BEEP_PUBLIC_URL:http://beep.localhost}
-  mail-from: ${MAIL_FROM:Beep <no-reply@beep.localhost>}
+  mail-from: ${MAIL_FROM:BeepClick <no-reply@beep.localhost>}
   totp-encryption-key: ${TOTP_ENCRYPTION_KEY:}
   admin-tokens: ${ADMIN_API_TOKEN:},${ADMIN_API_TOKEN_NEXT:}
   signup-mode: ${SIGNUP_MODE:invite}          # bêta privée : inscription sur invitation (open : inscription libre)
@@ -79,7 +79,7 @@ beep:
     cname-target: ${DOMAINS_CNAME_TARGET:}          # cible CNAME demandée aux clients (vide : domains.<site>)
     ips: ${DOMAINS_IPS:}                             # adresses A acceptées en alternative au CNAME (séparées par des virgules)
     resolver: ${DOMAINS_DNS_RESOLVER:}               # serveur DNS interrogé pour la vérification (vide : celui du système)
-    main-hosts: ${BEEP_MAIN_HOSTS:localhost,127.0.0.1,core}   # noms qui désignent le domaine de Beep, en plus du site public
+    main-hosts: ${BEEP_MAIN_HOSTS:localhost,127.0.0.1,core}   # noms qui désignent le domaine de BeepClick, en plus du site public
   billing:
     provider: ${PAYMENT_PROVIDER:sandbox}       # sandbox (dev, sans réseau) | notchpay (Mobile Money MTN/Orange + cartes)
     sandbox-secret: ${PAYMENT_SANDBOX_SECRET:sandbox-secret}
@@ -90,7 +90,7 @@ beep:
     vat-rates: ${BILLING_VAT_RATES:CM=1925,GA=1800}   # points de base par pays : à valider avec un expert-comptable
     default-country: ${BILLING_DEFAULT_COUNTRY:CM}
     seller:
-      name: ${BILLING_SELLER_NAME:Beep}
+      name: ${BILLING_SELLER_NAME:BeepClick}
       address: ${BILLING_SELLER_ADDRESS:}
       tax-id: ${BILLING_SELLER_TAX_ID:}
     reconcile-interval: ${BILLING_RECONCILE_INTERVAL:PT1M}

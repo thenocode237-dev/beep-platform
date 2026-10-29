@@ -11,7 +11,7 @@ public class PostgresDomainRouterAdapter implements DomainRouterPort {
   private final DSLContext dsl;
   private final Set<String> mainHosts;
 
-  /** `mainHosts` : noms qui désignent le domaine de Beep (site public, localhost, noms de service internes). */
+  /** `mainHosts` : noms qui désignent le domaine de BeepClick (site public, localhost, noms de service internes). */
   public PostgresDomainRouterAdapter(DSLContext dsl, Set<String> mainHosts) {
     this.dsl = dsl;
     this.mainHosts = Set.copyOf(mainHosts);

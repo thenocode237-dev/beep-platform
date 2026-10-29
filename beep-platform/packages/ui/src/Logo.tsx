@@ -1,10 +1,9 @@
 /**
- * Le signal Beep : un point émetteur et deux paires d'ondes symétriques.
- * Rayons 7,3 · 19,1 · 30,9 (rapport φ), trait 6,18 (10/φ), ouverture 360°/φ³.
+ * Le logo BeepClick : un point émetteur relié à trois destinations.
  */
 export function Logo({
   href = "/",
-  label = "Beep",
+  label = "BeepClick",
   variant = "full",
 }: {
   href?: string;
@@ -17,20 +16,22 @@ export function Logo({
         className="bp-logo__mark"
         width="34"
         height="34"
-        viewBox="14 14 72 72"
+        viewBox="192 90 700 700"
         fill="none"
         aria-hidden="true"
       >
         <path
-          d="M64.10 37.11A19.1 19.1 0 0 1 64.10 62.89M35.90 62.89A19.1 19.1 0 0 1 35.90 37.11M72.81 29.15A30.9 30.9 0 0 1 72.81 70.85M27.19 70.85A30.9 30.9 0 0 1 27.19 29.15"
+          d="M329 440L543 280M329 440H669M329 440L543 600"
           stroke="currentColor"
-          strokeWidth="6.18"
-          strokeLinecap="round"
+          strokeWidth="46"
         />
-        <circle cx="50" cy="50" r="7.3" fill="var(--color-brand-signature)" />
+        <circle cx="623" cy="220" r="92" stroke="currentColor" strokeWidth="46" />
+        <circle cx="769" cy="440" r="92" stroke="currentColor" strokeWidth="46" />
+        <circle cx="623" cy="660" r="92" stroke="currentColor" strokeWidth="46" />
+        <circle cx="329" cy="440" r="128" fill="currentColor" />
       </svg>}
       <span aria-hidden="true">
-        beep{variant === "full" && <span className="bp-logo__dot">.</span>}
+        BeepClick
       </span>
     </a>
   );

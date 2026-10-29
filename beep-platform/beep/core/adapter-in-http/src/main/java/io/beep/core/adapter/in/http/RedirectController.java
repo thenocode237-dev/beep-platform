@@ -64,7 +64,7 @@ public class RedirectController {
     };
   }
 
-  /** Racine d'un domaine personnalisé : redirection choisie par le client, sinon la page 404 de Beep. (Sur le domaine de Beep, `/` appartient au site.) */
+  /** Racine d'un domaine personnalisé : redirection choisie par le client, sinon la page 404 de BeepClick. (Sur le domaine de BeepClick, `/` appartient au site.) */
   @GetMapping("/")
   ResponseEntity<?> root(HttpServletRequest req) {
     DomainRouterPort.Route route = router.route(req.getServerName());

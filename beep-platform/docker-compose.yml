@@ -85,7 +85,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_AUTH: ${SMTP_AUTH:-false}
       SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
-      MAIL_FROM: ${MAIL_FROM:-Beep <no-reply@beep.localhost>}
+      MAIL_FROM: ${MAIL_FROM:-BeepClick <no-reply@beep.localhost>}
       SIGNUP_MODE: ${SIGNUP_MODE:-invite}               # bêta privée : inscription sur invitation (open : libre)
       GEOIP_DB_PATH: ${GEOIP_DB_PATH:-}                  # base MaxMind Country (.mmdb) montée en lecture seule ; vide = pays inconnus
       OAUTH_GOOGLE_CLIENT_ID: ${OAUTH_GOOGLE_CLIENT_ID:-}
@@ -100,10 +100,10 @@ services:
       NOTCHPAY_HASH_KEY: ${NOTCHPAY_HASH_KEY:-}
       BILLING_VAT_RATES: ${BILLING_VAT_RATES:-CM=1925,GA=1800}
       BILLING_DEFAULT_COUNTRY: ${BILLING_DEFAULT_COUNTRY:-CM}
-      BILLING_SELLER_NAME: ${BILLING_SELLER_NAME:-Beep}
+      BILLING_SELLER_NAME: ${BILLING_SELLER_NAME:-BeepClick}
       BILLING_SELLER_ADDRESS: ${BILLING_SELLER_ADDRESS:-}
       BILLING_SELLER_TAX_ID: ${BILLING_SELLER_TAX_ID:-}
-      DOMAINS_CNAME_TARGET: ${DOMAINS_CNAME_TARGET:-${BEEP_DOMAIN:-beep.click}}
+      DOMAINS_CNAME_TARGET: ${DOMAINS_CNAME_TARGET:-${BEEP_DOMAIN:-beepclick.app}}
       DOMAINS_ALLOWED_IPS: ${DOMAINS_ALLOWED_IPS:-}
       DOMAINS_DNS_RESOLVER: ${DOMAINS_DNS_RESOLVER:-}
       WEB_RISK_API_KEY: ${WEB_RISK_API_KEY:-}
@@ -154,7 +154,7 @@ services:
       context: .
       dockerfile: beep/web/Dockerfile
       args:
-        BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL:-https://beep.click}
+        BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL:-https://beepclick.app}
     environment:
       CORE_INTERNAL_URL: http://core:8080/v1                 # rendu serveur (SSR)
       BEEP_PUBLIC_URL: ${BEEP_PUBLIC_URL}

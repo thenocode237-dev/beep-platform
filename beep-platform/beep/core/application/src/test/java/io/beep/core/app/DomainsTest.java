@@ -60,13 +60,13 @@ class DomainsTest {
   // ---- Nom d'hôte ----
   @Test
   void hostnamesAreNormalizedAndStrictlyValidated() {
-    assertThat(Hostname.parse(" HTTPS://Go.Acme.Co/ ", "beep.click")).isEqualTo("go.acme.co");
+    assertThat(Hostname.parse(" HTTPS://Go.Acme.Co/ ", "beepclick.app")).isEqualTo("go.acme.co");
     for (String bad : new String[] {"", "localhost", "10.0.0.1", "acme", "-a.co", "a..co", "*.acme.co", "acme.co:8080", "ac me.co", "a.123", "x".repeat(64) + ".co"}) {
-      assertThatThrownBy(() -> Hostname.parse(bad, "beep.click")).as(bad).hasMessage("invalid_hostname");
+      assertThatThrownBy(() -> Hostname.parse(bad, "beepclick.app")).as(bad).hasMessage("invalid_hostname");
     }
-    assertThatThrownBy(() -> Hostname.parse("beep.click", "beep.click")).hasMessage("reserved_hostname");
-    assertThatThrownBy(() -> Hostname.parse("dashboard.beep.click", "beep.click")).hasMessage("reserved_hostname");
-    assertThatThrownBy(() -> Hostname.parse("app.beep.localhost", "beep.click")).hasMessage("reserved_hostname");
+    assertThatThrownBy(() -> Hostname.parse("beepclick.app", "beepclick.app")).hasMessage("reserved_hostname");
+    assertThatThrownBy(() -> Hostname.parse("dashboard.beepclick.app", "beepclick.app")).hasMessage("reserved_hostname");
+    assertThatThrownBy(() -> Hostname.parse("app.beep.localhost", "beepclick.app")).hasMessage("reserved_hostname");
   }
 
   // ---- Cycle de vie ----
@@ -179,7 +179,7 @@ class DomainsTest {
     CustomDomain d = verified(uc.add(ada, "go.acme.co"));
     Link l = create.execute(ada, new CreateLinkUseCase.Command("https://shop.example", "promo", null, d.id().toString()));
     assertThat(p.site.shortUrl(l)).isEqualTo("https://go.acme.co/promo");
-    assertThat(p.site.shortUrl(create.execute(ada, new CreateLinkUseCase.Command("https://shop.example", "plain", null, "main")))).isEqualTo("https://beep.click/plain");
+    assertThat(p.site.shortUrl(create.execute(ada, new CreateLinkUseCase.Command("https://shop.example", "plain", null, "main")))).isEqualTo("https://beepclick.app/plain");
   }
 
   // ---- Redirection par espace de noms ----
@@ -191,7 +191,7 @@ class DomainsTest {
     Visit visit = new Visit("203.0.113.1", "Mozilla/5.0", null, "fr", null, true, p.now);
 
     assertThat(p.resolveSlug.execute("promo", d.id(), visit)).isEqualTo(new Outcome.Redirect("https://shop.example/custom"));
-    assertThat(p.resolveSlug.execute("promo", visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine de Beep
+    assertThat(p.resolveSlug.execute("promo", visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine de BeepClick
     assertThat(p.resolveSlug.execute("only-main", d.id(), visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine du client
     assertThat(p.resolveSlug.execute("only-main", visit)).isEqualTo(new Outcome.Redirect("https://shop.example/main"));
   }
@@ -203,7 +203,7 @@ class DomainsTest {
     CustomDomain d = uc.add(ada, "go.acme.co");
     assertThat(tls.allowed("go.acme.co")).isFalse(); // DNS non vérifié
     assertThat(tls.allowed("inconnu.acme.co")).isFalse();
-    assertThat(tls.allowed("beep.click")).isFalse(); // le domaine de Beep n'est pas un domaine personnalisé
+    assertThat(tls.allowed("beepclick.app")).isFalse(); // le domaine de BeepClick n'est pas un domaine personnalisé
     assertThat(tls.allowed(null)).isFalse();
     assertThat(tls.allowed("x".repeat(300))).isFalse();
 
@@ -257,7 +257,7 @@ class DomainsTest {
   /** Routeur de test : lit directement les domaines en mémoire. */
   class Router implements DomainRouterPort {
     public Route route(String host) {
-      if ("beep.click".equals(host)) return Route.MAIN;
+      if ("beepclick.app".equals(host)) return Route.MAIN;
       return domains.findByHostname(host).map(d -> {
         boolean suspended = p.workspaceRepo.findById(d.workspaceId()).map(w -> w.suspended()).orElse(false);
         boolean blocked = d.blocked() || suspended;

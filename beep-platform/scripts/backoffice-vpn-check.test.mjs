@@ -32,7 +32,7 @@ test("rejects an offline, renamed or mismatched node", () => {
     (input) => { input.status.BackendState = "NeedsLogin"; },
     (input) => { input.status.Self.Online = false; },
     (input) => { input.status.Self.DNSName = "beep-admin-1.tail123.ts.net."; },
-    (input) => { input.origin = "https://dashboard.beep.click"; },
+    (input) => { input.origin = "https://dashboard.beepclick.app"; },
   ]) {
     const input = state();
     mutate(input);

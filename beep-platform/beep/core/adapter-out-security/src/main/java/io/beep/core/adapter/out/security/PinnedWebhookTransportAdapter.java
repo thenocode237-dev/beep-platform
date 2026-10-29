@@ -11,7 +11,7 @@ public class PinnedWebhookTransportAdapter implements WebhookTransportPort {
   public record Postback(String url,String body) {}
   /** Meta server events and Google GA4 server events. No IP, e-mail or user agent is forwarded. */
   public static Postback postbackPayload(String provider,String config,String payload)throws Exception{
-    var json=new com.fasterxml.jackson.databind.ObjectMapper();if(provider.equals("slack")){var e=json.readTree(payload);return new Postback(config,json.writeValueAsString(Map.of("text","Beep · "+e.path("type").asText()+" · "+e.path("id").asText())));}
+    var json=new com.fasterxml.jackson.databind.ObjectMapper();if(provider.equals("slack")){var e=json.readTree(payload);return new Postback(config,json.writeValueAsString(Map.of("text","BeepClick · "+e.path("type").asText()+" · "+e.path("id").asText())));}
     var event=json.readTree(payload);var data=event.path("data");String[] c=config.split("\n",-1);String visitor=data.path("visitor").asText("");if(visitor.isBlank()||visitor.equals("null"))throw new IOException("consenting visitor required");
     String id=event.path("id").asText(),name=data.path("name").asText();long seconds=java.time.Instant.parse(data.path("at").asText()).getEpochSecond();String url;Object body;
     if(provider.equals("meta")){
@@ -43,7 +43,7 @@ public class PinnedWebhookTransportAdapter implements WebhookTransportPort {
       try(SSLSocket tls=(SSLSocket)((SSLSocketFactory)SSLSocketFactory.getDefault()).createSocket(tcp,u.getHost(),443,true)){
         var params=tls.getSSLParameters();params.setEndpointIdentificationAlgorithm("HTTPS");params.setServerNames(List.of(new SNIHostName(u.getHost())));tls.setSSLParameters(params);tls.setSoTimeout(5000);tls.startHandshake();
         String path=(u.getRawPath()==null||u.getRawPath().isEmpty()?"/":u.getRawPath())+(u.getRawQuery()==null?"":"?"+u.getRawQuery());
-        var out=tls.getOutputStream();out.write(("POST "+path+" HTTP/1.1\r\nHost: "+u.getHost()+"\r\nContent-Type: application/json\r\nUser-Agent: Beep-Webhooks/1\r\nBeep-Signature: "+signature+"\r\nBeep-Delivery: "+deliveryId+"\r\nContent-Length: "+body.length+"\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));out.write(body);out.flush();
+        var out=tls.getOutputStream();out.write(("POST "+path+" HTTP/1.1\r\nHost: "+u.getHost()+"\r\nContent-Type: application/json\r\nUser-Agent: BeepClick-Webhooks/1\r\nBeep-Signature: "+signature+"\r\nBeep-Delivery: "+deliveryId+"\r\nContent-Length: "+body.length+"\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));out.write(body);out.flush();
         var input=tls.getInputStream();var line=new ByteArrayOutputStream();for(int i=0;i<4096;i++){int ch=input.read();if(ch<0||ch=='\n')break;line.write(ch);}return statusLine(line.toString(StandardCharsets.US_ASCII));
       }
     }

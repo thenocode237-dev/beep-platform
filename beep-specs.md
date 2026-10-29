@@ -1,11 +1,11 @@
-# Beep — Spécifications complètes
+# BeepClick — Spécifications complètes
 
 Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, QR codes, link in bio, suivi de conversion, analytics, API/webhooks**, avec un **back office** (staff) exposé en sous-domaine.
 
 > Statut : v1.1 du document (PostgreSQL + Java) · Périmètre : `beep` (plateforme) + `backoffice` (administration)
-> Domaine de référence dans ce document : `beep.click` (en local : `beep.localhost`).
+> Domaine de référence dans ce document : `beepclick.app` (en local : `beep.localhost`).
 
-> Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de Beep. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
+> Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de BeepClick. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
 
 ---
 
@@ -15,11 +15,11 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 |---|---|---|
 | H1 | Base de données | **PostgreSQL 16 livré dans le Compose** (un serveur, deux bases `beep` et `backoffice`, deux rôles sans droits croisés). Choix retenu pour la croissance : concurrence d'écriture, réplication, PITR, partitionnement des événements. Les accès restent derrière des *ports* (le domaine ignore la base). |
 | H2 | Deux projets | `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff). Chacun a **sa propre base** et son propre code en Clean Architecture. |
-| H3 | Même domaine | `beep.click` = site + espace client + API + redirections. `dashboard.beep.click` = back office. |
+| H3 | Même domaine | `beepclick.app` = site + espace client + API + redirections. `dashboard.beepclick.app` = back office. |
 | H4 | Stack | Backend **Java 21 + Spring Boot 3** (Maven multi-modules, jOOQ, Flyway), front **Next.js** (site, espace client **et** back office), reverse proxy **Caddy**, **Docker Compose**. Le domaine et les cas d'usage restent en Java pur, sans dépendance au framework. |
-| H5 | « Radar » | Le module « Radar » de Taap.it n'est pas documenté publiquement. Dans Beep, **Radar = flux d'activité temps réel + alertes** (pic de trafic, lien cassé, domaine en erreur). À confirmer. |
+| H5 | « Radar » | Le module « Radar » de Taap.it n'est pas documenté publiquement. Dans BeepClick, **Radar = flux d'activité temps réel + alertes** (pic de trafic, lien cassé, domaine en erreur). À confirmer. |
 | H6 | Tarifs | Offres **Starter (gratuit)**, **Pro 4 999 FCFA/mois** et **Elite 14 999 FCFA/mois**, fixées par le porteur du projet. Quotas inspirés de la grille publique de Taap.it (5 liens/QR/1 page en gratuit, 50 au total en entrée de gamme, 500 créations par mois en haut de gamme, 10 domaines, 15 membres). Prix supposés **TTC** ; à valider par une étude de coûts (infrastructure, frais de l'agrégateur de paiement). |
-| H7 | Propriété intellectuelle | Beep reprend le **périmètre fonctionnel** de ce type de plateforme, pas son code, ses textes, ses visuels ni sa marque. Vérifier la disponibilité du nom « Beep » (marque et domaine) avant lancement. |
+| H7 | Propriété intellectuelle | BeepClick reprend le **périmètre fonctionnel** de ce type de plateforme, pas son code, ses textes, ses visuels ni sa marque. Vérifier la disponibilité du nom « BeepClick » (marque et domaine) avant lancement. |
 | H8 | Marché cible | Offres en **FCFA (XAF)** : on suppose un lancement en **Afrique centrale** (Cameroun, Gabon…). Conséquences retenues : **Mobile Money** (MTN MoMo, Orange Money) comme moyen de paiement principal, abonnements prépayés, support **WhatsApp**, pages légères pour connexions mobiles instables, redirections servies au plus près des utilisateurs (CDN/edge), conformité aux lois locales de protection des données à valider avec un juriste. |
 
 ---
@@ -52,7 +52,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Export CSV/JSON et suppression des données (RGPD).
 
 ### 2.2 Liens courts (Short links)
-- Création en un champ : URL de destination → lien `beep.click/{slug}`.
+- Création en un champ : URL de destination → lien `beepclick.app/{slug}`.
 - Slug personnalisé, génération automatique (base62, 7 caractères), liste de slugs réservés (§8.4).
 - Titre, notes, tags, dossier.
 - Règles avancées : expiration (date / nombre de clics), mot de passe, rotation A/B de destinations (répartition pondérée), routage par pays, par langue, par OS/appareil.
@@ -64,10 +64,10 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 ### 2.3 Deeplinks
 - Un lien vers un contenu d'application (YouTube, Instagram, TikTok, Spotify, Amazon, etc.) **ouvre l'app native** au lieu du navigateur.
 - **Contournement des navigateurs intégrés** (webviews Instagram, Facebook, TikTok, LinkedIn…) : page de bascule + schémas d'URL / intents Android adaptés.
-- **Catalogue d'applications** géré depuis le back office : motif d'URL reconnu, schéma iOS, intent Android, repli web. Beep détecte l'app à partir de l'URL de destination.
+- **Catalogue d'applications** géré depuis le back office : motif d'URL reconnu, schéma iOS, intent Android, repli web. BeepClick détecte l'app à partir de l'URL de destination.
 - Repli intelligent : app non installée → store ou version web selon la règle.
 - Aperçu « comment le lien se comportera » (simulateur iOS/Android/desktop) dans l'espace client.
-- Extension Chrome « Ajouter à Beep » : création d'un deeplink en un clic depuis la page en cours (phase 4).
+- Extension Chrome « Ajouter à BeepClick » : création d'un deeplink en un clic depuis la page en cours (phase 4).
 
 ### 2.4 Onelink
 - **Un seul lien, toutes les plateformes** : destinations distinctes pour iOS, Android, desktop, avec repli.
@@ -81,24 +81,24 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Statut en temps réel (DNS ok, TLS ok, erreur) visible côté client et côté back office.
 
 ### 2.6 QR codes
-- Types : **dynamique** (pointe vers un lien Beep, destination modifiable sans réimprimer) et **statique** (URL, texte, Wi-Fi, vCard, e-mail, SMS).
+- Types : **dynamique** (pointe vers un lien BeepClick, destination modifiable sans réimprimer) et **statique** (URL, texte, Wi-Fi, vCard, e-mail, SMS).
 - Personnalisation : couleurs, dégradés, forme des modules et des yeux, logo central, cadre avec appel à l'action, niveau de correction d'erreur.
 - Export **SVG, PNG (haute résolution), PDF** prêts à imprimer.
 - Statistiques de scan (mêmes dimensions que les liens).
 - Génération en masse depuis un CSV (Elite). Modèles de style enregistrables.
 
 ### 2.7 Link in bio
-- Page publique `beep.click/{slug}` (ou domaine perso) : hub entièrement personnalisable.
+- Page publique `beepclick.app/{slug}` (ou domaine perso) : hub entièrement personnalisable.
 - Blocs : lien, bouton, titre, texte, image, galerie, vidéo (YouTube, Vimeo, TikTok), audio (Spotify, SoundCloud), réseaux sociaux (icônes), capture d'e-mail, formulaire de contact, carte, compte à rebours, FAQ, séparateur, produit.
 - Blocs **programmables** : affichage entre deux dates, par pays, par appareil.
 - Thèmes (clair/sombre, polices, couleurs, arrière-plans image/dégradé/vidéo), CSS personnalisé (Elite).
 - SEO : titre, description, image Open Graph, `noindex` en option.
 - Rendu SSR + cache CDN ; score Lighthouse mobile cible ≥ 95.
-- Badge « Propulsé par Beep » retirable avec le plan Elite.
+- Badge « Propulsé par BeepClick » retirable avec le plan Elite.
 - Nombre de pages bio selon le plan.
 
 ### 2.8 Suivi de conversion (Conversion tracking)
-- **Identifiant de clic** propriétaire (`beep_cid`) ajouté à la destination et conservé dans un cookie first-party par le script Beep.
+- **Identifiant de clic** propriétaire (`beep_cid`) ajouté à la destination et conservé dans un cookie first-party par le script BeepClick.
 - **Script `beep.js`** (installation par une ligne) : pixel de suivi, capture du `beep_cid`, pages vues, mode sans cookie.
 - **Événements** : `lead`, `sale` (montant + devise), `signup`, `subscription`, `custom:*`. Envoi par :
   - navigateur (`beep('track','sale',{value:49,currency:'EUR'})`),
@@ -132,7 +132,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - **Paiements manuels** (virement, espèces) enregistrables par l'équipe finance depuis le back office.
 - Upgrade immédiat avec prorata, downgrade en fin de période.
 - Quotas appliqués par des **droits (entitlements)** ; les dépassements n'interrompent **jamais** les redirections (§6.4).
-- **TVA et factures** : factures PDF générées par Beep (numérotation séquentielle, mentions légales), TVA appliquée selon le pays du client (taux à valider avec un expert-comptable), envoi par e-mail.
+- **TVA et factures** : factures PDF générées par BeepClick (numérotation séquentielle, mentions légales), TVA appliquée selon le pays du client (taux à valider avec un expert-comptable), envoi par e-mail.
 - Codes promo, programme d'affiliation (§2.12) avec commissions versées par Mobile Money.
 
 ### 2.12 Site public et croissance
@@ -146,7 +146,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 
 ## 3. Périmètre fonctionnel — back office `backoffice`
 
-Accessible uniquement sur `dashboard.beep.click`, réservé au personnel.
+Accessible uniquement sur `dashboard.beepclick.app`, réservé au personnel.
 
 | Module | Fonctions |
 |---|---|
@@ -176,7 +176,7 @@ Accessible uniquement sur `dashboard.beep.click`, réservé au personnel.
                     ┌─────▼─────┐   TLS auto + on-demand TLS (domaines clients)
                     │   Caddy   │
                     └─┬───┬───┬─┘
-   beep.click       │   │   │      dashboard.beep.click
+   beepclick.app       │   │   │      dashboard.beepclick.app
         ┌─────────────┘   │   └─────►┌──────────────────────────┐
         ▼                 │          │ backoffice-web (Next.js) │
  ┌────────────┐   /v1/*, /{slug}     │ backoffice-api (Java)    │
@@ -267,13 +267,13 @@ Le contrat `beep-admin.openapi.yaml` est **la source de vérité** : l'interface
 
 | Hôte + chemin | Destination |
 |---|---|
-| `beep.click/`, `/pricing`, `/blog`, `/features/*`, `/docs`, `/roadmap`, `/changelog`, `/affiliates`, `/report`, `/login`, `/signup`, `/app/*`, `/legal/*`, `/_next/*` | `beep-web` (Next.js) |
-| `beep.click/v1/*`, `/healthz`, `/beep.js`, `/_b/*` | `beep-core` (API publique, script de suivi, collecte d'événements) |
-| `beep.click/{slug}` (tout le reste) | `beep-core` (redirection ou page bio) |
-| `beep.click/internal/*`, `/actuator/*` | **404** (jamais exposé) |
+| `beepclick.app/`, `/pricing`, `/blog`, `/features/*`, `/docs`, `/roadmap`, `/changelog`, `/affiliates`, `/report`, `/login`, `/signup`, `/app/*`, `/legal/*`, `/_next/*` | `beep-web` (Next.js) |
+| `beepclick.app/v1/*`, `/healthz`, `/beep.js`, `/_b/*` | `beep-core` (API publique, script de suivi, collecte d'événements) |
+| `beepclick.app/{slug}` (tout le reste) | `beep-core` (redirection ou page bio) |
+| `beepclick.app/internal/*`, `/actuator/*` | **404** (jamais exposé) |
 | `{domaine client}/*` (TLS à la demande) | `beep-core` |
-| `dashboard.beep.click/api/*` | `backoffice-api` (Java) |
-| `dashboard.beep.click/*` | `backoffice-web` (Next.js) |
+| `dashboard.beepclick.app/api/*` | `backoffice-api` (Java) |
+| `dashboard.beepclick.app/*` | `backoffice-web` (Next.js) |
 
 Les cookies de session sont **host-only** (pas d'attribut `Domain`) : une session du site ne donne aucun accès au back office, et inversement. `/healthz` est un simple contrôle de vivacité exposé sur le port applicatif (8080). Les endpoints Actuator (santé détaillée, métriques) tournent sur un **port de gestion séparé** (8090 pour `core` et `worker`, 8091 pour `backoffice-api`), jamais routé par Caddy.
 
@@ -846,7 +846,7 @@ release: lint test build ## Pipeline de release locale
 ```dotenv
 # Domaine (dev : beep.localhost ; le back office est sur dashboard.<domaine>)
 BEEP_DOMAIN=beep.localhost
-ACME_EMAIL=ops@beep.click
+ACME_EMAIL=ops@beepclick.app
 BEEP_VERSION=dev
 
 # PostgreSQL
@@ -917,7 +917,7 @@ Trois offres, inspirées de la structure de la grille publique de Taap.it (gratu
 | Création en masse (CSV) | — | — | ✔ |
 | Intégrations natives | — | Zapier / Make | Toutes (Shopify, WooCommerce, GA4, Meta Pixel, Slack…) |
 | Journal d'audit, CSS personnalisé | — | — | ✔ |
-| Badge « Propulsé par Beep » sur les pages bio | Obligatoire | Obligatoire | Retirable |
+| Badge « Propulsé par BeepClick » sur les pages bio | Obligatoire | Obligatoire | Retirable |
 | **Support** | Communauté + e-mail | **WhatsApp** | Prioritaire (WhatsApp / canal privé) + accompagnement à la prise en main |
 
 ¹ **Rétention** : « illimitée » concerne les agrégats (rollups, faible volumétrie), conservés tant que le compte est actif. Les événements bruts et les *customer insights* portent sur 13 mois maximum (§4.6). Starter : 30 jours.

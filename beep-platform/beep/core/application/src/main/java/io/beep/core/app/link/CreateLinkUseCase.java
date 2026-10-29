@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 public class CreateLinkUseCase {
   /**
-   * @param domain null : domaine par défaut du workspace (sinon celui de Beep) ; « main » : domaine de Beep ; sinon identifiant d'un domaine vérifié du workspace
+   * @param domain null : domaine par défaut du workspace (sinon celui de BeepClick) ; « main » : domaine de BeepClick ; sinon identifiant d'un domaine vérifié du workspace
    */
   public record Command(String destination, String slug, String title, String domain, LinkRulesCommand rules) {
     public Command(String destination, String slug, String title, String domain) {
@@ -63,7 +63,7 @@ public class CreateLinkUseCase {
     this(workspaces, workspaceRepository, links, tx, site, clock, null);
   }
 
-  /** `domains` : dépôt des domaines personnalisés ; null = fonction désactivée (tous les liens sur le domaine de Beep). */
+  /** `domains` : dépôt des domaines personnalisés ; null = fonction désactivée (tous les liens sur le domaine de BeepClick). */
   public CreateLinkUseCase(Workspaces workspaces, WorkspaceRepository workspaceRepository, LinkRepository links, TransactionPort tx, PublicSite site, Clock clock,
       CustomDomainRepository domains) {
     this.domains = domains;

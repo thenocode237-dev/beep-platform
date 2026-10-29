@@ -193,7 +193,7 @@ final class PublicPages {
   String notFound(String lang) {
     boolean en = "en".equals(lang);
     return simple(lang, en ? "Link not found" : "Lien introuvable", en ? "This link doesn't exist or has been removed." : "Ce lien n'existe pas ou a été supprimé.",
-        en ? "Discover Beep" : "Découvrir Beep");
+        en ? "Discover BeepClick" : "Découvrir BeepClick");
   }
 
   String unavailable(String lang) {
@@ -201,13 +201,13 @@ final class PublicPages {
     return simple(lang, en ? "Link unavailable" : "Lien indisponible",
         en ? "This link has been disabled and no longer redirects. If you think this is a mistake, contact its owner."
             : "Ce lien a été désactivé et ne redirige plus. Si vous pensez qu'il s'agit d'une erreur, contactez la personne qui l'a partagé.",
-        en ? "Discover Beep" : "Découvrir Beep");
+        en ? "Discover BeepClick" : "Découvrir BeepClick");
   }
 
   String expired(String lang) {
     boolean en = "en".equals(lang);
     return simple(lang, en ? "Link expired" : "Lien expiré", en ? "This link was only valid until a set date and no longer redirects." : "Ce lien n'était valable que jusqu'à une date donnée et ne redirige plus.",
-        en ? "Discover Beep" : "Découvrir Beep");
+        en ? "Discover BeepClick" : "Découvrir BeepClick");
   }
 
   /** Formulaire de mot de passe : sans script, envoi vers la même adresse (POST). */
@@ -215,7 +215,7 @@ final class PublicPages {
     boolean en = "en".equals(lang);
     String title = en ? "Protected link" : "Lien protégé";
     return "<!doctype html><html lang=\"" + lang + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-        + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · Beep</title><style>" + PAGE_CSS
+        + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · BeepClick</title><style>" + PAGE_CSS
         + "form{display:grid;gap:.75rem;text-align:left}label{font-weight:600}input{min-height:48px;padding:0 .75rem;border-radius:8px;border:1px solid #8F8878;font:inherit;background:#fff;color:#2B2922}"
         + "button{min-height:48px;border:0;border-radius:8px;background:#F0CF65;color:#2B2922;font:inherit;font-weight:600;cursor:pointer}"
         + ".err{color:#9B2C1B;font-weight:600;margin:0 0 .75rem}</style></head><body><main><div class=\"mark\">beep<span>.</span></div><h1>" + esc(title) + "</h1><p>"
@@ -239,7 +239,7 @@ final class PublicPages {
     String inApp = d.inApp() ? browserName(d.browser()) : null;
     StringBuilder h = new StringBuilder(2048);
     h.append("<!doctype html><html lang=\"").append(lang).append("\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">")
-        .append("<meta name=\"robots\" content=\"noindex\"><title>").append(esc(en ? "Opening " : "Ouverture de ")).append(esc(app)).append(" · Beep</title><style>").append(PAGE_CSS)
+        .append("<meta name=\"robots\" content=\"noindex\"><title>").append(esc(en ? "Opening " : "Ouverture de ")).append(esc(app)).append(" · BeepClick</title><style>").append(PAGE_CSS)
         .append("a.alt{background:transparent;color:inherit;border:1px solid #8F8878;margin-top:.75rem}.help{background:rgba(240,207,101,.25);border-radius:8px;padding:.75rem 1rem;margin:0 0 1.25rem;text-align:left}")
         .append("</style></head><body><main><div class=\"mark\">beep<span>.</span></div><h1>").append(esc(en ? "Open in " + app : "Ouvrir dans " + app)).append("</h1>");
     if (inApp != null) {
@@ -303,7 +303,7 @@ final class PublicPages {
 
   private String simple(String lang, String title, String text, String cta) {
     return "<!doctype html><html lang=\"" + lang + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-        + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · Beep</title><style>"
+        + "<meta name=\"robots\" content=\"noindex\"><title>" + esc(title) + " · BeepClick</title><style>"
         + "body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#FFFFFF;color:#192B46;font:16px/1.6 system-ui,sans-serif;padding:1rem}"
         + "main{max-width:28rem;text-align:center}h1{font-size:1.6rem;margin:0 0 .5rem}p{color:#4C607D;margin:0 0 1.5rem}"
         + "a{display:inline-flex;align-items:center;min-height:48px;padding:0 1.25rem;border-radius:8px;background:#2457D6;color:#fff;text-decoration:none;font-weight:600}"

@@ -43,9 +43,9 @@ class QrDomainTest {
   void dynamicCodesEncodeTheirShortUrlAndStaticCodesTheirContent() {
     Instant now = Instant.parse("2026-01-01T00:00:00Z");
     QrCode dyn = QrCode.dynamic(UUID.randomUUID(), UUID.randomUUID(), "Ab3dEf9h", UUID.randomUUID(), QrStyle.DEFAULT, null, now);
-    assertThat(dyn.encodedValue("https://beep.click/")).isEqualTo("https://beep.click/q/Ab3dEf9h");
+    assertThat(dyn.encodedValue("https://beepclick.app/")).isEqualTo("https://beepclick.app/q/Ab3dEf9h");
     QrCode fixed = QrCode.fixed(UUID.randomUUID(), UUID.randomUUID(), QrContent.of(QrContent.Type.TEXT, Map.of("text", "Bonjour")), QrStyle.DEFAULT, "t", now);
-    assertThat(fixed.encodedValue("https://beep.click")).isEqualTo("Bonjour");
+    assertThat(fixed.encodedValue("https://beepclick.app")).isEqualTo("Bonjour");
     assertThatThrownBy(() -> dyn.edit(null, null, QrStyle.DEFAULT, null, now)).hasMessage("invalid_qr");
   }
 }

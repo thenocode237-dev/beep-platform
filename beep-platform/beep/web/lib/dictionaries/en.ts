@@ -2,11 +2,11 @@ import type { Dict } from "./fr";
 
 const en: Dict = {
   meta: {
-    title: "Beep — Smarter links for more conversions",
+    title: "BeepClick — Smarter links for more conversions",
     description: "Short links, deeplinks, QR codes and link in bio, measured from click to sale. Built for mobile and unreliable connections.",
   },
   common: { skip: "Skip to content", language: "Language", loading: "Loading…", soon: "Soon" },
-  nav: { login: "Log in", signup: "Get started", home: "Beep home" },
+  nav: { login: "Log in", signup: "Get started", home: "BeepClick home" },
   home: {
     h1: "Smarter links for more conversions",
     sub: "Short links, deeplinks, QR codes and link in bio, measured from click to sale. Light on mobile, dependable even when the network isn't.",
@@ -49,7 +49,7 @@ const en: Dict = {
       hasAccount: "Already have an account?",
       loginLink: "Log in",
       doneTitle: "Check your inbox",
-      done: "If your address was invited to the beta, a confirmation link is on its way (valid for 24 hours). Otherwise, an email explains how to join Beep.",
+      done: "If your address was invited to the beta, a confirmation link is on its way (valid for 24 hours). Otherwise, an email explains how to join BeepClick.",
     },
     login: {
       title: "Welcome back",

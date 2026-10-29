@@ -11,16 +11,16 @@ function production() {
   const key = Buffer.alloc(32, 7).toString("base64");
   return { services: {
     core: { image: "beep/core:v1.0.0", environment: {
-      BEEP_PUBLIC_URL: "https://beep.click", ADMIN_API_TOKEN: "service-secret",
+      BEEP_PUBLIC_URL: "https://beepclick.app", ADMIN_API_TOKEN: "service-secret",
       TOTP_ENCRYPTION_KEY: key, BEEP_CONVERSION_SECRET: key,
       PAYMENT_PROVIDER: "notchpay", NOTCHPAY_PUBLIC_KEY: "provider-key", NOTCHPAY_HASH_KEY: "provider-secret",
       BILLING_SELLER_ADDRESS: "Address", BILLING_SELLER_TAX_ID: "Registration",
       URL_SAFETY_PROVIDER: "web_risk", WEB_RISK_API_KEY: "safety-key",
-      SMTP_HOST: "smtp.example.com", MAIL_FROM: "Beep <hello@beep.click>",
+      SMTP_HOST: "smtp.example.com", MAIL_FROM: "BeepClick <hello@beepclick.app>",
     } },
-    web: { build: { args: { BEEP_PUBLIC_URL: "https://beep.click" } }, environment: {
-      BEEP_PUBLIC_URL: "https://beep.click", LEGAL_PUBLISHER: "Beep", LEGAL_ADDRESS: "Address",
-      LEGAL_REGISTRATION: "Registration", LEGAL_CONTACT: "hello@beep.click", LEGAL_HOST: "Host",
+    web: { build: { args: { BEEP_PUBLIC_URL: "https://beepclick.app" } }, environment: {
+      BEEP_PUBLIC_URL: "https://beepclick.app", LEGAL_PUBLISHER: "BeepClick", LEGAL_ADDRESS: "Address",
+      LEGAL_REGISTRATION: "Registration", LEGAL_CONTACT: "hello@beepclick.app", LEGAL_HOST: "Host",
     } },
     "backoffice-api": { networks: { admin: {}, backend: {}, db: {} }, environment: { BO_PUBLIC_URL: "https://beep-admin.tail123.ts.net", BO_ENCRYPTION_KEY: key } },
     "backoffice-web": { networks: { admin: {} } },
@@ -33,7 +33,7 @@ function production() {
         TS_EXTRA_ARGS: "--advertise-tags=tag:beep-admin --accept-routes=false --ssh=false",
       } },
     "backoffice-gateway": { network_mode: "service:backoffice-vpn" },
-    proxy: { networks: { edge: {} }, depends_on: { core: {}, web: {} }, environment: { BEEP_SITE: "beep.click", ACME_EMAIL: "ops@beep.click" } },
+    proxy: { networks: { edge: {} }, depends_on: { core: {}, web: {} }, environment: { BEEP_SITE: "beepclick.app", ACME_EMAIL: "ops@beepclick.app" } },
     postgres: { environment: { POSTGRES_USER: "postgres", POSTGRES_PASSWORD: "pg-secret", BEEP_DB_PASSWORD: "db-secret", BO_DB_PASSWORD: "bo-secret", WALG_S3_PREFIX: "s3://backups/pg" } },
     "pg-backup": { environment: { WALG_S3_PREFIX: "s3://backups/pg", AWS_ACCESS_KEY_ID: "backup-id", AWS_SECRET_ACCESS_KEY: "backup-secret" } },
   }, networks: { admin: { internal: true } }, secrets: { tailscale_authkey: { file: "/secrets/authkey" } } };
@@ -86,7 +86,7 @@ test("rejects backup services isolated from their remote storage", () => {
 
 test("rejects a public backoffice URL and VPN origin drift", () => {
   const config = production();
-  config.services["backoffice-api"].environment.BO_PUBLIC_URL = "https://dashboard.beep.click";
+  config.services["backoffice-api"].environment.BO_PUBLIC_URL = "https://dashboard.beepclick.app";
   const errors = validateProduction(config).join("\n");
   assert.match(errors, /beep-admin/);
   assert.match(errors, /même origine privée/);

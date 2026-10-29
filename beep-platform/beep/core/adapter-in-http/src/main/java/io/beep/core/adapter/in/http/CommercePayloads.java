@@ -6,7 +6,7 @@ import io.beep.core.domain.DomainException;
 import java.math.BigDecimal;
 import java.util.*;
 
-/** Normalizes only the payment amount and explicit Beep metadata, never customer details. */
+/** Normalizes only the payment amount and explicit BeepClick metadata, never customer details. */
 final class CommercePayloads {
   record Sale(String externalId,EventCommand command){}
   static Optional<Sale> normalize(String provider,JsonNode root){

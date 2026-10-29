@@ -41,7 +41,7 @@ class QrAndBioTest {
   void dynamicQrFollowsItsLinkAndCountsScansForBoth() {
     Link link = p.createLink.execute(ada, new CreateLinkUseCase.Command("example.com/menu", null, null));
     QrCode qr = p.qr.create(ada, dynamic(link));
-    assertThat(p.qr.get(ada, qr.id()).encoded()).isEqualTo("https://beep.click/q/" + qr.code());
+    assertThat(p.qr.get(ada, qr.id()).encoded()).isEqualTo("https://beepclick.app/q/" + qr.code());
 
     assertThat(p.resolveQr.execute(qr.code(), visit())).isEqualTo(new Outcome.Redirect("https://example.com/menu"));
     var e = p.sink.events.get(0);

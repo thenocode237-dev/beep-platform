@@ -23,7 +23,7 @@ const consoleEn: ConsoleDict = {
   },
   overview: {
     title: "Let's make the connection.",
-    sub: "Paste an address: Beep shortens it, measures it and makes it easy to share.",
+    sub: "Paste an address: BeepClick shortens it, measures it and makes it easy to share.",
     quickLabel: "Address to shorten",
     quickPlaceholder: "https://your-shop.com/new-collection",
     quickSubmit: "Create link",
@@ -55,7 +55,7 @@ const consoleEn: ConsoleDict = {
     empty: "No links yet. Create your first one by pasting an address.",
     noMatch: "No link matches this search.",
     last30: "clicks in 30 days",
-    disabled: "Disabled by the Beep team",
+    disabled: "Disabled by the BeepClick team",
     disabledText: "This link no longer redirects: it shows a warning page. Contact support if you think this is a mistake.",
     more: "More links",
     back: "All links",
@@ -91,7 +91,7 @@ const consoleEn: ConsoleDict = {
   },
   qr: {
     title: "Your QR codes",
-    sub: "Dynamic: follow a Beep link and change its destination without reprinting. Static: fixed content (Wi-Fi, business card…).",
+    sub: "Dynamic: follow a BeepClick link and change its destination without reprinting. Static: fixed content (Wi-Fi, business card…).",
     create: "New QR code",
     kind: "Type",
     dynamic: "Dynamic (follows a link, scans measured)",
@@ -172,7 +172,7 @@ const consoleEn: ConsoleDict = {
     network: "Unable to connect. Check your network and try again.",
     unauthorized: "Your session has expired: please log in again.",
     invalid_destination: "Invalid address: use a full web address (https://…).",
-    destination_loop: "A Beep link cannot redirect to Beep.",
+    destination_loop: "A BeepClick link cannot redirect to BeepClick.",
     invalid_slug: "Invalid path: 3 to 64 characters, letters, digits, - and _.",
     reserved_slug: "This path is reserved. Please choose another one.",
     slug_taken: "This path is already taken. Try a variation.",
@@ -195,7 +195,7 @@ const consoleEn: ConsoleDict = {
     invalid_credentials: "Sign-in refused.",
     oauth_failed: "Signing in with this provider failed. Please try again.",
     oauth_email_unverified: "This account has no verified email address with the provider.",
-    invite_required: "Beep is in private beta: this address hasn't been invited yet.",
+    invite_required: "BeepClick is in private beta: this address hasn't been invited yet.",
   },
   passwordless: {
     or: "or",
@@ -209,7 +209,7 @@ const consoleEn: ConsoleDict = {
     verifyTitle: "Two-step verification",
     verifySub: "Enter the code from your authenticator app.",
     verifySubmit: "Verify",
-    inviteNote: "Beep is in private beta: use the email address your invitation was sent to.",
+    inviteNote: "BeepClick is in private beta: use the email address your invitation was sent to.",
   },
 };
 

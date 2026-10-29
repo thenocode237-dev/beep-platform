@@ -81,7 +81,7 @@ export default async function Home({
 
         <section
           className="benefits"
-          aria-label={locale === "fr" ? "Pourquoi Beep" : "Why Beep"}
+          aria-label={locale === "fr" ? "Pourquoi BeepClick" : "Why BeepClick"}
         >
           <div className="bp-container">
             <ul className="benefit-grid">
@@ -120,12 +120,12 @@ export default async function Home({
                       <div className="mini-short">
                         <small>{c.shortFrom}</small>
                         <span className="mini-short__long">
-                          boutique.beep.click/collections/nouvelle-saison
+                          boutique.beepclick.app/collections/nouvelle-saison
                         </span>
                         <Icon name="arrow-right" size={18} />
                         <strong>
                           <Icon name="link" size={18} />
-                          beep.click/vous
+                          beepclick.app/vous
                         </strong>
                       </div>
                     )}

@@ -14,7 +14,7 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
         <div>
           <h1>Catalogue d'applications.</h1>
           <p>
-            Les applications que Beep sait ouvrir depuis un lien. Chaque publication crée une version et prend effet sans déploiement. Testez toujours sur des appareils réels
+            Les applications que BeepClick sait ouvrir depuis un lien. Chaque publication crée une version et prend effet sans déploiement. Testez toujours sur des appareils réels
             avant d'afficher une application comme prise en charge.
           </p>
         </div>

@@ -26,12 +26,12 @@ public record Link(
     return create(id, workspaceId, slug, destination, title, now, null, null);
   }
 
-  /** `domainId` : domaine personnalisé du lien (null = domaine de Beep). `domainHost` n'est qu'un champ de lecture, renseigné par le dépôt. */
+  /** `domainId` : domaine personnalisé du lien (null = domaine de BeepClick). `domainHost` n'est qu'un champ de lecture, renseigné par le dépôt. */
   public static Link create(UUID id, UUID workspaceId, Slug slug, Destination destination, String title, Instant now, UUID domainId, String domainHost) {
     return new Link(id, workspaceId, slug, destination, title(title), LinkStatus.ACTIVE, null, now, now, domainId, domainHost, LinkRules.NONE, null);
   }
 
-  /** Clé du lien dans le registre des chemins publics : le slug seul sur le domaine de Beep, `domaine/slug` sur un domaine personnalisé. */
+  /** Clé du lien dans le registre des chemins publics : le slug seul sur le domaine de BeepClick, `domaine/slug` sur un domaine personnalisé. */
   public String registryKey() {
     return registryKey(domainId, slug.value());
   }

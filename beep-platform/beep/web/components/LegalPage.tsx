@@ -19,7 +19,7 @@ export function LegalPage({
     ? [
         [
           "Your account data",
-          "Beep stores your email, account preferences, security settings and the links, QR codes, pages and domains you create. Security secrets are never included in your portable export.",
+          "BeepClick stores your email, account preferences, security settings and the links, QR codes, pages and domains you create. Security secrets are never included in your portable export.",
         ],
         [
           "Usage statistics",
@@ -41,7 +41,7 @@ export function LegalPage({
     : [
         [
           "Les données de votre compte",
-          "Beep conserve votre e-mail, vos préférences, vos réglages de sécurité ainsi que vos liens, QR codes, pages et domaines. Les secrets de sécurité sont exclus de l’export portable.",
+          "BeepClick conserve votre e-mail, vos préférences, vos réglages de sécurité ainsi que vos liens, QR codes, pages et domaines. Les secrets de sécurité sont exclus de l’export portable.",
         ],
         [
           "Les statistiques d’usage",
@@ -63,8 +63,8 @@ export function LegalPage({
   const terms = en
     ? [
         [
-          "Using Beep",
-          "Use Beep only for lawful content. Phishing, malware, spam, impersonation and attempts to bypass moderation are prohibited. You remain responsible for the destinations you share.",
+          "Using BeepClick",
+          "Use BeepClick only for lawful content. Phishing, malware, spam, impersonation and attempts to bypass moderation are prohibited. You remain responsible for the destinations you share.",
         ],
         [
           "Plans and payments",
@@ -81,8 +81,8 @@ export function LegalPage({
       ]
     : [
         [
-          "Utiliser Beep",
-          "Utilisez Beep pour des contenus licites. Phishing, logiciels malveillants, spam, usurpation et contournement de la modération sont interdits. Vous restez responsable des destinations partagées.",
+          "Utiliser BeepClick",
+          "Utilisez BeepClick pour des contenus licites. Phishing, logiciels malveillants, spam, usurpation et contournement de la modération sont interdits. Vous restez responsable des destinations partagées.",
         ],
         [
           "Offres et paiements",

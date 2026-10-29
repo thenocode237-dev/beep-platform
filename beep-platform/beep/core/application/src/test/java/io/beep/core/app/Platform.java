@@ -78,7 +78,7 @@ final class Platform {
     public Instant instant() { return now; }
   };
 
-  final PublicSite site = new PublicSite("https://beep.click/");
+  final PublicSite site = new PublicSite("https://beepclick.app/");
   final Fakes.Users users = new Fakes.Users();
   final Fakes.Sessions sessions = new Fakes.Sessions();
   final Fakes.Tokens tokens = new Fakes.Tokens();

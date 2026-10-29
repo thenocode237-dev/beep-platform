@@ -1,8 +1,8 @@
-# Beep — plateforme
+# BeepClick — plateforme
 
 Monorepo de `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff).
 
-Domaine de production : **`beep.click`** ; back office privé : **`https://beep-admin.<réseau>.ts.net`**, accessible aux appareils autorisés sur Tailscale, avec mot de passe et TOTP. Préparation : [accès privé](docs/backoffice-private.md) et [modèle de production](.env.production.example). Les illustrations et exemples de liens utilisent `beep.click`.
+Domaine de production : **`beepclick.app`** ; back office privé : **`https://beep-admin.<réseau>.ts.net`**, accessible aux appareils autorisés sur Tailscale, avec mot de passe et TOTP. Préparation : [accès privé](docs/backoffice-private.md) et [modèle de production](.env.production.example). Les illustrations et exemples de liens utilisent `beepclick.app`.
 Spécifications : `../beep-specs.md` · Feuille de route : `../beep-roadmap.md` · **État actuel : phase 5 implémentée et recette locale validée ; validations externes documentées**. Détail : [`docs/phase-5.md`](docs/phase-5.md).
 
 La phase 4 ajoute les workspaces d’équipe (Pro : 3 membres, Elite : 15), rôles et invitations, dossiers/tags, import CSV, intégrations, Radar, rapports, insights, blocs bio avancés, extension Chrome et affiliation. Le back-office supervise ces fonctions, les vues en lecture seule, le contenu publié et les accès staff. Parcours : `/app/team`, `/app/integrations`, `/app/radar`, et `dashboard.beep.localhost/ecosystem`. Installation de l’extension : [`extensions/chrome/README.md`](extensions/chrome/README.md).
@@ -71,7 +71,7 @@ Ce qui reste ouvert pour clore la phase 1 (bêta de 100 personnes, mesure à 1 0
 
 ## Direction graphique et expérience mobile
 
-La [refonte Signal du 24 octobre 2026](docs/refonte-atelier.md) couvre le site FR/EN, les parcours de compte et le back office. Le discours explique les bénéfices de Beep pour le partage sur WhatsApp, les réseaux et les supports physiques. L’interface est conçue dès 320 px, avec formulaires à 16 px, actions de 44 à 52 px, CTA mobile fixe et tableaux remplacés par des cartes sur téléphone.
+La [refonte Signal du 24 octobre 2026](docs/refonte-atelier.md) couvre le site FR/EN, les parcours de compte et le back office. Le discours explique les bénéfices de BeepClick pour le partage sur WhatsApp, les réseaux et les supports physiques. L’interface est conçue dès 320 px, avec formulaires à 16 px, actions de 44 à 52 px, CTA mobile fixe et tableaux remplacés par des cartes sur téléphone.
 
 Les aperçus marketing sont illustratifs. L’état de livraison des liens, QR codes, pages bio, statistiques et évolutions suivantes est suivi dans les documents de phase. Voir les [captures et la recette](docs/refonte-atelier.md#recette-du-rendu) et la [provenance des médias](docs/assets.md).
 
@@ -115,7 +115,7 @@ docs             charte graphique, runbook de sauvegarde
 ## Reste à faire pour clore la phase 0
 
 - **PITR démontré en staging** (critère de sortie) : outillage livré, démonstration à faire et à consigner dans [`docs/runbook-backup.md`](docs/runbook-backup.md).
-- **Réserver le nom `Beep`** (marque, domaine) et valider les hypothèses H1–H7 des spécifications.
+- **Réserver le nom `BeepClick`** (marque, domaine) et valider les hypothèses H1–H7 des spécifications.
 - Revue visuelle sur appareils réels (iOS Safari, Android Chrome entrée de gamme) et audit Lighthouse mobile.
 
 ## Phase 5 — Industrialisation

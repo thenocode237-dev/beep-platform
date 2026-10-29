@@ -84,7 +84,7 @@ export function SiteFooter({ dict, locale }: { dict: Dict; locale: Locale }) {
         </div>
         <div className="site-footer__bottom">
           <p>
-            © {new Date().getFullYear()} Beep. {dict.footer.rights}
+            © {new Date().getFullYear()} BeepClick. {dict.footer.rights}
           </p>
           <span>FR / EN</span>
         </div>

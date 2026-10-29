@@ -21,14 +21,14 @@ test("extension rejects credentials, insecure production endpoints and executabl
 test("API keys stay out of URLs and cookies, mutations are idempotent", () => {
   const key = "sk_" + "a".repeat(32);
   const r = linkRequest({
-    origin: "https://beep.click",
+    origin: "https://beepclick.app",
     key,
     url: "https://example.org",
     title: "Test",
     deeplink: true,
     idempotency: "request-1",
   });
-  assert.equal(r.url, "https://beep.click/v1/links");
+  assert.equal(r.url, "https://beepclick.app/v1/links");
   assert.equal(r.options.credentials, "omit");
   assert.equal(r.options.redirect, "error");
   assert.equal(r.options.headers["Idempotency-Key"], "request-1");

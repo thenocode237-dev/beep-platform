@@ -44,7 +44,7 @@ export const entitlementLabels: Record<string, string> = {
   "api.rpm": "API (requêtes / minute)",
   "analytics.retention_days": "Rétention des analytics (jours)",
   "features.analytics_advanced": "Analytics avancés",
-  "features.bio_badge_removable": "Badge Beep retirable",
+  "features.bio_badge_removable": "Badge BeepClick retirable",
   "features.export_csv": "Export CSV",
 };
 

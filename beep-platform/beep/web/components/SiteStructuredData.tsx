@@ -6,9 +6,9 @@ export function SiteStructuredData({ locale }: { locale: Locale }) {
   const data = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Organization", "@id": `${origin}/#organization`, name: "Beep", url: origin },
+      { "@type": "Organization", "@id": `${origin}/#organization`, name: "BeepClick", url: origin },
       {
-        "@type": "WebSite", "@id": `${origin}/#website`, name: "Beep",
+        "@type": "WebSite", "@id": `${origin}/#website`, name: "BeepClick",
         url: new URL(href(locale), origin).href, inLanguage: locale,
         publisher: { "@id": `${origin}/#organization` },
       },

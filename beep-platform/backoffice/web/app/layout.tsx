@@ -18,7 +18,7 @@ const display = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Beep · Back office",
+  title: "BeepClick · Back office",
   robots: { index: false, follow: false }, // outil interne : jamais indexé
 };
 

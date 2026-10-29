@@ -7,7 +7,7 @@ import { fmtDateTime } from "@/lib/format";
 
 const dnsLabel = { pending: "À vérifier", verified: "Vérifié", failed: "DNS incorrect" } as const;
 const tlsLabel = { pending: "Certificat en attente", active: "HTTPS actif" } as const;
-const errorLabel: Record<string, string> = { txt_missing: "TXT introuvable", routing_missing: "Ne pointe pas vers Beep", dns_unreachable: "DNS injoignable" };
+const errorLabel: Record<string, string> = { txt_missing: "TXT introuvable", routing_missing: "Ne pointe pas vers BeepClick", dns_unreachable: "DNS injoignable" };
 
 export default async function Domains({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; cursor?: string }> }) {
   const { q, status, cursor } = await searchParams;

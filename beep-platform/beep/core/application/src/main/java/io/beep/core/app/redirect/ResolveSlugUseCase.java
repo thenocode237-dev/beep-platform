@@ -12,7 +12,7 @@ import io.beep.core.domain.link.Slug;
 import java.util.Optional;
 
 /**
- * Chemin critique `beep.click/{slug}` : résolution (cache mémoire), contrôles, événement asynchrone, réponse.
+ * Chemin critique `beepclick.app/{slug}` : résolution (cache mémoire), contrôles, événement asynchrone, réponse.
  * Aucun appel réseau externe ; sur un succès de cache, aucun accès base. Les quotas n'interviennent jamais ici.
  */
 public class ResolveSlugUseCase {
@@ -55,7 +55,7 @@ public class ResolveSlugUseCase {
     return execute(rawSlug, null, visit);
   }
 
-  /** `domainId` : domaine personnalisé de la requête (null = domaine de Beep). Les pages bio n'existent que sur le domaine de Beep. */
+  /** `domainId` : domaine personnalisé de la requête (null = domaine de BeepClick). Les pages bio n'existent que sur le domaine de BeepClick. */
   public Outcome execute(String rawSlug, java.util.UUID domainId, Visit visit) {
     if (!Slug.looksValid(rawSlug)) return Outcome.NOT_FOUND;
     Resolution r = resolver.resolve(io.beep.core.domain.link.Link.registryKey(domainId, rawSlug));

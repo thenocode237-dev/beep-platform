@@ -65,7 +65,7 @@ mkdirSync(join(here, "dist"), { recursive: true });
 writeFileSync(join(here, "dist", "tokens.css"), css);
 
 const rows = (entries) => entries.map(([k, v]) => `| \`--${k}\` | \`${String(v)}\` |`).join("\n");
-const md = `# Design tokens Beep
+const md = `# Design tokens BeepClick
 
 > Généré par \`packages/design-tokens/build.mjs\`. Source : \`tokens.json\`. Utilisation : \`@import "@beep/design-tokens/tokens.css"\`.
 

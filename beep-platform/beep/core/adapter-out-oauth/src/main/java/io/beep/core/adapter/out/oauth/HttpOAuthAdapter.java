@@ -88,7 +88,7 @@ public class HttpOAuthAdapter implements OAuthPort {
 
   private static HttpRequest.Builder get(String url, String accessToken) {
     return HttpRequest.newBuilder(URI.create(url)).header("Authorization", "Bearer " + accessToken).header("Accept", "application/json")
-        .header("User-Agent", "Beep").GET();
+        .header("User-Agent", "BeepClick").GET();
   }
 
   private JsonNode send(HttpRequest.Builder request) {

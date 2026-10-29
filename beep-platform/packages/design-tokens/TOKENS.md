@@ -1,4 +1,4 @@
-# Design tokens Beep
+# Design tokens BeepClick
 
 > Généré par `packages/design-tokens/build.mjs`. Source : `tokens.json`. Utilisation : `@import "@beep/design-tokens/tokens.css"`.
 

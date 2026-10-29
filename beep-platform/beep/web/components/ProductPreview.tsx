@@ -29,7 +29,7 @@ export function ProductPreview({
       <div className="preview-phone">
         <div className="preview-phone__bar" aria-hidden="true">
           <span />
-          beep.click/naya
+          beepclick.app/naya
           <Icon name="globe" size={12} />
         </div>
         <div className="preview-phone__photo">
@@ -60,7 +60,7 @@ export function ProductPreview({
             {c.contact}
             <Icon name="arrow-right" size={14} />
           </div>
-          <span className="preview-phone__sign">made with beep.</span>
+          <span className="preview-phone__sign">made with BeepClick</span>
         </div>
       </div>
       <div className="scene-ticket">
@@ -69,7 +69,7 @@ export function ProductPreview({
         </span>
         <span>
           <small>{c.linkLabel}</small>
-          <strong>beep.click/naya</strong>
+          <strong>beepclick.app/naya</strong>
         </span>
         <Icon name="arrow-right" size={20} />
       </div>

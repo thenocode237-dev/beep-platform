@@ -31,7 +31,7 @@ public class EcosystemUseCase {
     require(u,true);feature(u,"features.teams");WorkspaceRole target=WorkspaceRole.parse(rawRole);role(u).requireManage(target);Email to=new Email(email);if(to.equals(u.email()))throw new DomainException("invalid_request");
     String token=tokens.newToken();UUID id=UUID.randomUUID(),wid=workspace(u);Instant now=clock.instant();
     tx.run(()->{ws.lock(wid);quotaMembers(u);data.invite(new Invite(id,wid,to.value(),target.db(),tokens.hash(token),now.plus(Duration.ofDays(7))));data.audit(wid,u.id(),"member.invited",id.toString(),now);});
-    mail.sendWorkspaceMessage(to,u.locale(),"Invitation Beep",workspaces.ensureFor(u).name()+" · "+target.db(),"/app/team?invite="+java.net.URLEncoder.encode(token,java.nio.charset.StandardCharsets.UTF_8));
+    mail.sendWorkspaceMessage(to,u.locale(),"Invitation BeepClick",workspaces.ensureFor(u).name()+" · "+target.db(),"/app/team?invite="+java.net.URLEncoder.encode(token,java.nio.charset.StandardCharsets.UTF_8));
   }
   private void quotaMembers(User u){var team=data.team(workspace(u));long used=((Number)team.get("seats")).longValue(),limit=workspaces.context(u).entitlements().value("members.max").orElse(1);if(limit>=0&&used>=limit)throw new DomainException("quota_reached");}
   public UUID accept(User u,String token){

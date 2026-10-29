@@ -91,7 +91,7 @@ public class CheckoutUseCase {
     PaymentGatewayPort.Charge charge;
     try {
       charge = gateway.initiate(new PaymentGatewayPort.ChargeRequest("beep-" + pending.id(), pending.amountXaf(), method, phone, actor.email().value(),
-          "Beep " + plan.name(), engine.settings().callbackUrl()));
+          "BeepClick " + plan.name(), engine.settings().callbackUrl()));
     } catch (PaymentGatewayPort.GatewayException e) {
       payments.update(pending.failed("gateway_unavailable"));
       throw new DomainException("payment_unavailable");

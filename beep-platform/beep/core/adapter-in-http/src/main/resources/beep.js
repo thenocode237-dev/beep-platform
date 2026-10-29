@@ -1,4 +1,4 @@
-/* Beep tracking v1. No cookies, localStorage, fingerprint or cross-page id until explicit consent. */
+/* BeepClick tracking v1. No cookies, localStorage, fingerprint or cross-page id until explicit consent. */
 (function(w,d){
   'use strict';
   var script=d.currentScript;if(!script)return;
