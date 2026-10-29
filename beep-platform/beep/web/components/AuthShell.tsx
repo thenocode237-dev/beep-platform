@@ -45,12 +45,6 @@ export function AuthShell({
             </a>
             <div className="auth__form bp-stack">
               <div className="auth__heading">
-                <span className="auth__symbol">
-                  <Icon
-                    name={path.includes("password") ? "shield" : "link"}
-                    size={24}
-                  />
-                </span>
                 <h1>{title}</h1>
                 {sub && <p className="muted">{sub}</p>}
               </div>

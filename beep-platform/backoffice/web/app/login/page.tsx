@@ -35,9 +35,6 @@ export default async function Login() {
           <Logo href="/login" label="Beep back office" />
         </div>
         <div className="staff-login__form bp-stack bp-stack--lg">
-          <span className="staff-symbol">
-            <Icon name="shield" size={25} />
-          </span>
           <div className="bp-stack">
             <h1>
               Bienvenue dans
