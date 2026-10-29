@@ -9,6 +9,7 @@ import io.beep.core.app.port.WorkspaceRepository;
 import io.beep.core.app.workspace.Workspaces;
 import io.beep.core.domain.DomainException;
 import io.beep.core.domain.bio.BioBlock;
+import io.beep.core.domain.bio.BioColors;
 import io.beep.core.domain.bio.BioPage;
 import io.beep.core.domain.bio.BioSeo;
 import io.beep.core.domain.bio.BioTheme;
@@ -30,7 +31,12 @@ public class BioPagesUseCase {
   public record CreateCommand(String slug, String title) {}
 
   public record UpdateCommand(String slug, String title, String description, String avatarUrl, String theme, String seoTitle, String seoDescription,
-      String seoImageUrl, boolean noindex) {}
+      String seoImageUrl, boolean noindex, String primaryColor, String secondaryColor, String accentColor) {
+    public UpdateCommand(String slug, String title, String description, String avatarUrl, String theme, String seoTitle, String seoDescription,
+        String seoImageUrl, boolean noindex) {
+      this(slug, title, description, avatarUrl, theme, seoTitle, seoDescription, seoImageUrl, noindex, null, null, null);
+    }
+  }
 
   /** Bloc saisi : identifiant absent pour un nouveau bloc. */
   public record BlockInput(String id, String type, Map<String, String> config) {}
@@ -78,13 +84,19 @@ public class BioPagesUseCase {
     BioPage page = owned(ctx, id);
     Slug slug = cmd.slug() == null || cmd.slug().equals(page.slug().value()) ? page.slug() : Slug.custom(cmd.slug());
     BioPage updated = page.edit(slug, cmd.title(), cmd.description(), cmd.avatarUrl(), BioTheme.parse(cmd.theme()),
-        BioSeo.of(cmd.seoTitle(), cmd.seoDescription(), cmd.seoImageUrl(), cmd.noindex()), clock.instant());
+        BioSeo.of(cmd.seoTitle(), cmd.seoDescription(), cmd.seoImageUrl(), cmd.noindex()), colors(page.colors(), cmd), clock.instant());
     try {
       tx.run(() -> pages.update(updated));
     } catch (SlugRegistryPort.SlugTakenException e) {
       throw new DomainException("slug_taken");
     }
     return updated;
+  }
+
+  /** Couleur absente : conservée ; chaîne vide : effacée (retour à la palette du thème). */
+  private static BioColors colors(BioColors current, UpdateCommand cmd) {
+    return BioColors.of(cmd.primaryColor() == null ? current.primary() : cmd.primaryColor(), cmd.secondaryColor() == null ? current.secondary() : cmd.secondaryColor(),
+        cmd.accentColor() == null ? current.accent() : cmd.accentColor());
   }
 
   public BioPage replaceBlocks(User actor, UUID id, List<BlockInput> inputs) {

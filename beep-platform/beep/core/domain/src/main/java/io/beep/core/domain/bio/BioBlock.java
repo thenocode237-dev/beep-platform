@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
  */
 public record BioBlock(String id, Type type, Map<String, String> config) {
   public static final int MAX_BLOCKS = 50;
+  /** Clé de configuration commune à tous les types : « true » masque le bloc sur la page publique sans le supprimer. */
+  public static final String HIDDEN = "hidden";
   private static final Pattern ID = Pattern.compile("^[A-Za-z0-9]{6,16}$");
 
   public enum Type {
@@ -54,11 +56,20 @@ public record BioBlock(String id, Type type, Map<String, String> config) {
     config = Map.copyOf(config);
   }
 
+  public boolean hidden() {
+    return "true".equals(config.get(HIDDEN));
+  }
+
   public static BioBlock of(String id, Type type, Map<String, String> raw) {
     if (id == null || !ID.matcher(id).matches() || type == null || raw == null) throw new DomainException("invalid_block");
     Map<String, String> c = new LinkedHashMap<>();
     for (var e : raw.entrySet()) {
-      if (!type.allowed.contains(e.getKey())) throw new DomainException("invalid_block");
+      boolean hidden = e.getKey().equals(HIDDEN);
+      if (!hidden && !type.allowed.contains(e.getKey())) throw new DomainException("invalid_block");
+      if (hidden) {
+        if ("true".equals(e.getValue() == null ? null : e.getValue().strip())) c.put(HIDDEN, "true");
+        continue;
+      }
       if (e.getValue() != null && !e.getValue().isBlank()) c.put(e.getKey(), e.getValue().strip());
     }
     switch (type) {
@@ -76,8 +87,9 @@ public record BioBlock(String id, Type type, Map<String, String> config) {
       case VIDEO, AUDIO -> {c.put("url",httpsUrl(required(c,"url")));text(c,"label",120,true);}
       case EMAIL, FORM -> {text(c,"label",120,true);text(c,"description",500,false);text(c,"consentText",500,true);c.put("privacyUrl",httpsUrl(required(c,"privacyUrl")));}
       case SOCIAL -> {
-        if (c.isEmpty()) throw new DomainException("invalid_block");
+        if (c.keySet().stream().allMatch(HIDDEN::equals)) throw new DomainException("invalid_block");
         for (String network : List.copyOf(c.keySet())) {
+          if (network.equals(HIDDEN)) continue;
           c.put(network, network.equals("email") ? new Email(c.get(network)).value() : Destination.parse(c.get(network)).url());
         }
       }

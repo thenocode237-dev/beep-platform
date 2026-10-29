@@ -38,7 +38,7 @@ final class Views {
   record BlockView(String id, String type, Map<String, String> config) {}
 
   record BioView(UUID id, String slug, String publicUrl, String title, String description, String avatarUrl, String theme, String seoTitle,
-      String seoDescription, String seoImageUrl, boolean noindex, List<BlockView> blocks, Instant createdAt, Instant updatedAt, long views30d) {}
+      String seoDescription, String seoImageUrl, boolean noindex, String primaryColor, String secondaryColor, String accentColor, List<BlockView> blocks, Instant createdAt, Instant updatedAt, long views30d) {}
 
   record StatsResponse(String resource, String from, String to, int days, int maxDays, String granularity, long clicks, long uniques, Long secondaryClicks,
       List<AnalyticsRepository.Point> series, Map<String, List<AnalyticsRepository.Breakdown>> breakdowns, boolean advanced, boolean exportAllowed) {}
@@ -66,7 +66,7 @@ final class Views {
 
   static BioView bio(BioPage p, String publicUrl, long views) {
     return new BioView(p.id(), p.slug().value(), publicUrl, p.title(), p.description(), p.avatarUrl(), p.theme().db(), p.seo().title(), p.seo().description(),
-        p.seo().imageUrl(), p.seo().noindex(), p.blocks().stream().map(Views::block).toList(), p.createdAt(), p.updatedAt(), views);
+        p.seo().imageUrl(), p.seo().noindex(), p.colors().primary(), p.colors().secondary(), p.colors().accent(), p.blocks().stream().map(Views::block).toList(), p.createdAt(), p.updatedAt(), views);
   }
 
   static BlockView block(BioBlock b) {

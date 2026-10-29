@@ -2,6 +2,7 @@ package io.beep.core.adapter.in.http;
 
 import io.beep.core.app.common.PublicSite;
 import io.beep.core.domain.bio.BioBlock;
+import io.beep.core.domain.bio.BioColors;
 import io.beep.core.domain.bio.BioPage;
 import io.beep.core.domain.bio.BioTheme;
 import java.util.Map;
@@ -14,14 +15,14 @@ final class PublicPages {
   /** Aucun script, aucun cadre ; images https des pages bio autorisées. */
   static final String CSP = "default-src 'none'; img-src https: data:; media-src https:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 
-  private record Palette(String bg, String text, String muted, String card, String border, String buttonBg, String buttonText, String scheme) {}
+  private record Palette(String bg, String text, String muted, String card, String border, String buttonBg, String buttonText, String scheme, String accent) {}
 
   /** Paires texte/fond conformes WCAG AA (≥ 4,5:1), reprises de la charte Atelier. */
   private static final Map<BioTheme, Palette> PALETTES = Map.of(
-      BioTheme.IVOIRE, new Palette("#F3F7FF", "#192B46", "#4C607D", "#FFFFFF", "#CBD7EA", "#1F3560", "#FFFFFF", "light"),
-      BioTheme.FORET, new Palette("#243D30", "#F8F7F2", "#BCD0BA", "#2E4A3B", "#4A6655", "#FFAD86", "#222B25", "dark"),
-      BioTheme.NUIT, new Palette("#101D32", "#F5F8FF", "#B9C8DE", "#1A2B47", "#2F4468", "#F5F8FF", "#101D32", "dark"),
-      BioTheme.SOLEIL, new Palette("#F5E8DD", "#222B25", "#58634F", "#FFFFFF", "#E2CBB8", "#243D30", "#F8F7F2", "light"));
+      BioTheme.IVOIRE, new Palette("#F3F7FF", "#192B46", "#4C607D", "#FFFFFF", "#CBD7EA", "#1F3560", "#FFFFFF", "light", null),
+      BioTheme.FORET, new Palette("#243D30", "#F8F7F2", "#BCD0BA", "#2E4A3B", "#4A6655", "#FFAD86", "#222B25", "dark", null),
+      BioTheme.NUIT, new Palette("#101D32", "#F5F8FF", "#B9C8DE", "#1A2B47", "#2F4468", "#F5F8FF", "#101D32", "dark", null),
+      BioTheme.SOLEIL, new Palette("#F5E8DD", "#222B25", "#58634F", "#FFFFFF", "#E2CBB8", "#243D30", "#F8F7F2", "light", null));
 
   private static final Map<String, String> NETWORKS = Map.ofEntries(Map.entry("instagram", "Instagram"), Map.entry("tiktok", "TikTok"),
       Map.entry("facebook", "Facebook"), Map.entry("x", "X"), Map.entry("youtube", "YouTube"), Map.entry("linkedin", "LinkedIn"),
@@ -45,6 +46,45 @@ final class PublicPages {
   private static final String GLOBE = "<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18\"/></svg>";
   private static final String MAIL = "<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"m3 7 9 6 9-6\"/></svg>";
 
+  /** Applique les couleurs choisies : secondaire = fond, principale = boutons, accent = contours, flèches et focus. Les textes sont dérivés (contraste ≥ 4,5:1). */
+  private static Palette custom(Palette base, BioColors k) {
+    String bg = k.secondary() != null ? k.secondary() : base.bg();
+    String text = k.secondary() != null ? readable(bg) : base.text();
+    String muted = k.secondary() != null ? mix(text, bg, 0.78) : base.muted();
+    String card = k.secondary() != null ? bg : base.card();
+    String border = k.secondary() != null ? mix(text, bg, 0.22) : base.border();
+    String buttonBg = k.primary() != null ? k.primary() : base.buttonBg();
+    String buttonText = k.primary() != null ? readable(buttonBg) : base.buttonText();
+    String scheme = k.secondary() != null ? (luminance(bg) > 0.4 ? "light" : "dark") : base.scheme();
+    return new Palette(bg, text, muted, card, border, buttonBg, buttonText, scheme, k.accent());
+  }
+
+  private static double luminance(String hex) {
+    double[] c = new double[3];
+    for (int i = 0; i < 3; i++) {
+      double v = Integer.parseInt(hex.substring(1 + 2 * i, 3 + 2 * i), 16) / 255.0;
+      c[i] = v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+
+  /** Texte noir ou blanc, selon le meilleur contraste sur le fond donné. */
+  private static String readable(String bg) {
+    double l = luminance(bg);
+    return (l + 0.05) / (luminance("#14181F") + 0.05) >= (luminance("#FFFFFF") + 0.05) / (l + 0.05) ? "#14181F" : "#FFFFFF";
+  }
+
+  /** Mélange `a` (poids w) et `b`. */
+  private static String mix(String a, String b, double w) {
+    StringBuilder out = new StringBuilder("#");
+    for (int i = 0; i < 3; i++) {
+      int x = Integer.parseInt(a.substring(1 + 2 * i, 3 + 2 * i), 16);
+      int y = Integer.parseInt(b.substring(1 + 2 * i, 3 + 2 * i), 16);
+      out.append(String.format("%02X", (int) Math.round(x * w + y * (1 - w))));
+    }
+    return out.toString();
+  }
+
   private static String logo(String network) {
     if (network.equals("website")) return GLOBE;
     if (network.equals("email")) return MAIL;
@@ -67,7 +107,7 @@ final class PublicPages {
   }
 
   String bio(BioPage p,boolean showBadge) {
-    Palette c = PALETTES.get(p.theme());
+    Palette c = custom(PALETTES.get(p.theme()), p.colors());
     String title = p.seo().title() != null ? p.seo().title() : p.title();
     String description = p.seo().description() != null ? p.seo().description() : p.description();
     String url = site.shortUrl(p.slug().value());
@@ -91,7 +131,7 @@ final class PublicPages {
     if (p.description() != null) h.append("<p class=\"bio\">").append(esc(p.description())).append("</p>");
     h.append("</div></section><div class=\"body\"><div class=\"blocks\">");
     boolean[] primary = {true};
-    for (BioBlock b : p.blocks()) h.append(block(p, b, primary));
+    for (BioBlock b : p.blocks()) if (!b.hidden()) h.append(block(p, b, primary));
     h.append("</div></div></main>");
     if(showBadge)h.append("<footer><a href=\"").append(esc(site.url())).append("/\">Propulsé par <strong>beep.</strong></a></footer>");
     h.append("</body></html>");
@@ -141,9 +181,9 @@ final class PublicPages {
         + ".cover{aspect-ratio:4/5;max-height:70dvh;width:auto;max-width:100%}.id{padding:0;text-align:left}h1{font-size:2.5rem}.bio{font-size:1.125rem}"
         + ".body{padding:2rem 0}.blocks{gap:1rem}.social{justify-content:flex-start!important}}"
         + ".link,.button{display:flex;align-items:center;justify-content:space-between;gap:.75rem;min-height:56px;padding:.75rem 1.1rem;text-decoration:none;font-weight:500;text-align:left}"
-        + ".link{background:" + c.card() + ";color:" + c.text() + ";border:1px solid " + c.border() + "}"
+        + ".link{background:" + c.card() + ";color:" + c.text() + ";border:1px solid " + (c.accent() != null ? c.accent() : c.border()) + "}"
         + ".button{background:" + c.buttonBg() + ";color:" + c.buttonText() + ";border:1px solid " + c.buttonBg() + "}.link:hover,.button:hover{filter:brightness(.96)}"
-        + ".link svg,.button svg{flex:none}a:focus-visible{outline:3px solid " + c.buttonBg() + ";outline-offset:3px}"
+        + ".link svg,.button svg{flex:none}" + (c.accent() != null ? ".link svg{color:" + c.accent() + "}" : "") + "a:focus-visible{outline:3px solid " + (c.accent() != null ? c.accent() : c.buttonBg()) + ";outline-offset:3px}"
         + ".image{display:block;width:100%;height:auto}"
         + ".social{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem;margin:.5rem 0;padding:0}"
         + ".social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;color:" + c.text() + "}.social svg{width:24px;height:24px}footer{padding:1rem 1rem 2rem}footer a{color:" + c.muted() + ";font-size:.85rem;text-decoration:none}"

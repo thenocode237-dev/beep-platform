@@ -31,7 +31,7 @@ public class BioPagesController {
   record CreateRequest(String slug, String title) {}
 
   record UpdateRequest(String slug, String title, String description, String avatarUrl, String theme, String seoTitle, String seoDescription, String seoImageUrl,
-      Boolean noindex) {}
+      Boolean noindex, String primaryColor, String secondaryColor, String accentColor) {}
 
   record BlockRequest(String id, String type, Map<String, String> config) {}
 
@@ -71,7 +71,7 @@ public class BioPagesController {
   @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   Views.BioView update(@PathVariable UUID id, @RequestBody UpdateRequest r, HttpServletRequest req) {
     return view(bio.update(cookies.requireUser(req), id, new BioPagesUseCase.UpdateCommand(r.slug(), r.title(), r.description(), r.avatarUrl(), r.theme(),
-        r.seoTitle(), r.seoDescription(), r.seoImageUrl(), Boolean.TRUE.equals(r.noindex()))));
+        r.seoTitle(), r.seoDescription(), r.seoImageUrl(), Boolean.TRUE.equals(r.noindex()), r.primaryColor(), r.secondaryColor(), r.accentColor())));
   }
 
   @PutMapping(value = "/{id}/blocks", consumes = MediaType.APPLICATION_JSON_VALUE)

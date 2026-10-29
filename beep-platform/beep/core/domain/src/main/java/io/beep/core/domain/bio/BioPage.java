@@ -19,6 +19,7 @@ public record BioPage(
     String avatarUrl,
     BioTheme theme,
     BioSeo seo,
+    BioColors colors,
     List<BioBlock> blocks,
     Instant createdAt,
     Instant updatedAt) {
@@ -30,19 +31,24 @@ public record BioPage(
   }
 
   public static BioPage create(UUID id, UUID workspaceId, Slug slug, String title, Instant now) {
-    return new BioPage(id, workspaceId, slug, title(title), null, null, BioTheme.IVOIRE, BioSeo.NONE, List.of(), now, now);
+    return new BioPage(id, workspaceId, slug, title(title), null, null, BioTheme.IVOIRE, BioSeo.NONE, BioColors.NONE, List.of(), now, now);
   }
 
   public BioPage edit(Slug newSlug, String newTitle, String newDescription, String newAvatarUrl, BioTheme newTheme, BioSeo newSeo, Instant now) {
+    return edit(newSlug, newTitle, newDescription, newAvatarUrl, newTheme, newSeo, colors, now);
+  }
+
+  public BioPage edit(Slug newSlug, String newTitle, String newDescription, String newAvatarUrl, BioTheme newTheme, BioSeo newSeo, BioColors newColors,
+      Instant now) {
     return new BioPage(id, workspaceId, newSlug, title(newTitle), description(newDescription),
-        newAvatarUrl == null || newAvatarUrl.isBlank() ? null : BioBlock.httpsUrl(newAvatarUrl), newTheme, newSeo, blocks, createdAt, now);
+        newAvatarUrl == null || newAvatarUrl.isBlank() ? null : BioBlock.httpsUrl(newAvatarUrl), newTheme, newSeo, newColors, blocks, createdAt, now);
   }
 
   public BioPage withBlocks(List<BioBlock> newBlocks, Instant now) {
     BioBlock.requireCount(newBlocks.size());
     Set<String> ids = new HashSet<>();
     for (BioBlock b : newBlocks) if (!ids.add(b.id())) throw new DomainException("invalid_block");
-    return new BioPage(id, workspaceId, slug, title, description, avatarUrl, theme, seo, newBlocks, createdAt, now);
+    return new BioPage(id, workspaceId, slug, title, description, avatarUrl, theme, seo, colors, newBlocks, createdAt, now);
   }
 
   public Optional<BioBlock> block(String blockId) {

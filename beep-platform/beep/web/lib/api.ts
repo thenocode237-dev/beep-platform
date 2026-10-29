@@ -46,7 +46,7 @@ export type QrView = {
 export type BlockView = { id: string; type: string; config: Record<string, string> };
 export type BioView = {
   id: string; slug: string; publicUrl: string; title: string; description: string | null; avatarUrl: string | null; theme: string; seoTitle: string | null;
-  seoDescription: string | null; seoImageUrl: string | null; noindex: boolean; blocks: BlockView[]; createdAt: string; updatedAt: string; views30d: number;
+  seoDescription: string | null; seoImageUrl: string | null; noindex: boolean; primaryColor: string | null; secondaryColor: string | null; accentColor: string | null; blocks: BlockView[]; createdAt: string; updatedAt: string; views30d: number;
 };
 export type BillingPlan = { code: string; name: string; priceXaf: number; priceQuarterlyXaf: number; priceAnnualXaf: number; public: boolean };
 export type BillingSubscription = { plan: string; status: "trialing" | "active" | "grace" | "expired"; cycle: string | null; periodStart: string; periodEnd: string; graceEnd: string; paid: boolean };

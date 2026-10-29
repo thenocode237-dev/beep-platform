@@ -362,9 +362,13 @@ export function BioCreateForm({ t, locale, site }: T & { locale: Locale; site: s
   );
 }
 
+const COLOR_FALLBACK = { primary: "#1F3560", secondary: "#F3F7FF", accent: "#1F3560" };
+
 export function BioSettingsForm({ t, page }: T & { page: BioView }) {
   const a = useAction(t);
   const [saved, setSaved] = useState(false);
+  // Chaîne vide = couleur du thème (le serveur efface la valeur) ; le sélecteur natif n'a pas d'état vide, d'où le bouton Réinitialiser.
+  const [colors, setColors] = useState({ primary: page.primaryColor ?? "", secondary: page.secondaryColor ?? "", accent: page.accentColor ?? "" });
   return (
     <form
       className="bp-stack"
@@ -381,6 +385,9 @@ export function BioSettingsForm({ t, page }: T & { page: BioView }) {
           seoDescription: val(e, "seoDescription"),
           seoImageUrl: val(e, "seoImageUrl"),
           noindex: new FormData(e.currentTarget).get("noindex") === "on",
+          primaryColor: colors.primary,
+          secondaryColor: colors.secondary,
+          accentColor: colors.accent,
         };
         a.run(() => send("PUT", `/bio-pages/${page.id}`, body), () => {
           setSaved(true);
@@ -405,6 +412,20 @@ export function BioSettingsForm({ t, page }: T & { page: BioView }) {
           <label key={k} className={`theme-swatch theme-swatch--${k}`}>
             <input type="radio" name="theme" value={k} defaultChecked={page.theme === k} /> <span>{v}</span>
           </label>
+        ))}
+      </fieldset>
+      <fieldset className="colors">
+        <legend>{t.bio.colors}</legend>
+        <p className="muted small">{t.bio.colorsHint}</p>
+        {(["primary", "secondary", "accent"] as const).map((k) => (
+          <div className="colors__row" key={k}>
+            <label htmlFor={`color-${k}`}>{t.bio[k === "primary" ? "colorPrimary" : k === "secondary" ? "colorSecondary" : "colorAccent"]}</label>
+            <input id={`color-${k}`} type="color" value={colors[k] || COLOR_FALLBACK[k]} onChange={(e) => setColors((c) => ({ ...c, [k]: e.target.value.toUpperCase() }))} />
+            <code>{colors[k] || "—"}</code>
+            <button type="button" className="text-link" disabled={!colors[k]} onClick={() => setColors((c) => ({ ...c, [k]: "" }))}>
+              {t.bio.colorReset}
+            </button>
+          </div>
         ))}
       </fieldset>
       <details className="seo">
@@ -468,6 +489,9 @@ export function BlocksEditor({ t, page }: T & { page: BioView }) {
             <div className="block__head">
               <strong>{t.bio.blockTypes[b.type as keyof ConsoleDict["bio"]["blockTypes"]] ?? b.type}</strong>
               <div className="block__tools">
+                <label className="check block__toggle">
+                  <input type="checkbox" checked={b.config.hidden !== "true"} onChange={(e) => update(i, "hidden", e.target.checked ? "" : "true")} /> {t.bio.visible}
+                </label>
                 <button type="button" className="icon-btn" aria-label={t.bio.moveUp} disabled={i === 0} onClick={() => move(i, -1)}>
                   ↑
                 </button>

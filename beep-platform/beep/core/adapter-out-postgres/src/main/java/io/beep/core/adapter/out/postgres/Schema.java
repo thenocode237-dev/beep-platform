@@ -112,6 +112,7 @@ final class Schema {
   static final Field<String> B_DESCRIPTION = field(name("bio_pages", "description"), SQLDataType.CLOB);
   static final Field<String> B_AVATAR = field(name("bio_pages", "avatar_url"), SQLDataType.CLOB);
   static final Field<String> B_THEME = field(name("bio_pages", "theme"), SQLDataType.CLOB);
+  static final Field<JSONB> B_COLORS = field(name("bio_pages", "colors"), SQLDataType.JSONB);
   static final Field<JSONB> B_SEO = field(name("bio_pages", "seo"), SQLDataType.JSONB);
   static final Field<OffsetDateTime> B_CREATED = field(name("bio_pages", "created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);
   static final Field<OffsetDateTime> B_UPDATED = field(name("bio_pages", "updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);

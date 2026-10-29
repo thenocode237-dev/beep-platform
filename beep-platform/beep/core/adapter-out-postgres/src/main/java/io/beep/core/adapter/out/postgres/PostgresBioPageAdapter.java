@@ -4,6 +4,7 @@ import static io.beep.core.adapter.out.postgres.Schema.*;
 
 import io.beep.core.app.port.BioPageRepository;
 import io.beep.core.domain.bio.BioBlock;
+import io.beep.core.domain.bio.BioColors;
 import io.beep.core.domain.bio.BioPage;
 import io.beep.core.domain.bio.BioSeo;
 import io.beep.core.domain.bio.BioTheme;
@@ -38,6 +39,7 @@ public class PostgresBioPageAdapter implements BioPageRepository {
         .set(B_AVATAR, p.avatarUrl())
         .set(B_THEME, p.theme().db())
         .set(B_SEO, seo(p.seo()))
+        .set(B_COLORS, colors(p.colors()))
         .set(B_CREATED, odt(p.createdAt()))
         .set(B_UPDATED, odt(p.updatedAt()))
         .execute();
@@ -56,6 +58,7 @@ public class PostgresBioPageAdapter implements BioPageRepository {
         .set(B_AVATAR, p.avatarUrl())
         .set(B_THEME, p.theme().db())
         .set(B_SEO, seo(p.seo()))
+        .set(B_COLORS, colors(p.colors()))
         .set(B_UPDATED, odt(p.updatedAt()))
         .where(B_ID.eq(p.id()))
         .execute();
@@ -116,10 +119,20 @@ public class PostgresBioPageAdapter implements BioPageRepository {
     return Sql.json(m);
   }
 
+  private static org.jooq.JSONB colors(BioColors c) {
+    Map<String, Object> m = new LinkedHashMap<>();
+    if (c.primary() != null) m.put("primary", c.primary());
+    if (c.secondary() != null) m.put("secondary", c.secondary());
+    if (c.accent() != null) m.put("accent", c.accent());
+    return Sql.json(m);
+  }
+
   private static BioPage map(Record r, List<BioBlock> blocks) {
     Map<String, Object> s = Sql.map(r.get(B_SEO));
     BioSeo seo = new BioSeo((String) s.get("title"), (String) s.get("description"), (String) s.get("imageUrl"), Boolean.TRUE.equals(s.get("noindex")));
+    Map<String, Object> cm = Sql.map(r.get(B_COLORS));
+    BioColors colors = new BioColors((String) cm.get("primary"), (String) cm.get("secondary"), (String) cm.get("accent"));
     return new BioPage(r.get(B_ID), r.get(B_WORKSPACE), new Slug(r.get(B_SLUG)), r.get(B_TITLE), r.get(B_DESCRIPTION), r.get(B_AVATAR),
-        BioTheme.parse(r.get(B_THEME)), seo, blocks, instant(r.get(B_CREATED)), instant(r.get(B_UPDATED)));
+        BioTheme.parse(r.get(B_THEME)), seo, colors, blocks, instant(r.get(B_CREATED)), instant(r.get(B_UPDATED)));
   }
 }
