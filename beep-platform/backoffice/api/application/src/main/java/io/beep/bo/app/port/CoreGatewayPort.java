@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Seul accès aux données métier de beep-core : l'API admin interne (contrat OpenAPI 0.2). Jamais la base de BeepClick.
+ * Seul accès aux données métier de beep-core : l'API admin interne (contrat OpenAPI 0.2). Jamais la base de Beepclick.
  * Les DTO reprennent exactement les schémas du contrat.
  */
 public interface CoreGatewayPort {

@@ -17,7 +17,7 @@ export function SiteHeader({
   return (
     <header className="site-header">
       <div className="bp-container site-header__inner">
-        <Logo href={href(locale)} label={dict.nav.home} variant="wordmark" />
+        <Logo href={href(locale)} label={dict.nav.home} />
         <nav className="site-header__sections" aria-label={c.navLabel}>
           <a href={href(locale,"/features")}>{c.navFeatures}</a>
           <a href={href(locale,"/pricing")}>{locale==="fr"?"Tarifs":"Pricing"}</a>
@@ -84,7 +84,7 @@ export function SiteFooter({ dict, locale }: { dict: Dict; locale: Locale }) {
         </div>
         <div className="site-footer__bottom">
           <p>
-            © {new Date().getFullYear()} BeepClick. {dict.footer.rights}
+            © {new Date().getFullYear()} Beepclick. {dict.footer.rights}
           </p>
           <span>FR / EN</span>
         </div>

@@ -18,7 +18,7 @@ export default async function Page({
     <PublicPage
       locale={locale}
       path="/roadmap"
-      title={locale === "en" ? "What is next for BeepClick." : "La suite de BeepClick."}
+      title={locale === "en" ? "What is next for Beepclick." : "La suite de Beepclick."}
     >
       {!available && (
         <p role="alert">

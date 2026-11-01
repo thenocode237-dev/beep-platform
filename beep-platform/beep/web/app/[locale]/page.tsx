@@ -81,7 +81,7 @@ export default async function Home({
 
         <section
           className="benefits"
-          aria-label={locale === "fr" ? "Pourquoi BeepClick" : "Why BeepClick"}
+          aria-label={locale === "fr" ? "Pourquoi Beepclick" : "Why Beepclick"}
         >
           <div className="bp-container">
             <ul className="benefit-grid">

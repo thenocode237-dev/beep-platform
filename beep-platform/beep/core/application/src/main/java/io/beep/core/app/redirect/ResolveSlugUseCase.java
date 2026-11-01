@@ -55,7 +55,7 @@ public class ResolveSlugUseCase {
     return execute(rawSlug, null, visit);
   }
 
-  /** `domainId` : domaine personnalisé de la requête (null = domaine de BeepClick). Les pages bio n'existent que sur le domaine de BeepClick. */
+  /** `domainId` : domaine personnalisé de la requête (null = domaine de Beepclick). Les pages bio n'existent que sur le domaine de Beepclick. */
   public Outcome execute(String rawSlug, java.util.UUID domainId, Visit visit) {
     if (!Slug.looksValid(rawSlug)) return Outcome.NOT_FOUND;
     Resolution r = resolver.resolve(io.beep.core.domain.link.Link.registryKey(domainId, rawSlug));

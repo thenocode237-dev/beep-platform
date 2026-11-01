@@ -797,6 +797,9 @@ section[id] {
   color: var(--color-scene-paper);
   font-size: 36px;
 }
+.site-footer .bp-logo > span {
+  text-transform: lowercase;
+}
 .site-footer .bp-logo__mark,
 .site-footer .bp-logo__dot {
   color: var(--color-scene-sky);
@@ -1586,3 +1589,41 @@ select.bp-input { appearance: auto; }
 .colors__row label { flex: 1 1 11rem; }
 .colors__row input[type="color"] { width: 48px; height: 40px; padding: 2px; border: 1px solid var(--color-border-default); background: transparent; cursor: pointer; }
 .block__toggle { margin-right: var(--space-2); white-space: nowrap; }
+
+/* Comparatif des offres : une colonne par plan, valeurs alignées, coches et croix. */
+.site-header .bp-logo{font-size:28px}
+@media(max-width:480px){.site-header .bp-logo{font-size:24px}.site-header .bp-logo__mark{width:30px;height:30px}}
+.plan-compare-wrap{overflow-x:auto;max-width:100%;border:1px solid var(--color-border-default);border-radius:20px;background:var(--color-bg-surface);-webkit-overflow-scrolling:touch}
+.plan-compare{width:100%;min-width:560px;border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums}
+.plan-compare th,.plan-compare td{padding:16px 18px;text-align:center;vertical-align:middle;border-bottom:1px solid var(--color-border-default)}
+.plan-compare thead th{vertical-align:top;padding-block:24px 20px;background:var(--color-surface-mist)}
+.plan-compare thead td{background:var(--color-surface-mist)}
+.plan-compare thead th>*{display:block}
+.plan-compare thead th>*+*{margin-top:6px}
+.plan-compare__price{font-size:1.625rem;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.plan-compare__price small{font-size:.875rem;font-weight:500;color:var(--color-text-muted);letter-spacing:0}
+.plan-compare tbody th{text-align:start;font-weight:600;min-width:11rem}
+.plan-compare tbody td{font-weight:700}
+.plan-compare tbody tr:nth-child(even) th,.plan-compare tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--color-surface-mist) 45%,transparent)}
+.plan-compare tbody tr:hover th,.plan-compare tbody tr:hover td{background:var(--color-surface-mist)}
+.plan-compare tfoot td{border-bottom:0;padding-block:20px}
+.plan-compare tfoot .bp-btn{margin-inline:auto;width:100%;max-width:14rem;justify-content:center}
+.plan-compare tbody th,.plan-compare thead td:first-child,.plan-compare tfoot td:first-child{position:sticky;inset-inline-start:0;z-index:1;background:var(--color-bg-surface)}
+.plan-compare thead td:first-child{background:var(--color-surface-mist)}
+.plan-compare tbody tr:nth-child(even) th{background:color-mix(in srgb,var(--color-surface-mist) 45%,var(--color-bg-surface))}
+.plan-compare tbody tr:hover th{background:var(--color-surface-mist)}
+.plan-mark{display:inline-block;vertical-align:middle;box-sizing:content-box;padding:5px;border-radius:999px}
+.plan-mark--yes{color:var(--color-on-blue);background:var(--color-action-primary-bg)}
+.plan-mark--no{color:var(--color-text-muted);background:transparent;opacity:.8}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Page fonctionnalités : trois cartes par ligne sur grand écran, deux sur tablette, une sur mobile. */
+.feature-cards{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:620px){.feature-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:960px){.feature-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}}
+.feature-card{display:flex;flex-direction:column;gap:12px;padding:28px;border-radius:20px;border:1px solid var(--color-border-default);background:var(--color-bg-surface);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.feature-card:hover{transform:translateY(-3px);border-color:var(--color-border-strong);box-shadow:0 12px 28px -16px rgba(15,23,42,.35)}
+.feature-card__num{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--color-surface-blue);color:var(--color-on-blue);font-weight:800;font-size:1rem;font-variant-numeric:tabular-nums}
+.feature-card h2{font-size:1.25rem;line-height:1.25;text-wrap:balance;margin:0}
+.feature-card p{margin:0;line-height:1.65;color:var(--color-text-secondary)}
+@media(prefers-reduced-motion:reduce){.feature-card{transition:none}.feature-card:hover{transform:none}}

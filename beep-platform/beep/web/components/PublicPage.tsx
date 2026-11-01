@@ -24,7 +24,7 @@ export function PublicPage({
       >
         <div className="public-page__heading">
           <p className="eyebrow">
-            BeepClick /{" "}
+            Beepclick /{" "}
             {locale === "fr"
               ? "Vos liens vont plus loin"
               : "Take your links further"}

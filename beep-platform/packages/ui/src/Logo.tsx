@@ -1,21 +1,21 @@
 /**
- * Le logo BeepClick : un point émetteur relié à trois destinations.
+ * Le logo Beepclick : un point émetteur relié à trois destinations.
  */
 export function Logo({
   href = "/",
-  label = "BeepClick",
+  label = "Beepclick",
   variant = "full",
 }: {
   href?: string;
   label?: string;
-  variant?: "full" | "wordmark";
+  variant?: "full" | "wordmark" | "mark";
 }) {
   return (
     <a className="bp-logo" href={href} aria-label={label}>
-      {variant === "full" && <svg
+      {variant !== "wordmark" && <svg
         className="bp-logo__mark"
-        width="34"
-        height="34"
+        width={variant === "mark" ? 44 : 34}
+        height={variant === "mark" ? 44 : 34}
         viewBox="192 90 700 700"
         fill="none"
         aria-hidden="true"
@@ -30,9 +30,9 @@ export function Logo({
         <circle cx="623" cy="660" r="92" stroke="currentColor" strokeWidth="46" />
         <circle cx="329" cy="440" r="128" fill="currentColor" />
       </svg>}
-      <span aria-hidden="true">
-        BeepClick
-      </span>
+      {variant !== "mark" && <span aria-hidden="true">
+        Beepclick
+      </span>}
     </a>
   );
 }

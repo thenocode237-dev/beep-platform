@@ -111,7 +111,7 @@ export async function phase4({
   }
   r = await site.post("/v1/team/invitations", { email, role: "viewer" });
   step("phase 4: team invitation reserves a seat", r.status === 200);
-  const invitationMail = await lastMailFor(email, /Invitation BeepClick/i),
+  const invitationMail = await lastMailFor(email, /Invitation Beepclick/i),
     invitation = /invite=([A-Za-z0-9_-]+)/.exec(
       invitationMail?.Text ?? "",
     )?.[1];

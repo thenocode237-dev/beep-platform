@@ -1,11 +1,11 @@
-# BeepClick — Spécifications complètes
+# Beepclick — Spécifications complètes
 
 Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, QR codes, link in bio, suivi de conversion, analytics, API/webhooks**, avec un **back office** (staff) exposé en sous-domaine.
 
 > Statut : v1.1 du document (PostgreSQL + Java) · Périmètre : `beep` (plateforme) + `backoffice` (administration)
 > Domaine de référence dans ce document : `beepclick.app` (en local : `beep.localhost`).
 
-> Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de BeepClick. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
+> Direction d’interface actualisée le **24 octobre 2026** : [charte Signal](beep-platform/docs/design-system.md), inspirée de Vendeer (glacier, cobalt, bleu encre, Manrope/DM Sans, médias locaux). Priorité mobile dès 320 px ; argumentaire fondé sur les usages de partage et les bénéfices de Beepclick. Voir la [refonte et sa recette](beep-platform/docs/refonte-atelier.md). Cette évolution visuelle ne change pas les jalons fonctionnels ; l’état du MVP et des évolutions suivantes est suivi dans les documents de phase.
 
 ---
 
@@ -17,9 +17,9 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 | H2 | Deux projets | `beep` (site, espace client, API, moteur de redirection) et `backoffice` (outil interne staff). Chacun a **sa propre base** et son propre code en Clean Architecture. |
 | H3 | Même domaine | `beepclick.app` = site + espace client + API + redirections. `dashboard.beepclick.app` = back office. |
 | H4 | Stack | Backend **Java 21 + Spring Boot 3** (Maven multi-modules, jOOQ, Flyway), front **Next.js** (site, espace client **et** back office), reverse proxy **Caddy**, **Docker Compose**. Le domaine et les cas d'usage restent en Java pur, sans dépendance au framework. |
-| H5 | « Radar » | Le module « Radar » de Taap.it n'est pas documenté publiquement. Dans BeepClick, **Radar = flux d'activité temps réel + alertes** (pic de trafic, lien cassé, domaine en erreur). À confirmer. |
+| H5 | « Radar » | Le module « Radar » de Taap.it n'est pas documenté publiquement. Dans Beepclick, **Radar = flux d'activité temps réel + alertes** (pic de trafic, lien cassé, domaine en erreur). À confirmer. |
 | H6 | Tarifs | Offres **Starter (gratuit)**, **Pro 4 999 FCFA/mois** et **Elite 14 999 FCFA/mois**, fixées par le porteur du projet. Quotas inspirés de la grille publique de Taap.it (5 liens/QR/1 page en gratuit, 50 au total en entrée de gamme, 500 créations par mois en haut de gamme, 10 domaines, 15 membres). Prix supposés **TTC** ; à valider par une étude de coûts (infrastructure, frais de l'agrégateur de paiement). |
-| H7 | Propriété intellectuelle | BeepClick reprend le **périmètre fonctionnel** de ce type de plateforme, pas son code, ses textes, ses visuels ni sa marque. Vérifier la disponibilité du nom « BeepClick » (marque et domaine) avant lancement. |
+| H7 | Propriété intellectuelle | Beepclick reprend le **périmètre fonctionnel** de ce type de plateforme, pas son code, ses textes, ses visuels ni sa marque. Vérifier la disponibilité du nom « Beepclick » (marque et domaine) avant lancement. |
 | H8 | Marché cible | Offres en **FCFA (XAF)** : on suppose un lancement en **Afrique centrale** (Cameroun, Gabon…). Conséquences retenues : **Mobile Money** (MTN MoMo, Orange Money) comme moyen de paiement principal, abonnements prépayés, support **WhatsApp**, pages légères pour connexions mobiles instables, redirections servies au plus près des utilisateurs (CDN/edge), conformité aux lois locales de protection des données à valider avec un juriste. |
 
 ---
@@ -64,10 +64,10 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 ### 2.3 Deeplinks
 - Un lien vers un contenu d'application (YouTube, Instagram, TikTok, Spotify, Amazon, etc.) **ouvre l'app native** au lieu du navigateur.
 - **Contournement des navigateurs intégrés** (webviews Instagram, Facebook, TikTok, LinkedIn…) : page de bascule + schémas d'URL / intents Android adaptés.
-- **Catalogue d'applications** géré depuis le back office : motif d'URL reconnu, schéma iOS, intent Android, repli web. BeepClick détecte l'app à partir de l'URL de destination.
+- **Catalogue d'applications** géré depuis le back office : motif d'URL reconnu, schéma iOS, intent Android, repli web. Beepclick détecte l'app à partir de l'URL de destination.
 - Repli intelligent : app non installée → store ou version web selon la règle.
 - Aperçu « comment le lien se comportera » (simulateur iOS/Android/desktop) dans l'espace client.
-- Extension Chrome « Ajouter à BeepClick » : création d'un deeplink en un clic depuis la page en cours (phase 4).
+- Extension Chrome « Ajouter à Beepclick » : création d'un deeplink en un clic depuis la page en cours (phase 4).
 
 ### 2.4 Onelink
 - **Un seul lien, toutes les plateformes** : destinations distinctes pour iOS, Android, desktop, avec repli.
@@ -81,7 +81,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Statut en temps réel (DNS ok, TLS ok, erreur) visible côté client et côté back office.
 
 ### 2.6 QR codes
-- Types : **dynamique** (pointe vers un lien BeepClick, destination modifiable sans réimprimer) et **statique** (URL, texte, Wi-Fi, vCard, e-mail, SMS).
+- Types : **dynamique** (pointe vers un lien Beepclick, destination modifiable sans réimprimer) et **statique** (URL, texte, Wi-Fi, vCard, e-mail, SMS).
 - Personnalisation : couleurs, dégradés, forme des modules et des yeux, logo central, cadre avec appel à l'action, niveau de correction d'erreur.
 - Export **SVG, PNG (haute résolution), PDF** prêts à imprimer.
 - Statistiques de scan (mêmes dimensions que les liens).
@@ -94,11 +94,11 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - Thèmes (clair/sombre, polices, couleurs, arrière-plans image/dégradé/vidéo), CSS personnalisé (Elite).
 - SEO : titre, description, image Open Graph, `noindex` en option.
 - Rendu SSR + cache CDN ; score Lighthouse mobile cible ≥ 95.
-- Badge « Propulsé par BeepClick » retirable avec le plan Elite.
+- Badge « Propulsé par Beepclick » retirable avec le plan Elite.
 - Nombre de pages bio selon le plan.
 
 ### 2.8 Suivi de conversion (Conversion tracking)
-- **Identifiant de clic** propriétaire (`beep_cid`) ajouté à la destination et conservé dans un cookie first-party par le script BeepClick.
+- **Identifiant de clic** propriétaire (`beep_cid`) ajouté à la destination et conservé dans un cookie first-party par le script Beepclick.
 - **Script `beep.js`** (installation par une ligne) : pixel de suivi, capture du `beep_cid`, pages vues, mode sans cookie.
 - **Événements** : `lead`, `sale` (montant + devise), `signup`, `subscription`, `custom:*`. Envoi par :
   - navigateur (`beep('track','sale',{value:49,currency:'EUR'})`),
@@ -132,7 +132,7 @@ Plateforme tout-en-un de gestion de liens : **liens courts, deeplinks, Onelink, 
 - **Paiements manuels** (virement, espèces) enregistrables par l'équipe finance depuis le back office.
 - Upgrade immédiat avec prorata, downgrade en fin de période.
 - Quotas appliqués par des **droits (entitlements)** ; les dépassements n'interrompent **jamais** les redirections (§6.4).
-- **TVA et factures** : factures PDF générées par BeepClick (numérotation séquentielle, mentions légales), TVA appliquée selon le pays du client (taux à valider avec un expert-comptable), envoi par e-mail.
+- **TVA et factures** : factures PDF générées par Beepclick (numérotation séquentielle, mentions légales), TVA appliquée selon le pays du client (taux à valider avec un expert-comptable), envoi par e-mail.
 - Codes promo, programme d'affiliation (§2.12) avec commissions versées par Mobile Money.
 
 ### 2.12 Site public et croissance
@@ -917,7 +917,7 @@ Trois offres, inspirées de la structure de la grille publique de Taap.it (gratu
 | Création en masse (CSV) | — | — | ✔ |
 | Intégrations natives | — | Zapier / Make | Toutes (Shopify, WooCommerce, GA4, Meta Pixel, Slack…) |
 | Journal d'audit, CSS personnalisé | — | — | ✔ |
-| Badge « Propulsé par BeepClick » sur les pages bio | Obligatoire | Obligatoire | Retirable |
+| Badge « Propulsé par Beepclick » sur les pages bio | Obligatoire | Obligatoire | Retirable |
 | **Support** | Communauté + e-mail | **WhatsApp** | Prioritaire (WhatsApp / canal privé) + accompagnement à la prise en main |
 
 ¹ **Rétention** : « illimitée » concerne les agrégats (rollups, faible volumétrie), conservés tant que le compte est actif. Les événements bruts et les *customer insights* portent sur 13 mois maximum (§4.6). Starter : 30 jours.

@@ -38,7 +38,7 @@ export const options = {
 };
 export function redirect() {
   const r = http.get(target + "/" + (__ENV.SLUG || "demo"), {
-    headers: { Host: host, "User-Agent": "BeepClick phase3 load browser" },
+    headers: { Host: host, "User-Agent": "Beepclick phase3 load browser" },
     redirects: 0,
   });
   check(r, { "redirect 302": (r) => r.status === 302 });

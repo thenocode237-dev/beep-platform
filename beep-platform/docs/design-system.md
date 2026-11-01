@@ -1,4 +1,4 @@
-# BeepClick — charte Signal
+# Beepclick — charte Signal
 
 Direction Signal : thème bleu sur fond blanc, actualisé le 25 octobre 2026 à la demande du porteur du projet. Bleu encre, cobalt et brume structurent les accents et les cartes. La composition et la priorité mobile sont conservées.
 
@@ -6,11 +6,11 @@ Source exécutable : [tokens.json](../packages/design-tokens/tokens.json). Inven
 
 ## Intention et argumentaire
 
-« Un petit lien. De grandes possibilités. » BeepClick rapproche les idées, contenus et produits des personnes qui les découvrent.
+« Un petit lien. De grandes possibilités. » Beepclick rapproche les idées, contenus et produits des personnes qui les découvrent.
 
 Le discours commence par les situations de partage : conversation WhatsApp, bio de réseau social, emballage. Il explique ensuite trois bénéfices : une adresse reconnaissable et facile à transmettre ; moins d’étapes vers la bonne destination ; des données pour comprendre les canaux qui fonctionnent. Les noms techniques viennent après leur utilité.
 
-La voix est chaleureuse, concrète et honnête sur l’avancement. Aucun taux de conversion, témoignage, nombre de clients ou résultat commercial fictif. Les photos et aperçus mettent en scène un atelier fictif, pas une cliente de BeepClick.
+La voix est chaleureuse, concrète et honnête sur l’avancement. Aucun taux de conversion, témoignage, nombre de clients ou résultat commercial fictif. Les photos et aperçus mettent en scène un atelier fictif, pas une cliente de Beepclick.
 
 **Disponibilité :** l’état fonctionnel suit la [phase 1](phase-1.md) et la [phase 2 en cours](phase-2.md). Liens courts, QR codes, pages bio et statistiques de base sont disponibles dès l’inscription. Deeplinks et Onelink restent des évolutions prévues. Les maquettes marketing restent des illustrations, sans données clients réelles. Les mentions de disponibilité doivent suivre ces documents.
 
@@ -56,7 +56,7 @@ Les titres se composent en casse naturelle, avec approche resserrée. Les sous-t
 
 ## Logo, illustrations et médias
 
-Le signe BeepClick est un **point émetteur entouré de deux paires d’ondes**, accompagné du mot « beep. ». Il reprend l’idée de connexion du produit et conserve une identité distincte du V de Vendeer. Le composant [Logo.tsx](../packages/ui/src/Logo.tsx) hérite des couleurs sémantiques ; les favicons des deux applications reprennent le même signe.
+Le signe Beepclick est un **point émetteur entouré de deux paires d’ondes**, accompagné du mot « beep. ». Il reprend l’idée de connexion du produit et conserve une identité distincte du V de Vendeer. Le composant [Logo.tsx](../packages/ui/src/Logo.tsx) hérite des couleurs sémantiques ; les favicons des deux applications reprennent le même signe.
 
 Une seule famille d’icônes SVG à trait cohérent, dans [Icon.tsx](../packages/ui/src/Icon.tsx). Les icônes décoratives sont masquées aux lecteurs d’écran. Les commandes qui n’affichent qu’une icône ont un nom accessible.
 
@@ -84,7 +84,7 @@ Trois couches : primitives → sémantique clair/sombre/statique → composants.
 
 `Button` : primary cobalt, accent bleu nuit, secondary et ghost, état de chargement. `TextField` : label, hint et erreur reliée. `Alert`, `Badge`, `Icon`, `Logo`. Utilitaires : `bp-container`, `bp-stack`, `bp-row`, `bp-card`, `bp-sr-only`, `bp-skip-link`, `bp-tabular`.
 
-Les thèmes personnalisables des pages bio (Ivoire, Forêt, Nuit, Soleil) sont des choix de contenu indépendants de l’identité de la plateforme. Leur palette et leurs identifiants persistent ; changer la marque BeepClick ne recolore pas les pages de leurs propriétaires.
+Les thèmes personnalisables des pages bio (Ivoire, Forêt, Nuit, Soleil) sont des choix de contenu indépendants de l’identité de la plateforme. Leur palette et leurs identifiants persistent ; changer la marque Beepclick ne recolore pas les pages de leurs propriétaires.
 
 `SiteChrome` porte la navigation et le pied de page. `ProductPreview` porte la scène illustrative. `AuthShell` sert les écrans d’authentification. `AppShell` encadre l’espace client et ses écrans de gestion ; les paramètres donnent accès à la sécurité. Le back office utilise `Shell` avec la même identité. Les nouveaux écrans réutilisent les tokens sémantiques Signal.
 

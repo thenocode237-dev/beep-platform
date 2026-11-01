@@ -125,7 +125,7 @@ export function DeveloperPanel({
   return (
     <div className="bp-stack bp-stack--lg">
       <header className="page-heading">
-        <p className="eyebrow">BeepClick / API</p>
+        <p className="eyebrow">Beepclick / API</p>
         <h1>
           {txt("Conversions & développeurs.", "Conversions & developers.")}
         </h1>

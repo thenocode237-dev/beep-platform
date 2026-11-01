@@ -73,7 +73,7 @@ public class Workspaces {
   public Entitlements entitlements(Workspace w) {
     Plan plan = plans.findByCode(w.planCode()).orElseThrow(() -> new IllegalStateException("plan inconnu : " + w.planCode()));
     Map<String, Long> overrides = plans.overrides(w.id()).stream().collect(Collectors.toMap(PlanRepository.EntitlementOverride::key, PlanRepository.EntitlementOverride::value));
-    if(enterprise!=null)enterprise.contract(w.id()).filter(c->io.beep.core.domain.enterprise.EnterprisePolicy.active(c,clock.instant())).ifPresent(c->{overrides.put("analytics.retention_days",((Number)c.get("retentionDays")).longValue());if(!"BeepClick".equals(c.get("brandName")))overrides.put("features.bio_badge_removable",1L);});
+    if(enterprise!=null)enterprise.contract(w.id()).filter(c->io.beep.core.domain.enterprise.EnterprisePolicy.active(c,clock.instant())).ifPresent(c->{overrides.put("analytics.retention_days",((Number)c.get("retentionDays")).longValue());if(!"Beepclick".equals(c.get("brandName")))overrides.put("features.bio_badge_removable",1L);});
     return Entitlements.of(plan, overrides);
   }
 

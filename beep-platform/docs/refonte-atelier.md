@@ -1,12 +1,12 @@
-# Refonte BeepClick — direction Signal
+# Refonte Beepclick — direction Signal
 
 24 octobre 2026. Périmètre : site public FR/EN, inscription et connexion, vérification d’adresse, récupération de mot de passe, espace client, connexion équipe et liste des utilisateurs du back office.
 
 ## Pourquoi cette direction
 
-La référence de composition est Vendeer : typographies Manrope/DM Sans, photos de travail, surfaces sobres et mise en page éditoriale. Après le retour du porteur du projet, les couleurs ont été entièrement remplacées pour distinguer BeepClick : fond blanc, cobalt, bleu encre et brume. Le signe et l’argumentaire restent propres au partage de liens.
+La référence de composition est Vendeer : typographies Manrope/DM Sans, photos de travail, surfaces sobres et mise en page éditoriale. Après le retour du porteur du projet, les couleurs ont été entièrement remplacées pour distinguer Beepclick : fond blanc, cobalt, bleu encre et brume. Le signe et l’argumentaire restent propres au partage de liens.
 
-L’ancienne interface exposait surtout un catalogue de fonctionnalités. La nouvelle commence par le problème rencontré : une adresse trop longue à partager, des détours avant de trouver le bon contenu, un manque de visibilité sur les clics. Elle relie ensuite chaque capacité future de BeepClick à son bénéfice.
+L’ancienne interface exposait surtout un catalogue de fonctionnalités. La nouvelle commence par le problème rencontré : une adresse trop longue à partager, des détours avant de trouver le bon contenu, un manque de visibilité sur les clics. Elle relie ensuite chaque capacité future de Beepclick à son bénéfice.
 
 | Décision | Effet recherché |
 | --- | --- |
@@ -23,7 +23,7 @@ L’ancienne interface exposait surtout un catalogue de fonctionnalités. La nou
 ## Ce que cette refonte livre
 
 - Nouvelle identité partagée : palette clair/sombre, logo, favicons, polices locales, boutons, champs et cartes.
-- Accueil recomposé : accroche, bénéfices BeepClick, audience, six aperçus de fonctions, scénario en trois gestes, FAQ et invitation à créer un compte.
+- Accueil recomposé : accroche, bénéfices Beepclick, audience, six aperçus de fonctions, scénario en trois gestes, FAQ et invitation à créer un compte.
 - Authentification à deux panneaux sur bureau, formulaire prioritaire sur mobile.
 - Espace client séparé du gabarit de connexion ; palette commune aux écrans de gestion via `AppShell`, formulaires, graphiques et paramètres de sécurité.
 - Back office cohérent : connexion équipe illustrée, navigation bleu nuit, liste adaptative et état vide.
@@ -60,7 +60,7 @@ Les builds des deux fronts, le typage et les **34 paires de contrastes** passent
 
 ## Méthode
 
-Le skill demandé **ui-ux-pro-max** a servi de grille de décision : contraste, cibles tactiles, priorité de contenu, labels de formulaires, clavier, dimensions de médias et mouvement réduit. Son moteur de recherche Python n’a pas été exécuté, Python n’étant pas disponible ; aucune recommandation issue de ce moteur n’est revendiquée. Vendeer a guidé la composition ; le retour utilisateur a conduit à la palette Signal propre à BeepClick.
+Le skill demandé **ui-ux-pro-max** a servi de grille de décision : contraste, cibles tactiles, priorité de contenu, labels de formulaires, clavier, dimensions de médias et mouvement réduit. Son moteur de recherche Python n’a pas été exécuté, Python n’étant pas disponible ; aucune recommandation issue de ce moteur n’est revendiquée. Vendeer a guidé la composition ; le retour utilisateur a conduit à la palette Signal propre à Beepclick.
 
 Les valeurs communes se maintiennent dans les tokens, les compositions dans les feuilles CSS de chaque application et les textes éditoriaux FR/EN dans `beep/web/lib/experience.ts`. Les sources de Vendeer n’ont pas été modifiées.
 

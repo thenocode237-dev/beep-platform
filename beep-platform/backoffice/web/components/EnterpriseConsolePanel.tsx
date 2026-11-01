@@ -332,7 +332,7 @@ export function EnterpriseConsolePanel({
             <Field
               name="brandName"
               label="Nom affiché"
-              defaultValue={text(contract, "brandName") || "BeepClick"}
+              defaultValue={text(contract, "brandName") || "Beepclick"}
               maxLength={80}
               required
             />

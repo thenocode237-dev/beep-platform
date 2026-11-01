@@ -20,7 +20,7 @@ export default async function Page({
     <PublicPage
       locale={locale}
       path="/docs"
-      title={en ? "Build with BeepClick." : "Développez avec BeepClick."}
+      title={en ? "Build with Beepclick." : "Développez avec Beepclick."}
       intro={
         en
           ? "Links, conversion events and signed webhooks."
@@ -92,8 +92,8 @@ export default async function Page({
         </h2>
         <p>
           {en
-            ? "BeepClick-Signature contains t=UNIX_SECONDS,v1=HEX_HMAC. Compute HMAC-SHA256 with your whsec_ secret over timestamp + '.' + the exact request body. Compare in constant time, reject timestamps older than 5 minutes, and deduplicate the event id. Delivery is at least once, with eight attempts and exponential backoff. 3xx responses are not followed."
-            : "BeepClick-Signature contient t=UNIX_SECONDS,v1=HMAC_HEX. Calculez HMAC-SHA256 avec le secret whsec_ sur timestamp + '.' + le corps exact. Comparez en temps constant, refusez les horodatages de plus de 5 minutes et dédupliquez l’identifiant d’événement. La livraison peut être répétée : huit tentatives avec attente exponentielle. Les redirections 3xx ne sont pas suivies."}
+            ? "Beepclick-Signature contains t=UNIX_SECONDS,v1=HEX_HMAC. Compute HMAC-SHA256 with your whsec_ secret over timestamp + '.' + the exact request body. Compare in constant time, reject timestamps older than 5 minutes, and deduplicate the event id. Delivery is at least once, with eight attempts and exponential backoff. 3xx responses are not followed."
+            : "Beepclick-Signature contient t=UNIX_SECONDS,v1=HMAC_HEX. Calculez HMAC-SHA256 avec le secret whsec_ sur timestamp + '.' + le corps exact. Comparez en temps constant, refusez les horodatages de plus de 5 minutes et dédupliquez l’identifiant d’événement. La livraison peut être répétée : huit tentatives avec attente exponentielle. Les redirections 3xx ne sont pas suivies."}
         </p>
         <pre className="developer-code">{`import {createHmac, timingSafeEqual} from 'node:crypto';\nconst expected = createHmac('sha256', process.env.BEEP_WEBHOOK_SECRET)\n  .update(timestamp + '.' + rawBody).digest();\nconst received = Buffer.from(signatureHex, 'hex');\nconst valid = received.length === expected.length &&\n  timingSafeEqual(received, expected) &&\n  Math.abs(Date.now()/1000 - Number(timestamp)) < 300;`}</pre>
       </section>

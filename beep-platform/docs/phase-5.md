@@ -23,7 +23,7 @@ La bascule est explicite et transactionnelle, après les migrations normales, pe
 
 Parcours client : `/app/enterprise`, accessible également depuis « Plus ». Parcours staff : `/enterprise`.
 
-- Contrats versionnés par workspace : référence, validité, état, SLA en points de base, référence et empreinte du DPA signé, rétention de 1 à 3 650 jours, CIDR IPv4/IPv6, nom et couleur de marque. Les éditions concurrentes sont refusées. Le registre stocke la preuve de signature fournie ; BeepClick ne signe pas juridiquement le DPA.
+- Contrats versionnés par workspace : référence, validité, état, SLA en points de base, référence et empreinte du DPA signé, rétention de 1 à 3 650 jours, CIDR IPv4/IPv6, nom et couleur de marque. Les éditions concurrentes sont refusées. Le registre stocke la preuve de signature fournie ; Beepclick ne signe pas juridiquement le DPA.
 - Les plans non publics, overrides de quotas et paiements manuels utilisent les modules existants Plans et Facturation ; les écrans entreprise y donnent accès.
 - Les restrictions IP couvrent les sessions et les clés API. Les routes de réception des fournisseurs conservent leur propre signature. La liste IP et l’exigence SSO ne disparaissent pas silencieusement à l’échéance commerciale. Le staff peut corriger une politique qui a bloqué l’accès.
 - La rétention contractuelle active remplace celle du plan pour les statistiques et conversions. La maintenance conserve les partitions nécessaires aux contrats longs. Les empreintes de visiteur et les touches d’attribution gardent leurs durées courtes existantes.

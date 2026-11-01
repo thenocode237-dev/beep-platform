@@ -57,7 +57,7 @@ public class InvoicePdfAdapter implements InvoicePdfPort {
     text(c, 48, 603, 10, true, "Désignation");
     text(c, 555 - 8 - width("Montant (FCFA)", 10, true), 603, 10, true, "Montant (FCFA)");
     int row = 578;
-    row = line(c, row, "Abonnement BeepClick " + i.planName() + " — " + cycle(i.cycle()), money(i.listPriceXaf()));
+    row = line(c, row, "Abonnement Beepclick " + i.planName() + " — " + cycle(i.cycle()), money(i.listPriceXaf()));
     if (i.discountXaf() > 0) row = line(c, row, "Remise (code promotionnel)", "-" + money(i.discountXaf()));
     if (i.creditXaf() > 0) row = line(c, row, "Crédit du temps restant de l'abonnement précédent", "-" + money(i.creditXaf()));
     c.append("0.8 0.8 0.78 RG 40 ").append(row + 10).append(" m 555 ").append(row + 10).append(" l S\n");
@@ -69,7 +69,7 @@ public class InvoicePdfAdapter implements InvoicePdfPort {
     text(c, 555 - 8 - width(total, 12, true), row, 12, true, total);
 
     text(c, 40, 80, 8, false, "Les montants sont exprimés en francs CFA (XAF), TVA incluse dans le prix affiché. Facture acquittée : paiement reçu.");
-    text(c, 40, 68, 8, false, "Document généré automatiquement par BeepClick, valable sans signature.");
+    text(c, 40, 68, 8, false, "Document généré automatiquement par Beepclick, valable sans signature.");
     return document(c.toString());
   }
 
@@ -144,7 +144,7 @@ public class InvoicePdfAdapter implements InvoicePdfPort {
     objects.add("<< /Length " + stream.length + " >>\nstream\n" + content + "endstream");
     objects.add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
     objects.add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
-    objects.add("<< /Title (Facture BeepClick) /Producer (BeepClick) >>");
+    objects.add("<< /Title (Facture Beepclick) /Producer (Beepclick) >>");
     StringBuilder pdf = new StringBuilder("%PDF-1.4\n");
     List<Integer> offsets = new ArrayList<>();
     for (int n = 0; n < objects.size(); n++) {

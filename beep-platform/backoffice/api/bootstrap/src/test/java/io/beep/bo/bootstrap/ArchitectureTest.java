@@ -70,7 +70,7 @@ class ArchitectureTest {
         noClasses().that().resideInAPackage("io.beep.bo.adapter.out..").should().dependOnClassesThat().resideInAPackage("io.beep.bo.adapter.in.."));
 
     // Le back office ne parle au core QUE par l'API admin : seul le gateway utilise un client HTTP sortant.
-    r.put("seul l'adapter coregateway utilise un client HTTP sortant (jamais d'accès direct à la base de BeepClick)",
+    r.put("seul l'adapter coregateway utilise un client HTTP sortant (jamais d'accès direct à la base de Beepclick)",
         noClasses().that().resideOutsideOfPackage("io.beep.bo.adapter.out.coregateway..")
             .should().dependOnClassesThat().resideInAnyPackage("org.springframework.web.client..", "java.net.http.."));
 

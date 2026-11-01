@@ -1,11 +1,11 @@
 const fr = {
   meta: {
-    title: "BeepClick — Des liens plus intelligents pour plus de conversions",
+    title: "Beepclick — Des liens plus intelligents pour plus de conversions",
     description:
       "Liens courts, deeplinks, QR codes et link in bio, mesurés du clic jusqu'à la vente. Pensé pour le mobile et les connexions instables.",
   },
   common: { skip: "Aller au contenu", language: "Langue", loading: "Chargement…", soon: "Bientôt" },
-  nav: { login: "Se connecter", signup: "Commencer", home: "Accueil BeepClick" },
+  nav: { login: "Se connecter", signup: "Commencer", home: "Accueil Beepclick" },
   home: {
     h1: "Des liens plus intelligents pour plus de conversions",
     sub: "Liens courts, deeplinks, QR codes et link in bio, mesurés du clic jusqu'à la vente. Léger sur mobile, fiable même quand la connexion ne l'est pas.",

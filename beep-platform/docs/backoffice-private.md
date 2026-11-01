@@ -1,10 +1,10 @@
 # Accès privé au backoffice
 
-En production, seul un appareil connecté au réseau Tailscale et autorisé par la politique réseau accède à `https://beep-admin.<réseau>.ts.net`. Le mot de passe, le TOTP obligatoire, les rôles et les audits de BeepClick restent en vigueur. L’espace client `https://beepclick.app/app` conserve son accès public.
+En production, seul un appareil connecté au réseau Tailscale et autorisé par la politique réseau accède à `https://beep-admin.<réseau>.ts.net`. Le mot de passe, le TOTP obligatoire, les rôles et les audits de Beepclick restent en vigueur. L’espace client `https://beepclick.app/app` conserve son accès public.
 
 ## 1. Créer le réseau dédié
 
-Créer un compte/réseau Tailscale dédié à BeepClick avec l’identité de son propriétaire. Activer la protection MFA de cette identité. Dans DNS, activer MagicDNS et les certificats HTTPS ; relever le suffixe DNS réel du réseau, par exemple `tail123.ts.net`. Installer Tailscale sur l’ordinateur et les appareils mobiles des administrateurs et les connecter à ce réseau.
+Créer un compte/réseau Tailscale dédié à Beepclick avec l’identité de son propriétaire. Activer la protection MFA de cette identité. Dans DNS, activer MagicDNS et les certificats HTTPS ; relever le suffixe DNS réel du réseau, par exemple `tail123.ts.net`. Installer Tailscale sur l’ordinateur et les appareils mobiles des administrateurs et les connecter à ce réseau.
 
 Dans Access controls, **remplacer** la politique initiale par [`infra/tailscale/policy.hujson`](../infra/tailscale/policy.hujson), après remplacement de toutes les occurrences de `owner@your-company.invalid` par le compte réel du propriétaire. Vérifier les tests intégrés avant d’enregistrer. La politique initiale « allow all » doit disparaître. Ajouter explicitement les autres comptes autorisés à `group:beep-staff`. Les autres utilisateurs ne reçoivent aucun accès au serveur.
 
@@ -49,7 +49,7 @@ make prod-vpn-check ENV_FILE=.env.production
 make prod-logs ENV_FILE=.env.production s=backoffice-vpn
 ```
 
-Les images utilisent Tailscale `v1.104.2` en mode userspace, sans privilèges réseau ni `/dev/net/tun`. L’API et le front du backoffice sont retirés du réseau public ; seul le VPN dispose d’un réseau sortant dédié. La passerelle Caddy partage l’espace réseau du VPN et écoute **uniquement** `127.0.0.1:8080`. Serve termine HTTPS sur le réseau privé et transmet vers cette socket ; `/api/*` et l’interface partagent la même origine. Les routes de gestion et internes restent bloquées. Les en-têtes d’identité Tailscale ne remplacent jamais l’authentification BeepClick.
+Les images utilisent Tailscale `v1.104.2` en mode userspace, sans privilèges réseau ni `/dev/net/tun`. L’API et le front du backoffice sont retirés du réseau public ; seul le VPN dispose d’un réseau sortant dédié. La passerelle Caddy partage l’espace réseau du VPN et écoute **uniquement** `127.0.0.1:8080`. Serve termine HTTPS sur le réseau privé et transmet vers cette socket ; `/api/*` et l’interface partagent la même origine. Les routes de gestion et internes restent bloquées. Les en-têtes d’identité Tailscale ne remplacent jamais l’authentification Beepclick.
 
 Le proxy public ne dépend d’aucun service privé. Les services publics sont démarrés/rechargés avant l’attente du VPN. L’ancien domaine du dashboard répond 404 en HTTP et dans le routage HTTPS générique ; si aucun certificat n’existe plus, sa connexion TLS peut être refusée avant HTTP. Ne jamais rétablir la route publique comme solution de secours.
 
@@ -63,7 +63,7 @@ Ces contrôles exigent le réseau Tailscale et les comptes réels ; les tests lo
 4. Redémarrer `backoffice-vpn` et `backoffice-gateway` avec le même projet et les mêmes volumes ; relancer `make prod-vpn-check`. Vérifier que l’identité et l’URL restent identiques, puis arrêter temporairement ces deux services et confirmer que `beepclick.app`, `/app`, les API publiques et les liens personnalisés fonctionnent toujours. Les redémarrer avec `make prod-up`.
 5. Après réussite, supprimer l’ancien enregistrement DNS public `dashboard.beepclick.app`. Se reconnecter au backoffice sur la nouvelle adresse ; aucun mot de passe, secret TOTP ou donnée métier n’est migré.
 
-Pour révoquer un administrateur : le retirer du groupe Tailscale, révoquer ses appareils perdus et désactiver son compte staff BeepClick. En cas d’accès privé indisponible, utiliser la console sécurisée du serveur ou le compte propriétaire Tailscale pour réparer le tunnel, sans publier le backoffice. Le propriétaire conserve un accès de récupération à son fournisseur d’identité.
+Pour révoquer un administrateur : le retirer du groupe Tailscale, révoquer ses appareils perdus et désactiver son compte staff Beepclick. En cas d’accès privé indisponible, utiliser la console sécurisée du serveur ou le compte propriétaire Tailscale pour réparer le tunnel, sans publier le backoffice. Le propriétaire conserve un accès de récupération à son fournisseur d’identité.
 
 ## Vérifications automatiques
 

@@ -546,7 +546,7 @@ class ApplicationWiring {
     return new PostgresCustomDomainAdapter(dsl);
   }
 
-  /** Noms qui désignent le domaine de BeepClick : site public, plus `BEEP_MAIN_HOSTS` (ex. localhost, core). Tout autre nom est un domaine personnalisé ou inconnu. */
+  /** Noms qui désignent le domaine de Beepclick : site public, plus `BEEP_MAIN_HOSTS` (ex. localhost, core). Tout autre nom est un domaine personnalisé ou inconnu. */
   @Bean
   CachingDomainRouterAdapter domainRouter(DSLContext dsl, PublicSite site, MeterRegistry registry, @Value("${beep.domains.main-hosts}") List<String> mainHosts,
       @Value("${beep.redirect.cache-size}") long size) {

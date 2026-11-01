@@ -253,7 +253,7 @@ r = await visitor.get(`/${bioSlug}`);
 step("bio : page publiée, rendue côté serveur, contenu échappé, CSP sans script",
   r.status === 200 && r.text.includes("Atelier e2e — boutique") && r.text.includes("&lt;b&gt;qui&lt;/b&gt;") && !/<script/i.test(r.text) && /default-src 'none'/.test(r.headers.get("content-security-policy") ?? "") && r.raw.length < 150_000,
   `statut ${r.status}`);
-step("bio : badge « Propulsé par BeepClick »", /Propulsé par/.test(r.text));
+step("bio : badge « Propulsé par Beepclick »", /Propulsé par/.test(r.text));
 r = await visitor.get(`/_b/c/${bio.id}/${blockId}`);
 step("bio : clic sur un bouton mesuré puis redirigé", r.status === 302 && r.headers.get("location") === "https://example.com/boutique", `statut ${r.status}`);
 r = await site.post("/v1/bio-pages", { slug: `${bioSlug}-2`, title: "Deuxième" });

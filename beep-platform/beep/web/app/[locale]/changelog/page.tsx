@@ -19,7 +19,7 @@ export default async function Page({
       locale={locale}
       path="/changelog"
       title={
-        locale === "en" ? "What is new in BeepClick." : "Les nouveautés de BeepClick."
+        locale === "en" ? "What is new in Beepclick." : "Les nouveautés de Beepclick."
       }
     >
       {!available && (

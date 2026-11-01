@@ -16,10 +16,10 @@ function production() {
       PAYMENT_PROVIDER: "notchpay", NOTCHPAY_PUBLIC_KEY: "provider-key", NOTCHPAY_HASH_KEY: "provider-secret",
       BILLING_SELLER_ADDRESS: "Address", BILLING_SELLER_TAX_ID: "Registration",
       URL_SAFETY_PROVIDER: "web_risk", WEB_RISK_API_KEY: "safety-key",
-      SMTP_HOST: "smtp.example.com", MAIL_FROM: "BeepClick <hello@beepclick.app>",
+      SMTP_HOST: "smtp.example.com", MAIL_FROM: "Beepclick <hello@beepclick.app>",
     } },
     web: { build: { args: { BEEP_PUBLIC_URL: "https://beepclick.app" } }, environment: {
-      BEEP_PUBLIC_URL: "https://beepclick.app", LEGAL_PUBLISHER: "BeepClick", LEGAL_ADDRESS: "Address",
+      BEEP_PUBLIC_URL: "https://beepclick.app", LEGAL_PUBLISHER: "Beepclick", LEGAL_ADDRESS: "Address",
       LEGAL_REGISTRATION: "Registration", LEGAL_CONTACT: "hello@beepclick.app", LEGAL_HOST: "Host",
     } },
     "backoffice-api": { networks: { admin: {}, backend: {}, db: {} }, environment: { BO_PUBLIC_URL: "https://beep-admin.tail123.ts.net", BO_ENCRYPTION_KEY: key } },

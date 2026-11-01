@@ -47,7 +47,7 @@ public record Destination(String url) {
     }
   }
 
-  /** Une destination qui pointe vers BeepClick lui-même créerait des chaînes ou des boucles de redirection. */
+  /** Une destination qui pointe vers Beepclick lui-même créerait des chaînes ou des boucles de redirection. */
   public void requireNotHost(String ownHost) {
     if (ownHost != null && !ownHost.isBlank() && host().equals(ownHost.toLowerCase(Locale.ROOT))) throw new DomainException("destination_loop");
   }

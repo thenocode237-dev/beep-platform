@@ -80,7 +80,7 @@ export async function phase3({
     await sleep(250);
     r = await visitor.get("/" + bio.slug);
     step(
-      "phase 3: entitled bio has no BeepClick badge",
+      "phase 3: entitled bio has no Beepclick badge",
       r.status === 200 && !r.text.includes("Propulsé par"),
     );
   }

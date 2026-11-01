@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "BeepClick public API",
+    "title": "Beepclick public API",
     "version": "0.9.0",
     "description": "Clés sk_ par workspace. read pour GET, write pour mutations, events pour POST /events. Pro 60 req/min, Elite 600 req/min. Sessions également acceptées pour les parcours client. Phase 4: team administration, native integrations and Radar are session-authenticated in the workspace UI. Chrome uses an existing write-scoped API key, bound to its workspace."
   },

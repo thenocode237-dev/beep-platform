@@ -17,20 +17,20 @@ Parcours : `/app/team`, `/app/organization`, et sélecteur de workspace dans la 
 
 | Outil | Comportement livré | Configuration |
 |---|---|---|
-| Stripe | Réception des paiements réussis ; déduplication commune aux événements Checkout et PaymentIntent d’un même paiement | Secret du webhook Stripe ; remplacer son URL de livraison par celle fournie par BeepClick |
+| Stripe | Réception des paiements réussis ; déduplication commune aux événements Checkout et PaymentIntent d’un même paiement | Secret du webhook Stripe ; remplacer son URL de livraison par celle fournie par Beepclick |
 | Shopify | Réception des commandes payées, HMAC du corps brut et contrôle du domaine marchand | Secret de l’application et domaine `*.myshopify.com`, puis abonnement webhook |
-| WooCommerce | Réception des commandes `processing` / `completed`, signature HMAC du corps brut | Secret du webhook et URL de livraison BeepClick |
+| WooCommerce | Réception des commandes `processing` / `completed`, signature HMAC du corps brut | Secret du webhook et URL de livraison Beepclick |
 | Zapier / Make | Événements sortants signés, file durable et journal existant | URL HTTPS de réception ; secret de signature affiché une fois |
 | Slack | Notifications de leads, ventes et créations de liens ; alertes Radar | URL Incoming Webhook Slack |
 | GA4 | Leads et ventes via Measurement Protocol | Measurement ID et API secret ; référence visiteur consentie nécessaire |
 
 Pro donne accès à Zapier et Make ; Elite donne accès à tous les connecteurs. Les connexions se configurent dans `/app/integrations`. Il s’agit de connecteurs à configuration explicite, sans installation OAuth ou publication sur les marketplaces fournisseurs.
 
-Les ventes reçues exigent `beep_consent=true` dans les métadonnées (`note_attributes` Shopify, `meta_data` WooCommerce). `beep_cid` rattache la vente à un clic ; `beep_visitor` est facultatif pour BeepClick et doit être un identifiant opaque. GA4 exige cette référence visiteur pour recevoir le postback. Aucun e-mail client, nom, adresse, IP ou panier n’est importé. Les montants Stripe suivent les [unités mineures et cas particuliers du fournisseur](https://docs.stripe.com/currencies), y compris ISK, UGX et MGA ; Shopify et WooCommerce transmettent une valeur décimale.
+Les ventes reçues exigent `beep_consent=true` dans les métadonnées (`note_attributes` Shopify, `meta_data` WooCommerce). `beep_cid` rattache la vente à un clic ; `beep_visitor` est facultatif pour Beepclick et doit être un identifiant opaque. GA4 exige cette référence visiteur pour recevoir le postback. Aucun e-mail client, nom, adresse, IP ou panier n’est importé. Les montants Stripe suivent les [unités mineures et cas particuliers du fournisseur](https://docs.stripe.com/currencies), y compris ISK, UGX et MGA ; Shopify et WooCommerce transmettent une valeur décimale.
 
 Les signatures Stripe ont une tolérance de cinq minutes ; Shopify et WooCommerce utilisent HMAC-SHA256 en Base64. La collecte lit au plus 256 Ko et déduplique par connexion et identifiant métier. Le worker effectue huit tentatives avec baux et backoff, conserve les erreurs normalisées et permet le rejeu. Les secrets, y compris les URL natives de webhook, sont chiffrés et absents des vues et exports. Désactiver une connexion annule les travaux encore en attente.
 
-Le visiteur est pseudonymisé avant stockage dans la file. Export et effacement visiteur couvrent aussi les conversions en attente ; un travail réclamé doit encore être actif sous verrou du workspace avant son ingestion. Les journaux gardent un marqueur de déduplication sans les données effacées. Les livraisons déjà reçues par un fournisseur ne peuvent pas être retirées par BeepClick.
+Le visiteur est pseudonymisé avant stockage dans la file. Export et effacement visiteur couvrent aussi les conversions en attente ; un travail réclamé doit encore être actif sous verrou du workspace avant son ingestion. Les journaux gardent un marqueur de déduplication sans les données effacées. Les livraisons déjà reçues par un fournisseur ne peuvent pas être retirées par Beepclick.
 
 Les erreurs sortantes et les rejeux sont également visibles dans `/app/developer`. Les destinations sortantes reprennent la protection DNS/HTTPS de la phase 3 ; aucune redirection réseau n’est suivie.
 

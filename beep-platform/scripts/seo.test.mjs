@@ -21,7 +21,7 @@ before(async () => {
       const slug = locale === "en" ? "share-better" : "bien-partager";
       const items = url.searchParams.has("slug") && url.searchParams.get("slug") !== slug ? [] : [{
         kind: "blog", slug, locale, title: locale === "en" ? "Share better" : "Bien partager",
-        body: "## BeepClick\n\nDes liens pour vos campagnes.", version: 1, published_at: "2026-10-20T10:00:00Z",
+        body: "## Beepclick\n\nDes liens pour vos campagnes.", version: 1, published_at: "2026-10-20T10:00:00Z",
       }];
       res.end(JSON.stringify({ items }));
     } else {
@@ -97,7 +97,7 @@ test("account and authentication routes carry noindex on both locales", async ()
 
 test("articles use their own metadata and unknown slugs return 404", async () => {
   const body = await html("/blog/bien-partager");
-  assert.match(body, /<title>Bien partager \| BeepClick<\/title>/);
+  assert.match(body, /<title>Bien partager \| Beepclick<\/title>/);
   assert.ok(body.includes(`<link rel="canonical" href="${origin}/blog/bien-partager"`));
   assert.ok(body.includes('property="og:type" content="article"'));
   assert.doesNotMatch(body, /<link rel="alternate"/);

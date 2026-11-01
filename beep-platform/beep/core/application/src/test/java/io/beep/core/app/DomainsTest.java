@@ -191,7 +191,7 @@ class DomainsTest {
     Visit visit = new Visit("203.0.113.1", "Mozilla/5.0", null, "fr", null, true, p.now);
 
     assertThat(p.resolveSlug.execute("promo", d.id(), visit)).isEqualTo(new Outcome.Redirect("https://shop.example/custom"));
-    assertThat(p.resolveSlug.execute("promo", visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine de BeepClick
+    assertThat(p.resolveSlug.execute("promo", visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine de Beepclick
     assertThat(p.resolveSlug.execute("only-main", d.id(), visit)).isInstanceOf(Outcome.NotFound.class); // pas sur le domaine du client
     assertThat(p.resolveSlug.execute("only-main", visit)).isEqualTo(new Outcome.Redirect("https://shop.example/main"));
   }
@@ -203,7 +203,7 @@ class DomainsTest {
     CustomDomain d = uc.add(ada, "go.acme.co");
     assertThat(tls.allowed("go.acme.co")).isFalse(); // DNS non vérifié
     assertThat(tls.allowed("inconnu.acme.co")).isFalse();
-    assertThat(tls.allowed("beepclick.app")).isFalse(); // le domaine de BeepClick n'est pas un domaine personnalisé
+    assertThat(tls.allowed("beepclick.app")).isFalse(); // le domaine de Beepclick n'est pas un domaine personnalisé
     assertThat(tls.allowed(null)).isFalse();
     assertThat(tls.allowed("x".repeat(300))).isFalse();
 

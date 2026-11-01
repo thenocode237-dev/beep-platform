@@ -1,11 +1,11 @@
-# BeepClick — Roadmap de développement (plateforme + back office)
+# Beepclick — Roadmap de développement (plateforme + back office)
 
 Ce document planifie l'évolution **simultanée** de `beep` et de `backoffice`, en Clean Architecture, sur Docker Compose, avec les deux projets sous le même domaine (`beepclick.app` et `dashboard.beepclick.app`).
 Il complète `beep-specs.md`.
 
 ## Direction d’interface — mise à jour du 24 octobre 2026
 
-La [refonte Signal](beep-platform/docs/refonte-atelier.md) applique à BeepClick une direction inspirée de Vendeer : nouvelle identité, accueil argumenté autour du partage et de la destination des liens, médias locaux, parcours de compte et back office harmonisés. La [charte](beep-platform/docs/design-system.md) devient la référence des prochaines phases.
+La [refonte Signal](beep-platform/docs/refonte-atelier.md) applique à Beepclick une direction inspirée de Vendeer : nouvelle identité, accueil argumenté autour du partage et de la destination des liens, médias locaux, parcours de compte et back office harmonisés. La [charte](beep-platform/docs/design-system.md) devient la référence des prochaines phases.
 
 Les nouvelles interfaces sont conçues dès 320 px : formulaires prioritaires sur mobile, cibles de 44 à 52 px, CTA fixe sur l’accueil et utilisateurs en cartes. Le typage, les builds des deux fronts et les contrastes sont vérifiés ; captures et résultats navigateur sont documentés dans la recette. Les essais sur appareils physiques et les mesures Lighthouse restent ouverts.
 
@@ -126,7 +126,7 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 - `backoffice` : **catalogue d'apps** (CRUD, test en direct, publication versionnée), **file de modération** (signalements, Safe Browsing, liste noire), feature flags v1, **export et suppression de compte (RGPD)** côté staff, avec le parcours équivalent dans l'espace client.
 
 **Critères de sortie — lancement public**
-- Paiements réels en production, factures conformes, TVA et factures conformes générées par BeepClick (taux validés avec un expert-comptable) ; test de bout en bout d'un paiement MTN MoMo et Orange Money en production.
+- Paiements réels en production, factures conformes, TVA et factures conformes générées par Beepclick (taux validés avec un expert-comptable) ; test de bout en bout d'un paiement MTN MoMo et Orange Money en production.
 - ≥ 25 apps populaires dans le catalogue, testées sur iOS/Android réels.
 - Processus d'abus opérationnel (délai de traitement cible < 24 h).
 - Droits RGPD (export et suppression de compte) opérationnels.
@@ -163,7 +163,7 @@ La grille de `beep-specs.md` (§6.1) décrit le produit cible. Le site n'affiche
 - `backoffice` : rôles staff granulaires (`support`, `finance`, `trust_safety`, `content`), **impersonation lecture seule**, supervision des intégrations, gestion des erreurs d'intégration.
 
 **Cycle 13–14 (S27–S30) : Radar, extension, croissance**
-- `beep` : **extension Chrome** « Ajouter à BeepClick », **Radar** (alertes), flux temps réel (SSE), vérification de santé des destinations, customer insights (plan Elite), rapports e-mail planifiés, blocs bio avancés (capture d'e-mail, formulaire, vidéo/audio), **programme d'affiliation**.
+- `beep` : **extension Chrome** « Ajouter à Beepclick », **Radar** (alertes), flux temps réel (SSE), vérification de santé des destinations, customer insights (plan Elite), rapports e-mail planifiés, blocs bio avancés (capture d'e-mail, formulaire, vidéo/audio), **programme d'affiliation**.
 - `backoffice` : **gestion de contenu** (blog, en remplacement du Markdown versionné ; feuille de route publique ; annonces), paiements d'affiliation, métriques de cohortes et de rétention, support léger (notes, historique).
 
 **Critères de sortie**
@@ -211,7 +211,7 @@ Cycle  S      beep                              backoffice
 |---|---|
 | **Versionnement du contrat admin** | SemVer sur `beep-admin.openapi.yaml`. Changement **additif** : un cycle suffit. Changement **cassant** : nouvelle version `/internal/admin/v2` + période de coexistence d'un cycle. |
 | **Ordre de livraison** | 1) contrat fusionné, 2) `beep-core` expose l'endpoint, 3) `backoffice` consomme. Le back office ne peut jamais être déployé avant la version du core dont il dépend (vérifié par un test de compatibilité au démarrage). |
-| **Données** | Le back office ne lit/écrit jamais la base de BeepClick. Toute donnée métier passe par l'API admin. |
+| **Données** | Le back office ne lit/écrit jamais la base de Beepclick. Toute donnée métier passe par l'API admin. |
 | **Environnements** | `dev` (Compose local) → `staging` (même Compose, données anonymisées) → `prod`. Les migrations des deux bases sont jouées séparément et indépendamment. |
 | **Incidents** | Si `beep-core` est indisponible, le back office reste accessible en mode dégradé (données propres : audit, notes, contenu) et affiche l'état du core. |
 | **Sécurité croisée** | Jeton de service de l'API admin rotatif (rotation trimestrielle, double jeton pendant la transition), appels admin journalisés des deux côtés. |

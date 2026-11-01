@@ -60,7 +60,7 @@ export function ProductPreview({
             {c.contact}
             <Icon name="arrow-right" size={14} />
           </div>
-          <span className="preview-phone__sign">made with BeepClick</span>
+          <span className="preview-phone__sign">made with Beepclick</span>
         </div>
       </div>
       <div className="scene-ticket">

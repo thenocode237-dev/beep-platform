@@ -35,6 +35,29 @@ export default async function Page({
       currency: "XAF",
       maximumFractionDigits: 0,
     }).format(n);
+  const mark = (ok: boolean) => (
+    <svg
+      className={ok ? "plan-mark plan-mark--yes" : "plan-mark plan-mark--no"}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-label={ok ? (en ? "Included" : "Inclus") : en ? "Not included" : "Non inclus"}
+    >
+      {ok ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : <path d="M6 6l12 12M18 6L6 18" />}
+    </svg>
+  );
+  const cell = (v: number | undefined, key: string) => {
+    if (v === undefined || v === 0) return mark(false);
+    if (v === -1) return en ? "Unlimited" : "Illimité";
+    if (key === "features.conversion") return mark(true);
+    return v;
+  };
   const rows = en
     ? [
         ["links.stock_max", "Links in stock"],
@@ -42,7 +65,7 @@ export default async function Page({
         ["qr.stock_max", "QR codes in stock"],
         ["qr.monthly_creations", "QR creations / month"],
         ["api.rpm", "API requests / minute"],
-        ["features.conversion", "Conversions (1 = available)"],
+        ["features.conversion", "Conversions"],
         ["members.max", "Team members"],
         ["bio.max", "Bio pages"],
         ["domains.max", "Custom domains"],
@@ -54,7 +77,7 @@ export default async function Page({
         ["qr.stock_max", "QR en stock"],
         ["qr.monthly_creations", "Créations de QR / mois"],
         ["api.rpm", "Requêtes API / minute"],
-        ["features.conversion", "Conversions (1 = disponible)"],
+        ["features.conversion", "Conversions"],
         ["members.max", "Membres d’équipe"],
         ["bio.max", "Pages bio"],
         ["domains.max", "Domaines personnels"],
@@ -82,56 +105,66 @@ export default async function Page({
             : "Les offres sont temporairement indisponibles. Réessayez plus tard."}
         </p>
       ) : (
-        <div className="public-grid">
-          {plans.map((p) => (
-            <section className="bp-card bp-card--lg bp-stack" key={p.code}>
-              <p className="eyebrow">{p.name}</p>
-              <h2>
-                {money(p.priceXaf)} <small>{en ? "/ month" : "/ mois"}</small>
-              </h2>
-              {!p.available && (
-                <p className="muted">
-                  {en
-                    ? "Coming soon · 14-day trial from your account"
-                    : "Bientôt · essai de 14 jours depuis votre compte"}
-                </p>
-              )}
-              <dl className="public-plan-features">
-                {rows.map(([key, label]) => (
-                  <div key={key}>
-                    <dt>{label}</dt>
-                    <dd>
-                      {p.entitlements[key] === undefined
-                        ? "—"
-                        : p.entitlements[key] === -1
-                          ? en
-                            ? "Unlimited"
-                            : "Illimité"
-                          : p.entitlements[key]}
-                    </dd>
-                  </div>
+        <div className="plan-compare-wrap">
+          <table className="plan-compare">
+            <caption className="sr-only">
+              {en ? "Plan comparison" : "Comparaison des offres"}
+            </caption>
+            <thead>
+              <tr>
+                <td />
+                {plans.map((p) => (
+                  <th scope="col" key={p.code}>
+                    <span className="eyebrow">{p.name}</span>
+                    <span className="plan-compare__price">
+                      {money(p.priceXaf)} <small>{en ? "/ month" : "/ mois"}</small>
+                    </span>
+                    {p.priceXaf > 0 && (
+                      <small className="muted">
+                        {en ? "Quarterly" : "Trimestriel"} {money(p.priceQuarterlyXaf)}
+                        <br />
+                        {en ? "Annual" : "Annuel"} {money(p.priceAnnualXaf)}
+                      </small>
+                    )}
+                    {!p.available && (
+                      <small className="muted">
+                        {en ? "Coming soon · 14-day trial" : "Bientôt · essai de 14 jours"}
+                      </small>
+                    )}
+                  </th>
                 ))}
-              </dl>
-              {p.priceXaf > 0 && (
-                <p className="muted small">
-                  {en ? "Quarterly" : "Trimestriel"} :{" "}
-                  {money(p.priceQuarterlyXaf)}
-                  <br />
-                  {en ? "Annual" : "Annuel"} : {money(p.priceAnnualXaf)}
-                </p>
-              )}
-              <a
-                className="bp-btn bp-btn--secondary"
-                href={href(locale, p.available ? "/signup" : "/app/billing")}
-              >
-                {p.available
-                  ? (en ? "Choose " : "Choisir ") + p.name
-                  : en
-                    ? "Explore the trial"
-                    : "Découvrir l’essai"}
-              </a>
-            </section>
-          ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(([key, label]) => (
+                <tr key={key}>
+                  <th scope="row">{label}</th>
+                  {plans.map((p) => (
+                    <td key={p.code}>{cell(p.entitlements[key], key)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td />
+                {plans.map((p) => (
+                  <td key={p.code}>
+                    <a
+                      className="bp-btn bp-btn--secondary"
+                      href={href(locale, p.available ? "/signup" : "/app/billing")}
+                    >
+                      {p.available
+                        ? (en ? "Choose " : "Choisir ") + p.name
+                        : en
+                          ? "Explore the trial"
+                          : "Découvrir l’essai"}
+                    </a>
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          </table>
         </div>
       )}
       <section className="bp-card bp-stack">

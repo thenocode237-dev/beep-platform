@@ -21,8 +21,8 @@ export default async function Page({
       path="/affiliates"
       title={
         en
-          ? "Share BeepClick. Earn together."
-          : "Recommandez BeepClick. Avancez ensemble."
+          ? "Share Beepclick. Earn together."
+          : "Recommandez Beepclick. Avancez ensemble."
       }
     >
       <section className="bp-card bp-stack">

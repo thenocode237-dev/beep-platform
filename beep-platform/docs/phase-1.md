@@ -42,7 +42,7 @@ Contrat admin : **0.2.0** (additif ; le back office exige un core ≥ 0.2 au dé
 - **Un workspace personnel par utilisateur**, créé à la première utilisation (comptes de la phase 0 compris). Les équipes et rôles de workspace arrivent en phase 4 ; l'index unique `workspaces_owner_key` sera alors relâché.
 - **Quotas mensuels sur le mois civil UTC** : les cycles de facturation n'existent qu'avec les abonnements (phase 2).
 - **Export CSV** : la roadmap le livre en phase 1, la grille le réserve à Pro et Elite. Il est porté par le droit `features.export_csv` (Starter : 0) et s'active pour un workspace par override depuis le back office.
-- **Badge « Propulsé par BeepClick »** toujours affiché : il n'est retirable qu'en Elite, qui n'est pas commercialisé avant la phase 3.
+- **Badge « Propulsé par Beepclick »** toujours affiché : il n'est retirable qu'en Elite, qui n'est pas commercialisé avant la phase 3.
 - **Suspension** = compte **et** workspace : en plus de la connexion bloquée, les liens et pages du workspace affichent une page d'information (410). C'est une décision de modération, distincte des quotas, qui n'arrêtent jamais une redirection.
 - **Désactivation des pages bio** (modération) non incluse : elle arrive avec la file de modération (phase 2).
 - **Pays** : base MaxMind Country locale (`GEOIP_DB_PATH`, licence GeoLite2 à obtenir). Sans base, les pays sont « inconnus » (`ZZ`) et rien d'autre ne change.

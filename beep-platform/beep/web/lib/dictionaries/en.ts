@@ -2,11 +2,11 @@ import type { Dict } from "./fr";
 
 const en: Dict = {
   meta: {
-    title: "BeepClick — Smarter links for more conversions",
+    title: "Beepclick — Smarter links for more conversions",
     description: "Short links, deeplinks, QR codes and link in bio, measured from click to sale. Built for mobile and unreliable connections.",
   },
   common: { skip: "Skip to content", language: "Language", loading: "Loading…", soon: "Soon" },
-  nav: { login: "Log in", signup: "Get started", home: "BeepClick home" },
+  nav: { login: "Log in", signup: "Get started", home: "Beepclick home" },
   home: {
     h1: "Smarter links for more conversions",
     sub: "Short links, deeplinks, QR codes and link in bio, measured from click to sale. Light on mobile, dependable even when the network isn't.",

@@ -13,7 +13,7 @@ export function AppShell({
   t,
   locale,
   email,
-  brandName="BeepClick",
+  brandName="Beepclick",
   brandColor,
   logoutLabel,
   children,

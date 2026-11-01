@@ -11,14 +11,14 @@ export default async function Login() {
   return (
     <main id="main" className="staff-login">
       <aside className="staff-login__visual">
-        <Logo href="/login" label="BeepClick back office" />
+        <Logo href="/login" label="Beepclick back office" />
         <div className="staff-login__message">
           <h2>
             Les bonnes connexions
             <br />
             <span>commencent ici.</span>
           </h2>
-          <p>Un espace pour accompagner celles et ceux qui font vivre BeepClick.</p>
+          <p>Un espace pour accompagner celles et ceux qui font vivre Beepclick.</p>
         </div>
         <div className="staff-art" aria-hidden="true">
           <span />
@@ -28,11 +28,11 @@ export default async function Login() {
             <Icon name="link" size={52} />
           </div>
         </div>
-        <p className="staff-login__caption">BeepClick · Espace équipe</p>
+        <p className="staff-login__caption">Beepclick · Espace équipe</p>
       </aside>
       <div className="staff-login__content">
         <div className="staff-login__mobile-logo">
-          <Logo href="/login" label="BeepClick back office" />
+          <Logo href="/login" label="Beepclick back office" />
         </div>
         <div className="staff-login__form bp-stack bp-stack--lg">
           <div className="bp-stack">
@@ -43,7 +43,7 @@ export default async function Login() {
             </h1>
             <p className="muted">
               Connectez-vous à votre espace équipe. L’accès est réservé au
-              personnel BeepClick.
+              personnel Beepclick.
             </p>
           </div>
           <LoginForm />

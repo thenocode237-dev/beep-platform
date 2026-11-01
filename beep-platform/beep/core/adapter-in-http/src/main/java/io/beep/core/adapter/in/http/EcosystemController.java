@@ -61,6 +61,6 @@ public class EcosystemController {
     if(email.length()>254||message.length()>2000||!block.matches("[A-Za-z0-9]{6,16}"))throw new DomainException("invalid_request");
     if(!rate.tryAcquire("bio-form:"+tokens.hash(r.getRemoteAddr()+":"+clock.instant().getEpochSecond()/3600),5,Duration.ofHours(1)))throw new DomainException("rate_limited");
     Email to=new Email(email);if(!data.submit(page,block,cipher.encrypt(to.value()),cipher.encrypt(message),clock.instant()))throw new DomainException("not_found");
-    return ResponseEntity.ok().cacheControl(CacheControl.noStore()).contentType(MediaType.TEXT_HTML).header("Content-Security-Policy","default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'").body("<!doctype html><html lang=fr><meta name=viewport content='width=device-width,initial-scale=1'><title>Merci · BeepClick</title><main style='font:18px system-ui;margin:3rem auto;max-width:30rem;padding:1rem'><h1>Merci !</h1><p>Votre réponse a été enregistrée.</p></main></html>");
+    return ResponseEntity.ok().cacheControl(CacheControl.noStore()).contentType(MediaType.TEXT_HTML).header("Content-Security-Policy","default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'").body("<!doctype html><html lang=fr><meta name=viewport content='width=device-width,initial-scale=1'><title>Merci · Beepclick</title><main style='font:18px system-ui;margin:3rem auto;max-width:30rem;padding:1rem'><h1>Merci !</h1><p>Votre réponse a été enregistrée.</p></main></html>");
   }
 }
